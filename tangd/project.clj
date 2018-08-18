@@ -8,7 +8,7 @@
                  [org.clojure/clojurescript "1.10.339"]]
 
   :plugins [[lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
-            [lein-figwheel "0.5.13"]]
+            [lein-figwheel "0.5.16"]]
 
   :source-paths ["src"]
 
@@ -18,7 +18,7 @@
   :cljsbuild {
               :builds [{:id "dev"
                         :source-paths ["src"]
-                        :figwheel true
+                        :figwheel false
                         :compiler {
                                    :main tangd.core
                                    :asset-path "target/js/compiled/dev"

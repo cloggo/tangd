@@ -1,2 +1,4 @@
 tmp
 tangd/target
+*.npm
+tangd/.config

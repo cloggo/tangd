@@ -6,7 +6,7 @@ NODEMON_BIN := node_modules/.bin/nodemon
 DEV_MAIN_JS := target/js/compiled/tangd.js
 DEV_TEST_JS := target/js/compiled/test.js
 
-node_modules: tangd/package.json tangd/package-lock.json
+tangd/node_modules: tangd/package.json tangd/package-lock.json
 	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) npm install
 
 .PHONY: figwheel

@@ -1,27 +1,29 @@
 (ns tangd.core
   (:require [cljs.nodejs :as node]
+            [restify]
             [goog.string :as gstring]
             [goog.string.format]
-            [oops.core :refer [oget oset!]]))
+            [oops.core :refer [oget oset! ocall]]))
 
-(node/enable-util-print!)
+ ;;(node/enable-util-print!)
 
 
-(def restify (node/require "restify"))
+;; (def restify (node/require "restify"))
 
 (defn log [& args]
-  (println (apply gstring/format args)))
+  (.log js/console (apply gstring/format args)))
 
 (defn respond [req res next]
   (.send res (str "hello " (oget req :params :name))))
 
-(def server (.createServer restify))
+;; (def server (.createServer restify))
+(def server (ocall restify :createServer))
 
 (do
-  (.get server "/hello/:name" respond)
-  (.head server "/hello/:name" respond))
+  (ocall server :get "/hello/:name" respond)
+  (ocall server :head "/hello/:name" respond))
 
 (defn -main [& args]
-  (.listen server 8080 #(log "%s listening at %s" (.-name server) (.-url server))))
+  (ocall server :listen 8080 #(log "%s listening at %s" (.-name server) (.-url server))))
 
 (set! *main-cli-fn* -main)

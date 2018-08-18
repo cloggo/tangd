@@ -28,6 +28,8 @@
                                    :output-to "target/js/compiled/tangd.js"
                                    :output-dir "target/js/compiled/dev"
                                    :target :nodejs
+                                   :install-deps true
+                                   :npm-deps {:restify "^7.2.1"}
                                    :optimizations :none
                                    :source-map-timestamp true}}
                        {:id "test"
@@ -38,6 +40,8 @@
                                    :asset-path "target/js/compiled/test"
                                    :output-to "target/js/compiled/test.js"
                                    :output-dir "target/js/compiled/test"
+                                   :install-deps true
+                                   :npm-deps {:restify "^7.2.1"}
                                    :target :nodejs
                                    :optimizations :none
                                    :source-map-timestamp true}}
@@ -46,8 +50,10 @@
                         :compiler {
                                    :output-to "server.js"
                                    :output-dir "target/js/compiled/prod"
+                                   :install-deps true
+                                   :npm-deps {:restify "^7.2.1"}
                                    :target :nodejs
-                                   :optimizations :simple}}]}
+                                   :optimizations :advanced}}]}
 
   :profiles {:dev {:dependencies [[figwheel-sidecar "0.5.16"]
                                   [cider/piggieback "0.3.8"]]

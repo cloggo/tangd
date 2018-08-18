@@ -14,6 +14,9 @@ figwheel:
 build-auto:
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto dev
 
+build:
+	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild once prod
+
 nrepl:
 	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) lein repl
 
@@ -21,7 +24,7 @@ start-dev: node_modules
 	$(DOCKER_SERVICE_CMD) -p 8081:8080 $(SERVICE_IMAGE) $(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) $(DEV_MAIN_JS)
 
 start: node_modules
-	$(DOCKER_SERVICE_CMD) -p 8080:8080 $(SERVICE_IMAGE) node target/js/compiled/server.js
+	$(DOCKER_SERVICE_CMD) -p 8080:8080 $(SERVICE_IMAGE) node server.js
 
 js-cli: node_modules
 	$(DOCKER_SERVICE_CMD) -p 8081:8080  $(SERVICE_IMAGE) sh

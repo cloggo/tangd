@@ -11,31 +11,31 @@ tangd/node_modules: tangd/package.json tangd/package-lock.json
 
 .PHONY: figwheel
 
-figwheel:
+figwheel: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) -p 4001:4001 -p 3449:3449 $(BUILDER_IMAGE) lein figwheel
 
 .PHONY: build-auto
 
-build-auto:
+build-auto: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto dev
 
 .PHONY: build-test-auto
 
-build-test-auto:
+build-test-auto: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto test
 
 # older nodejs < 10 required must use nodemon -L to work properly
-start-test: node_modules
+start-test: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) $(NODEMON_BIN) --watch src --watch test -L -e js,cljs --exec "lein" doo node test once
 
 .PHONY: build-auto-daemon
 
-build-auto-daemon:
+build-auto-daemon: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto dev
 
 .PHONY: build
 
-build:
+build: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild once prod
 
 .PHONY: nrepl
@@ -45,26 +45,26 @@ nrepl:
 
 .PHONY: start-dev
 
-start-dev: node_modules
+start-dev: tangd/node_modules
 	$(DOCKER_SERVICE_CMD) -e NODE_ENV=dev -p 8081:8080 $(SERVICE_IMAGE) $(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) $(DEV_MAIN_JS)
 
 .PHONY: start
 
-start: node_modules
+start: tangd/node_modules
 	$(DOCKER_SERVICE_CMD) -e NODE_ENV=production -p 8080:8080 $(SERVICE_IMAGE) node server.js
 
 .PHONY: js-cli
 
-js-cli: node_modules
+js-cli: tangd/node_modules
 	$(DOCKER_SERVICE_CMD) -p 8081:8080  $(SERVICE_IMAGE) sh
 
 .PHONY: cl-cli
 
-cl-cli: node_modules
+cl-cli: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) bash
 
 .PHONY: clean
 
 clean:
 	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) lein clean
-	@RM -rf node_modules
+	@RM -rf tangd/node_modules

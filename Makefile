@@ -3,7 +3,7 @@ SERVICE_IMAGE := registry.delite.ca/docker/base/node/10:dev
 DOCKER_BUILDER_CMD := docker run -it -w /app -v $(CURDIR)/tmp:/root -v $(CURDIR)/tangd:/app
 DOCKER_SERVICE_CMD := docker run -it -w /app -v $(CURDIR)/tangd:/app -e NODE_ENV=dev
 
-node_modules:
+node_modules: tangd/package.json tangd/package-lock.json
 	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) npm install
 
 figwheel:

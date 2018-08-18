@@ -4,6 +4,6 @@
 (nodejs/enable-util-print!)
 
 (defn -main []
-  (println "Hello world 3!"))
+  (println "Hello world!"))
 
 (set! *main-cli-fn* -main)

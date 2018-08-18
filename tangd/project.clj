@@ -9,6 +9,7 @@
                  [org.clojure/clojurescript "1.10.339"]]
 
   :plugins [[lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
+            [lein-doo "0.1.10"]
             [lein-figwheel "0.5.16"]]
 
   :source-paths ["src"]
@@ -16,6 +17,7 @@
   :clean-targets ["server.js"
                   "target"]
 
+  ;; https://github.com/clojure/clojurescript-site/blob/master/content/reference/compiler-options.adoc
   :cljsbuild {
               :builds [{:id "dev"
                         :source-paths ["src"]
@@ -25,6 +27,17 @@
                                    :asset-path "target/js/compiled/dev"
                                    :output-to "target/js/compiled/tangd.js"
                                    :output-dir "target/js/compiled/dev"
+                                   :target :nodejs
+                                   :optimizations :none
+                                   :source-map-timestamp true}}
+                       {:id "test"
+                        :source-paths ["test" "src"]
+                        :figwheel false
+                        :compiler {
+                                   :main test.core
+                                   :asset-path "target/js/compiled/test"
+                                   :output-to "target/js/compiled/test.js"
+                                   :output-dir "target/js/compiled/test"
                                    :target :nodejs
                                    :optimizations :none
                                    :source-map-timestamp true}}

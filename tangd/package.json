@@ -6,7 +6,9 @@
     "node": "6.x"
   },
   "main": "server.js",
-  "dependencies": {},
+  "dependencies": {
+    "restify": "^7.2.1"
+  },
   "devDependencies": {
     "source-map-support": "^0.4.15",
     "utf-8-validate": "^5.0.1",

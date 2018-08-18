@@ -9,14 +9,17 @@ node_modules: tangd/package.json tangd/package-lock.json
 figwheel:
 	$(DOCKER_BUILDER_CMD) -p 4001:4001 -p 3449:3449 $(BUILDER_IMAGE) lein figwheel
 
+build-auto:
+	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto dev
+
 nrepl:
 	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) lein repl
 
 start: node_modules
-	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) node target/js/compiled/tangd.js
+	$(DOCKER_SERVICE_CMD) -p 8081:8080 $(SERVICE_IMAGE) node target/js/compiled/tangd.js
 
 js-cli: node_modules
-	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) sh
+	$(DOCKER_SERVICE_CMD) -p 8081:8080  $(SERVICE_IMAGE) sh
 
 cl-cli: node_modules
 	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) bash

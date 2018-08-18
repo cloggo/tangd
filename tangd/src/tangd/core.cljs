@@ -13,7 +13,7 @@
   (println (apply gstring/format args)))
 
 (defn respond [req res next]
-  (.send res (str "hello " (oget req "params" "name"))))
+  (.send res (str "hello " (oget req :params :name))))
 
 (def server (.createServer restify))
 

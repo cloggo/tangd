@@ -1,17 +1,18 @@
 {
-  "name": "tangd",
-  "version": "0.1.0",
-  "private": "true",
-  "engines": {
-    "node": "6.x"
-  },
-  "main": "server.js",
-  "dependencies": {
-    "restify": "^7.2.1"
-  },
-  "devDependencies": {
-    "source-map-support": "^0.4.15",
-    "utf-8-validate": "^5.0.1",
-    "ws": "^6.0.0"
-  }
+    "name": "tangd",
+    "version": "0.1.0",
+    "private": "true",
+    "engines": {
+        "node": "6.x"
+    },
+    "main": "server.js",
+    "dependencies": {
+        "restify": "^7.2.1"
+    },
+    "devDependencies": {
+        "source-map-support": "^0.4.15",
+        "utf-8-validate": "^5.0.1",
+        "nodemon": "^1.18.0",
+        "ws": "^6.0.0"
+    }
 }

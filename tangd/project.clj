@@ -1,3 +1,12 @@
+(def npm-prod
+  {:restify "^7.2.1"})
+
+(def npm-dev
+  (merge
+   {}
+   npm-prod))
+
+
 (defproject tangd "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
   :url "http://example.com/FIXME"
@@ -29,7 +38,7 @@
                                    :output-dir "target/js/compiled/dev"
                                    :target :nodejs
                                    :install-deps true
-                                   :npm-deps {:restify "^7.2.1"}
+                                   :npm-deps ~npm-dev
                                    :optimizations :none
                                    :source-map-timestamp true}}
                        {:id "test"
@@ -41,7 +50,7 @@
                                    :output-to "target/js/compiled/test.js"
                                    :output-dir "target/js/compiled/test"
                                    :install-deps true
-                                   :npm-deps {:restify "^7.2.1"}
+                                   :npm-deps ~npm-dev
                                    :target :nodejs
                                    :optimizations :none
                                    :source-map-timestamp true}}
@@ -51,7 +60,7 @@
                                    :output-to "server.js"
                                    :output-dir "target/js/compiled/prod"
                                    :install-deps true
-                                   :npm-deps {:restify "^7.2.1"}
+                                   :npm-deps ~npm-prod
                                    :target :nodejs
                                    :optimizations :advanced}}]}
   ;; no need for node.js :optimizations :advanced but it does save about 5M of memory}}]}
@@ -62,3 +71,8 @@
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                   :host "0.0.0.0"
                                   :port 4001}}})
+
+;; (def npm-dev
+;;   (merge {} npm-prod))
+
+

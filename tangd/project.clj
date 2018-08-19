@@ -54,6 +54,7 @@
                                    :npm-deps {:restify "^7.2.1"}
                                    :target :nodejs
                                    :optimizations :advanced}}]}
+  ;; no need for node.js :optimizations :advanced but it does save about 5M of memory}}]}
 
   :profiles {:dev {:dependencies [[figwheel-sidecar "0.5.16"]
                                   [cider/piggieback "0.3.8"]]

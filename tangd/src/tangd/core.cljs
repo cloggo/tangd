@@ -14,7 +14,9 @@
   (.log js/console (apply gstring/format args)))
 
 (defn respond [req res next]
-  (.send res (str "hello " (oget req :params :name))))
+  (do
+    (.send res (str "hello " (oget req :params :name)))
+    (next false)))
 
 ;; (def server (.createServer restify))
 (def server (ocall restify :createServer))

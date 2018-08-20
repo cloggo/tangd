@@ -14,6 +14,11 @@ tangd/node_modules: tangd/package.json tangd/package-lock.json
 figwheel: tangd/node_modules
 	$(DOCKER_BUILDER_CMD) -p 4001:4001 -p 3449:3449 $(BUILDER_IMAGE) lein figwheel
 
+.PHONY: once
+
+build-once: tangd/node_modules
+	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild once dev
+
 .PHONY: build-auto
 
 build-auto: tangd/node_modules
@@ -31,7 +36,7 @@ start-test: tangd/node_modules
 .PHONY: build-auto-daemon
 
 build-auto-daemon: tangd/node_modules
-	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto dev
+	$(DOCKER_BUILDER_CMD) -d $(BUILDER_IMAGE) lein cljsbuild auto dev
 
 .PHONY: build
 
@@ -41,7 +46,7 @@ build: tangd/node_modules
 .PHONY: nrepl
 
 nrepl:
-	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) lein repl
+	$(DOCKER_BUILDER_CMD) -p 4001:4001 -p 3449:3449  -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) lein repl
 
 .PHONY: start-dev
 

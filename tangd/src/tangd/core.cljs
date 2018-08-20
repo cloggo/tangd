@@ -12,7 +12,7 @@
 
 (defn -main [& args]
   (oops/ocall server
-              :listen 8080
+              :listen config/port
               #(interop/log "%s listening at %s" (.-name server) (.-url server))))
 
 (set! *main-cli-fn* -main)

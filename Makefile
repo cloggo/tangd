@@ -41,6 +41,7 @@ build-auto-daemon: tangd/node_modules
 .PHONY: build
 
 build: tangd/node_modules
+	@RM -f tangd/server.js
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild once prod
 
 .PHONY: nrepl

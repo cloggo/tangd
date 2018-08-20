@@ -8,7 +8,10 @@
 (defn ometh [obj k]
   (.bind (oops/oget+ obj k) obj))
 
-;;;; enabled by (enable-util-print!)
-;; (defn log [& args]
-;;   (.log js/console (apply gstring/format args)))
+;;;; println is enabled by (enable-util-print!)
+(defn log [& args]
+  (.log js/console (apply gstring/format args)))
+
+(defn log-error [& args]
+  (.error js/console (apply gstring/format args)))
 

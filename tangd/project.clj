@@ -33,6 +33,7 @@
                         :figwheel false
                         :compiler {
                                    :main tangd.core
+                                   :closure-defines {goog.DEBUG true}
                                    :asset-path "target/js/compiled/dev"
                                    :output-to "target/js/compiled/tangd.js"
                                    :output-dir "target/js/compiled/dev"
@@ -46,6 +47,7 @@
                         :figwheel false
                         :compiler {
                                    :main test.core
+                                   :closure-defines {goog.DEBUG true}
                                    :asset-path "target/js/compiled/test"
                                    :output-to "target/js/compiled/test.js"
                                    :output-dir "target/js/compiled/test"
@@ -57,6 +59,7 @@
                        {:id "prod"
                         :source-paths ["src"]
                         :compiler {
+                                   :closure-defines {goog.DEBUG false}
                                    :output-to "server.js"
                                    :output-dir "target/js/compiled/prod"
                                    :install-deps true
@@ -70,7 +73,8 @@
                    :source-paths ["src" "dev"]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                   :host "0.0.0.0"
-                                  :port 4001}}})
+                                  :server-port 3449
+                                  :nrepl-port 4001}}})
 
 ;; (def npm-dev
 ;;   (merge {} npm-prod))

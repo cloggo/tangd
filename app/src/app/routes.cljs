@@ -8,3 +8,5 @@
    [ :get "/adv/:kid" adv/respond-kid ]
    [ :post "/rec/:kid" rec/respond-kid ]])
 
+
+;; (def routes [[:post "/rec/:kid" (restify/listener :rec)] ])

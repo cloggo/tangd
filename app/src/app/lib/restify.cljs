@@ -8,7 +8,7 @@
   (do (oops/ocall res :send status data headers) (next next?)))
 
 (defn extract-request [req paths]
-  (if (nil? paths) [] (mapv #(oops/oget+ req %) paths)))
+  (mapv #(oops/oget+ req %) paths))
 
 (def defaults {:headers config/res-headers
                :next? false})

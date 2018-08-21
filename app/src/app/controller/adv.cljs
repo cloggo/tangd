@@ -6,8 +6,8 @@
 (defn respond [kid]
   #js {:hello kid})
 
-(registrar/register-evt :adv :restify {:status :CREATED
+(registrar/reg-evt :adv :restify {:status :OK
                                        :callback [ respond [[:params :kid]]]})
 
-(registrar/register-evt :adv* :restify {:status :CREATED
+(registrar/reg-evt :adv* :restify {:status :OK
                                        :callback [ #(identity #js {:hello "world"}) ]})

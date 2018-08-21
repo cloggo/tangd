@@ -3,10 +3,10 @@
 
 (def atom- (atom {}))
 
-(defn register-fx [id handler]
+(defn reg-fx [id handler]
   (swap! atom- assoc-in [:fx id] handler))
 
-(defn register-evt [id fx-id callback]
+(defn reg-evt [id fx-id callback]
   (swap! atom- assoc-in [:evt id] [fx-id callback]))
 
 (defn dispatch! [evt-id data]

@@ -29,4 +29,4 @@
     (apply send- res next data)))
 
 
-(registrar/register-fx :restify respond)
+(registrar/reg-fx :restify respond)

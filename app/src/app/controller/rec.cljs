@@ -8,5 +8,4 @@
 (defn respond-kid [req res next]
   (restify/send req res next
          {:status :CREATED
-          :callback rec-response
-          :callback-arg-paths [[:params :kid] [:body :name]]}))
+          :callback [rec-response [[:params :kid] [:body :name]]]}))

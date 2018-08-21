@@ -17,12 +17,12 @@
   (let[data (merge defaults data)
        {headers :headers
         next? :next?
-        paths :callback-arg-paths
         extractor :extractor
         status :status
-        res-cb :callback} data]
+        cb :callback} data
+       [cb-fn paths] cb]
     [(status const/http-status)
-     (apply res-cb (extractor paths))
+     (apply cb-fn (extractor paths))
      headers
      next?]))
 

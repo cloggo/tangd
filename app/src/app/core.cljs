@@ -1,5 +1,6 @@
 (ns app.core
   (:require [restify]
+            [app.loader]
             ;; [cljs.nodejs :as node]
             [app.lib.interop :as interop]
             [app.lib.router :as router]

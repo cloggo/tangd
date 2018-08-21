@@ -1,14 +1,13 @@
 (ns app.controller.adv
   (:require
-   [oops.core :as oops]))
+   [app.registrar :as registrar]))
 
 
-(defn respond-top [req res next]
-  (do
-    (.send res (str "adv: " "top"))
-    (next false)))
+(defn respond [kid]
+  #js {:hello kid})
 
-(defn respond-kid [req res next]
-  (do
-    (.send res (str "adv: " (oops/oget req :params :kid)))
-    (next false)))
+(registrar/register-evt :adv :restify {:status :CREATED
+                                       :callback [ respond [[:params :kid]]]})
+
+(registrar/register-evt :adv* :restify {:status :CREATED
+                                       :callback [ #(identity #js {:hello "world"}) ]})

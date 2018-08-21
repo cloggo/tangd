@@ -41,7 +41,7 @@ build-auto-daemon: app/node_modules
 .PHONY: build
 
 build: app/node_modules
-	@RM -f app/server.js
+	@RM -f app/index.js
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild once prod
 
 .PHONY: nrepl
@@ -57,7 +57,7 @@ start-dev: app/node_modules
 .PHONY: start
 
 start: app/node_modules
-	$(DOCKER_SERVICE_CMD) -e NODE_ENV=production -p 8080:8080 $(SERVICE_IMAGE) node server.js
+	$(DOCKER_SERVICE_CMD) -e NODE_ENV=production -p 8080:8080 $(SERVICE_IMAGE) node index.js
 
 .PHONY: js-cli
 

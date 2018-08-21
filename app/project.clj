@@ -60,7 +60,7 @@
                         :source-paths ["src"]
                         :compiler {
                                    :closure-defines {goog.DEBUG false}
-                                   :output-to "server.js"
+                                   :output-to "index.js"
                                    :output-dir "target/js/compiled/prod"
                                    :install-deps true
                                    :npm-deps ~npm-prod

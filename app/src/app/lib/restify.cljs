@@ -1,5 +1,6 @@
 (ns app.lib.restify
   (:require
+   [app.registrar :as registrar]
    [app.config :as config]
    [app.lib.const* :as const]
    [oops.core :as oops]))
@@ -23,7 +24,9 @@
      headers
      next?]))
 
-(defn send [req res next data]
+(defn respond [data req res next]
   (let [data (build-response-object (assoc data :extractor (partial extract-request req)))]
     (apply send- res next data)))
 
+
+(registrar/register-fx :restify respond)

@@ -1,12 +1,4 @@
-(ns tangd.defaults)
-
-(def port 8080)
-
-(def res-headers #js {:content-type "json"})
-
-(def server-options
-  #js {:ignoreTrailingSlash true
-       :name "tangd"})
+(ns tangd.code)
 
 (def http-status
   {:ACCEPTED                         202

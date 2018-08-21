@@ -1,6 +1,6 @@
 (ns tangd.controller.rec
   (:require
-   [tangd.const* :as const]
+   [tangd.lib.const* :as const]
    [tangd.config :as config]
    [oops.core :as oops]))
 

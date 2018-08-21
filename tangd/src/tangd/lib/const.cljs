@@ -1,4 +1,4 @@
-(ns tangd.const*)
+(ns tangd.lib.const*)
 
 (def http-status
   {:ACCEPTED                         202

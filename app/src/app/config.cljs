@@ -1,4 +1,6 @@
-(ns tangd.config)
+(ns app.config)
+
+(def app-name "tangd")
 
 (def port 8080)
 
@@ -6,5 +8,5 @@
 
 (def server-options
   #js {:ignoreTrailingSlash true
-       :name "tangd"})
+       :name app-name})
 

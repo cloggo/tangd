@@ -1,10 +1,10 @@
-(ns tangd.core
+(ns app.core
   (:require [restify]
             ;; [cljs.nodejs :as node]
-            [tangd.lib.interop :as interop]
-            [tangd.lib.router :as router]
-            [tangd.routes :as routes]
-            [tangd.config :as config]
+            [app.lib.interop :as interop]
+            [app.lib.router :as router]
+            [app.routes :as routes]
+            [app.config :as config]
             [oops.core :as oops]))
 
 ;; (node/enable-util-print!)

@@ -1,6 +1,6 @@
-(ns tangd.lib.router
+(ns app.lib.router
   (:require
-   [tangd.lib.interop :as interop]))
+   [app.lib.interop :as interop]))
 
 
 (defn register-route [server r]

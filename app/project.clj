@@ -32,10 +32,10 @@
                         :source-paths ["src"]
                         :figwheel false
                         :compiler {
-                                   :main tangd.core
+                                   :main app.core
                                    :closure-defines {goog.DEBUG true}
                                    :asset-path "target/js/compiled/dev"
-                                   :output-to "target/js/compiled/tangd.js"
+                                   :output-to "target/js/compiled/app.js"
                                    :output-dir "target/js/compiled/dev"
                                    :target :nodejs
                                    :install-deps true

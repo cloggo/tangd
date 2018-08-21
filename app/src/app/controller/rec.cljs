@@ -1,7 +1,7 @@
-(ns tangd.controller.rec
+(ns app.controller.rec
   (:require
-   [tangd.lib.const* :as const]
-   [tangd.config :as config]
+   [app.lib.const* :as const]
+   [app.config :as config]
    [oops.core :as oops]))
 
 

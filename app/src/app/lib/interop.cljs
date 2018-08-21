@@ -1,4 +1,4 @@
-(ns tangd.lib.interop
+(ns app.lib.interop
   (:require
    [goog.string :as gstring]
    [goog.string.format]

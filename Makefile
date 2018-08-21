@@ -1,47 +1,47 @@
 BUILDER_IMAGE := registry.delite.ca/docker/base/alpine/3_8:clojure-lein-node
 SERVICE_IMAGE := registry.delite.ca/docker/base/node/10:dev
-DOCKER_BUILDER_CMD := docker run --rm -it -w /app -v $(CURDIR)/tmp:/root -v $(CURDIR)/tangd:/app
-DOCKER_SERVICE_CMD := docker run --rm -it -w /app -v $(CURDIR)/tangd:/app
-NODEMON_BIN := node_modules/.bin/nodemon 
-DEV_MAIN_JS := target/js/compiled/tangd.js
+DOCKER_BUILDER_CMD := docker run --rm -it -w /app -v $(CURDIR)/tmp:/root -v $(CURDIR)/app:/app
+DOCKER_SERVICE_CMD := docker run --rm -it -w /app -v $(CURDIR)/app:/app
+NODEMON_BIN := node_modules/.bin/nodemon
+DEV_MAIN_JS := target/js/compiled/app.js
 DEV_TEST_JS := target/js/compiled/test.js
 
-tangd/node_modules: tangd/package.json tangd/package-lock.json
+app/node_modules: app/package.json app/package-lock.json
 	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) npm install
 
 .PHONY: figwheel
 
-figwheel: tangd/node_modules
+figwheel: app/node_modules
 	$(DOCKER_BUILDER_CMD) -p 4001:4001 -p 3449:3449 $(BUILDER_IMAGE) lein figwheel
 
 .PHONY: once
 
-build-once: tangd/node_modules
+build-once: app/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild once dev
 
 .PHONY: build-auto
 
-build-auto: tangd/node_modules
+build-auto: app/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto dev
 
 .PHONY: build-test-auto
 
-build-test-auto: tangd/node_modules
+build-test-auto: app/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild auto test
 
 # older nodejs < 10 required must use nodemon -L to work properly
-start-test: tangd/node_modules
+start-test: app/node_modules
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) $(NODEMON_BIN) --watch src --watch test -L -e js,cljs --exec "lein" doo node test once
 
 .PHONY: build-auto-daemon
 
-build-auto-daemon: tangd/node_modules
+build-auto-daemon: app/node_modules
 	$(DOCKER_BUILDER_CMD) -d $(BUILDER_IMAGE) lein cljsbuild auto dev
 
 .PHONY: build
 
-build: tangd/node_modules
-	@RM -f tangd/server.js
+build: app/node_modules
+	@RM -f app/server.js
 	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) lein cljsbuild once prod
 
 .PHONY: nrepl
@@ -51,26 +51,26 @@ nrepl:
 
 .PHONY: start-dev
 
-start-dev: tangd/node_modules
+start-dev: app/node_modules
 	$(DOCKER_SERVICE_CMD) -e NODE_ENV=dev -p 8081:8080 $(SERVICE_IMAGE) $(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) $(DEV_MAIN_JS)
 
 .PHONY: start
 
-start: tangd/node_modules
+start: app/node_modules
 	$(DOCKER_SERVICE_CMD) -e NODE_ENV=production -p 8080:8080 $(SERVICE_IMAGE) node server.js
 
 .PHONY: js-cli
 
-js-cli: tangd/node_modules
+js-cli: app/node_modules
 	$(DOCKER_SERVICE_CMD) -p 8081:8080  $(SERVICE_IMAGE) sh
 
 .PHONY: cl-cli
 
-cl-cli: tangd/node_modules
+cl-cli: app/node_modules
 	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) bash
 
 .PHONY: clean
 
 clean:
 	$(DOCKER_BUILDER_CMD) -v $(CURDIR)/tmp:/root $(BUILDER_IMAGE) lein clean
-	@RM -rf tangd/node_modules
+	@RM -rf app/node_modules

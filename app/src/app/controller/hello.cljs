@@ -1,4 +1,4 @@
-(ns tangd.controller.hello
+(ns app.controller.hello
   (:require
    [oops.core :as oops]))
 

@@ -1,7 +1,7 @@
 # Standalone Usage
 
 1. `lein figwheel`
-2. (In another window) `node target\js\compiled\tangd.js ...`
+2. (In another window) `node target\js\compiled\app.js ...`
 
 
 # Production Builds
@@ -19,7 +19,7 @@ You can now connect to Figwheel's REPL through
 1. `lein repl`
 2. `(fig-start)`
 3. `(cljs-repl)`
-4. (In another window) `node target\js\compiled\tangd.js ...`
+4. (In another window) `node target\js\compiled\app.js ...`
 5. (In Vim) `:Piggieback (figwheel-sidecar.repl-api/repl-env)`
 
 Standard `vim-fireplace` commands will now work in the context of the

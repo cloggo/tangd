@@ -5,9 +5,6 @@
    [app.lib.const* :as const]
    [oops.core :as oops]))
 
-(defn send- [res next status data headers next?]
-  (do (oops/ocall res :send status data headers) (next next?)))
-
 (defn extract-request [req paths]
   (mapv #(oops/oget+ req %) paths))
 
@@ -23,6 +20,9 @@
      (apply cb-fn (extractor paths))
      headers
      next?]))
+
+(defn send- [res next status data headers next?]
+  (do (oops/ocall res :send status data headers) (next next?)))
 
 (defn respond [data req res next]
   (let [data (build-response-object (assoc data :extractor (partial extract-request req)))]

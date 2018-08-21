@@ -10,11 +10,8 @@
 (defn extract-request [req paths]
   (mapv #(oops/oget+ req %) paths))
 
-(def defaults {:headers config/res-headers
-               :next? false})
-
 (defn build-response-object [data]
-  (let[data (merge defaults data)
+  (let[data (merge config/response-defaults data)
        {headers :headers
         next? :next?
         extractor :extractor

@@ -9,10 +9,7 @@
 
 ;; (node/enable-util-print!)
 
-(def options
-  #js {:ignoreTrailingSlash true})
-
-(def server (oops/ocall restify :createServer options))
+(def server (oops/ocall restify :createServer defaults/server-options))
 
 (oops/ocall server :use
             (.call (oops/oget restify :plugins :bodyParser) restify  #js { :mapParams true}))

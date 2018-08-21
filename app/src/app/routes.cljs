@@ -1,7 +1,5 @@
 (ns app.routes
-  (:require [app.registrar :as registrar]
-            [app.controller.adv :as adv]
-            [app.controller.rec :as rec]))
+  (:require [app.registrar :as registrar]))
 
 ;; Restify don't support regexp path, only string and wildcard
 (def routes

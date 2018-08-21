@@ -12,4 +12,4 @@
 (defn dispatch! [evt-id data]
   (let [[fx-id evt-callback] (get-in @atom- [:evt evt-id])
         fx-handler (get-in @atom- [:fx fx-id])]
-    (apply fx-handler evt-callback data)))
+    (fx-handler evt-callback data)))

@@ -24,7 +24,7 @@
 (defn send- [res next status data headers next?]
   (do (oops/ocall res :send status data headers) (next next?)))
 
-(defn respond [data req res next]
+(defn respond [data [req res next]]
   (let [data (build-response-object (assoc data :extractor (partial extract-request req)))]
     (apply send- res next data)))
 

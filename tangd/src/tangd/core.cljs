@@ -9,7 +9,13 @@
 
 ;; (node/enable-util-print!)
 
-(def server (oops/ocall restify :createServer))
+(def options
+  #js {:ignoreTrailingSlash true})
+
+(def server (oops/ocall restify :createServer options))
+
+(oops/ocall server :use
+            (.call (oops/oget restify :plugins :bodyParser) restify  #js { :mapParams true}))
 
 (mapv (partial router/register-route server) config/routes)
 

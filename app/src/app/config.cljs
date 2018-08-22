@@ -12,4 +12,5 @@
 
 (def response-defaults
   {:headers response-headers
+   :status :OK
    :next? false})

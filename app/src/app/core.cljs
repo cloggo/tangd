@@ -1,14 +1,14 @@
 (ns app.core
   (:require [restify]
             [app.loader]
-            ;; [cljs.nodejs :as node]
+            [cljs.nodejs :as node]
             [app.lib.interop :as interop]
             [app.lib.router :as router]
             [app.routes :as routes]
             [app.config :as config]
             [oops.core :as oops]))
 
-;; (node/enable-util-print!)
+(node/enable-util-print!)
 
 (def server (oops/ocall restify :createServer config/server-options))
 

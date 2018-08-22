@@ -3,13 +3,10 @@
    [app.registrar :as registrar]))
 
 
-(defn respond [kid]
+(defn respond [[kid]]
   #js {:hello kid})
 
-(registrar/reg-evt :adv :restify-response
-                   {:status :OK
-                    :callback [ respond [[:params :kid]]]})
+(registrar/reg-evt :adv :restify-response respond [[:params :kid]])
 
 (registrar/reg-evt :adv* :restify-response
-                   {:status :OK
-                    :callback [ #(identity #js {:hello "world"}) ]})
+                   #(identity #js {:hello "world"}))

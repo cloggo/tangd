@@ -7,7 +7,7 @@
   #js {:hello kid})
 
 (registrar/reg-evt :adv :restify {:status :OK
-                                       :callback [ respond [[:params :kid]]]})
+                                  :callback [ respond [[:params :kid]]]})
 
 (registrar/reg-evt :adv* :restify {:status :OK
-                                       :callback [ #(identity #js {:hello "world"}) ]})
+                                   :callback [ #(identity #js {:hello "world"}) ]})

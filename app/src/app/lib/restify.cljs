@@ -10,12 +10,8 @@
 
 (defn build-response-object [data]
   (let[data (merge config/response-defaults data)
-       {headers :headers
-        next? :next?
-        extractor :extractor
-        status :status
-        cb :callback} data
-       [cb-fn paths] cb]
+       {:keys [headers next? extractor status callback]} data
+       [cb-fn paths] callback]
     [(status const/http-status)
      (apply cb-fn (extractor paths))
      headers
@@ -29,4 +25,4 @@
     (apply send- res next* data)))
 
 
-(registrar/reg-fx :restify respond)
+(registrar/reg-fx :restify-response respond)

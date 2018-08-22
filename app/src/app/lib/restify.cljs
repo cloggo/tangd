@@ -18,8 +18,10 @@
   (let [{:keys [status]}  res-spec]
     {:res-spec (assoc res-spec :status (status const/http-status))}))
 
+(defn check-http-error [data] (cljs.core/instance? errors/HttpError data))
+
 (defn send- [res next* status data headers next?]
-  (let [http-error? (cljs.core/instance? errors/HttpError data)
+  (let [http-error? (check-http-error data)
         next? (if http-error? data next?)]
     (when-not http-error? (oops/ocall res :send status data headers)) (next* next?)))
 
@@ -28,4 +30,12 @@
         {:keys [status headers next?]} res-spec]
     (send- res next* status data headers next?)))
 
-(registrar/reg-fx :restify respond [extract-request] [apply-defaults apply-status])
+(defn wrap-skip-if-error [f data res-spec dispatch-data]
+  (when-not (check-http-error data) (f data res-spec dispatch-data)))
+
+(defn wrap-fv [w fv] (mapv #(partial w %) fv))
+
+(def pre-callback-fv (wrap-fv wrap-skip-if-error [extract-request]))
+(def post-callback-fv (wrap-fv wrap-skip-if-error [apply-defaults apply-status]))
+
+(registrar/reg-fx :restify respond pre-callback-fv post-callback-fv)

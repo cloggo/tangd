@@ -6,7 +6,7 @@
 (defn respond [[kid]]
   #js {:hello kid})
 
-(registrar/reg-evt :adv :restify-response respond [[:params :kid]])
+(registrar/reg-evt :adv :restify respond [[:params :kid]])
 
-(registrar/reg-evt :adv* :restify-response
+(registrar/reg-evt :adv* :restify
                    #(identity #js {:hello "world"}))

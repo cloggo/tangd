@@ -24,4 +24,4 @@
         {:keys [status headers next?]} res-spec]
     (send- res next* status data headers next?)))
 
-(registrar/reg-fx :restify-response respond [extract-request] [apply-defaults apply-status])
+(registrar/reg-fx :restify respond [extract-request] [apply-defaults apply-status])

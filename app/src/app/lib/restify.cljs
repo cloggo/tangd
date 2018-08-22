@@ -1,7 +1,9 @@
 (ns app.lib.restify
   (:require
+   [restify-errors :as errors]
    [app.lib.interop :as interop]
    [app.registrar :as registrar]
+   [cljs.core]
    [app.config :as config]
    [app.lib.const* :as const]
    [oops.core :as oops]))
@@ -17,7 +19,9 @@
     {:res-spec (assoc res-spec :status (status const/http-status))}))
 
 (defn send- [res next* status data headers next?]
-  (do (oops/ocall res :send status data headers) (next* next?)))
+  (let [http-error? (cljs.core/instance? errors/HttpError data)
+        next? (if http-error? data next?)]
+    (when-not http-error? (oops/ocall res :send status data headers)) (next* next?)))
 
 (defn respond [data res-spec dispatch-data]
   (let [[req res next*] dispatch-data

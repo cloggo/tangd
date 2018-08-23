@@ -4,6 +4,9 @@
 (def atom- (atom {}))
 
 
+(defn set-data! [path data]
+  (swap! atom- assoc-in path data))
+
 (defn wrap-callback [f [data res-spec dispatch-data]]
   [(f data) res-spec dispatch-data])
 

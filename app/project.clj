@@ -15,6 +15,7 @@
   :min-lein-version "2.7.1"
 
   :dependencies [[org.clojure/clojure "1.9.0"]
+                 [com.cognitect/transit-cljs "0.8.256"]
                  [binaryage/oops "0.6.2"]
                  [org.clojure/clojurescript "1.10.339"]]
 

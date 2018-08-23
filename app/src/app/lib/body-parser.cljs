@@ -34,13 +34,11 @@
                 "application/transit-msgpack" (:transit-parser parsers)
                 "application/x-www-form-urlencoded" (aget (:form-parser parsers) 0)
                 "multipart/form-data" (:multipart-parser parsers)
-                nil)
-              content-parser (or content-parser
-                                 (if-not (nil? (re-matches #"(?i)application/.*(json|msgpack)"
-                                                           content-type))
-                                   (:transit-parser parsers)
-                                   (next (errors/UnsupportedMediaTypeError. content-type))))]
-          (content-parser req res next))))))
+                (when (re-matches #"(?i)application/.*(json|msgpack)" content-type)
+                      (:transit-parser parsers)))]
+          (if (nil? content-parser)
+            (next (errors/UnsupportedMediaTypeError. content-type))
+            (content-parser req res next)))))))
 
 (defn body-parser [& [options]]
   (let [opts (or options #js {})

@@ -8,7 +8,8 @@
     "main": "index.js",
     "dependencies": {
         "@cljs-oss/module-deps": "^1.1.1",
-        "restify": "^7.2.1"
+        "restify": "^7.2.1",
+        "restify-errors": "^6.1.1"
     },
     "devDependencies": {
         "source-map-support": "^0.4.15",

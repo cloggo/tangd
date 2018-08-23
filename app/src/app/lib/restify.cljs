@@ -9,18 +9,16 @@
    [oops.core :as oops]))
 
 (defn extractor- [req path]
-  (let [content-type (oops/ocall req :contentType)
-        [first & rest] path
-        is-transit? (re-matches #"(?i)application/.*(json|msgpack)" content-type)
-        extractor (if is-transit? get-in #(oops/oget+ %1 %2))
+  (let [[first & rest] path
+        is-transit? (oops/oget req "?isTransit")
+        extractor (if (and is-transit? (= :body first)) get-in #(oops/oget+ %1 %2))
         o (oops/oget+ req first)
         extractor (partial extractor o)]
     (extractor rest)))
 
 (defn extract-request [paths _ [req]]
   (let [extractor (partial extractor- req)
-        data (mapv extractor paths)
-        _ (println "extracted: " data)]
+        data (mapv extractor paths)]
     {:data data}))
 
 (defn apply-defaults [_ res-spec _]
@@ -34,8 +32,7 @@
 
 (defn send- [res next* status data headers next?]
   (let [http-error? (check-http-error data)
-        next? (if http-error? data next?)
-        _ (println "sending: " data)]
+        next? (if http-error? data next?)]
     (when-not http-error? (oops/ocall res :send status data headers)) (next* next?)))
 
 (defn respond [data res-spec dispatch-data]

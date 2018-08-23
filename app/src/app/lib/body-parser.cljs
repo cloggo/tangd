@@ -9,8 +9,9 @@
         body (oops/oget req :body)]
     (oops/oset! req "!_body" body)
     (oops/oset! req "!rawBody" body)
+    (oops/oset! req "!isTransit" true)
     (oops/oset! req :body (t/read r (oops/ocall body :toString)))
-    (println "transit: " (oops/oget req :body))
+    #_(println "transit: " (oops/oget req :body))
     (next)))
 
 (defn parse-body- [parsers]

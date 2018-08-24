@@ -27,9 +27,9 @@
                 "multipart/form-data" (:multipart-parser parsers)
                 (when (re-matches #"(?i)application/.*\+json" content-type)
                       (:json-parser parsers)))]
-          (if (nil? content-parser)
-            (next (errors/UnsupportedMediaTypeError. content-type))
-            (content-parser req res next)))))))
+          (if content-parser
+            (content-parser req res next)
+            (next (errors/UnsupportedMediaTypeError. content-type))))))))
 
 (defn body-parser [& [options]]
   (let [opts (or options #js {})

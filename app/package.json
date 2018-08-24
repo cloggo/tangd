@@ -8,7 +8,6 @@
     "main": "index.js",
     "dependencies": {
         "@cljs-oss/module-deps": "^1.1.1",
-        "fast-json-parse": "^1.0.3",
         "restify": "^7.2.1",
         "restify-errors": "^6.1.1"
     },

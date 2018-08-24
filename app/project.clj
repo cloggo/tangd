@@ -1,5 +1,6 @@
 (def npm-prod
   {:restify "^7.2.1"
+   ;; :fast-json-parse "^1.0.3"
    :restify-errors "^6.1.1"})
 
 (def npm-dev

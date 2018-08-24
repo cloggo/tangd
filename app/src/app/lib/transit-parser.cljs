@@ -1,4 +1,4 @@
-(ns app.lib.body-parser
+(ns app.lib.transit-parser
   (:require [cognitect.transit :as t]
             [restify]
             [restify-errors :as errors]

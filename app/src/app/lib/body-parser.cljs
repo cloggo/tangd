@@ -22,7 +22,7 @@
               (case content-type
                 "application/json" (:json-parser parsers)
                 "application/transit+json" (:transit-parser parsers)
-                "application/transit+msgpack" (:transit-parser parsers)
+                ;; "application/transit+msgpack" (:transit-parser parsers)
                 "application/x-www-form-urlencoded" (:form-parser parsers)
                 "multipart/form-data" (:multipart-parser parsers)
                 (when (re-matches #"(?i)application/.*json" content-type)

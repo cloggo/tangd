@@ -1,7 +1,7 @@
 (ns app.core
   (:require [restify]
             [app.loader]
-            [app.lib.transit-parser :as transit-parser]
+            [app.lib.body-parser :as body-parser]
             [oops.core :as oops] #_[body-parser]
             [goog.array :as garray]
             [cljs.nodejs :as node]
@@ -15,7 +15,7 @@
 (def server (oops/ocall restify :createServer config/server-options))
 
 #_(oops/ocall server :use (body-parser/body-parser #js {:mapParams true}))
-(oops/ocall server :use (transit-parser/body-parser))
+(oops/ocall server :use (body-parser/body-parser))
 
 (mapv (partial router/register-route server) routes/routes)
 

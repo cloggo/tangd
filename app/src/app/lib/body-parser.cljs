@@ -25,7 +25,7 @@
                 ;; "application/transit+msgpack" (:transit-parser parsers)
                 "application/x-www-form-urlencoded" (:form-parser parsers)
                 "multipart/form-data" (:multipart-parser parsers)
-                (when (re-matches #"(?i)application/.*+json" content-type)
+                (when (re-matches #"(?i)application/.*\+json" content-type)
                       (:json-parser parsers)))]
           (if (nil? content-parser)
             (next (errors/UnsupportedMediaTypeError. content-type))

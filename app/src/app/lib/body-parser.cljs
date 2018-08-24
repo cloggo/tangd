@@ -16,8 +16,7 @@
         (= method "GET") (next)
         (and (= length 0) (not is-chunked)) (next)
         :else
-        (let [_ (oops/oset! req "!_parsedBody" true)
-              content-type (oops/ocall req :contentType)
+        (let [content-type (oops/ocall req :contentType)
               content-parser
               (case content-type
                 "application/json" (:json-parser parsers)
@@ -26,7 +25,8 @@
                 "application/x-www-form-urlencoded" (:form-parser parsers)
                 "multipart/form-data" (:multipart-parser parsers)
                 (when (re-matches #"(?i)application/.*\+json" content-type)
-                      (:json-parser parsers)))]
+                  (:json-parser parsers)))]
+          (oops/oset! req "!_parsedBody" true)
           (if content-parser
             (content-parser req res next)
             (next (errors/UnsupportedMediaTypeError. content-type))))))))

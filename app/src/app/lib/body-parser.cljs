@@ -9,8 +9,7 @@
   (fn [req res next]
     (let [method (oops/oget req :method)
           is-chunked (oops/ocall req :isChunked)
-          length (oops/ocall req :contentLength)
-          content-type (oops/ocall req :contentType)]
+          length (oops/ocall req :contentLength)]
       (cond
         (oops/oget req "?_parsedBody") (next)
         (= method "HEAD") (next)
@@ -18,6 +17,7 @@
         (and (= length 0) (not is-chunked)) (next)
         :else
         (let [_ (oops/oset! req "!_parsedBody" true)
+              content-type (oops/ocall req :contentType)
               content-parser
               (case content-type
                 "application/json" (:json-parser parsers)

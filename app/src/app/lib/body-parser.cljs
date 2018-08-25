@@ -2,6 +2,7 @@
   (:require [restify]
             [restify-errors :as errors]
             [app.lib.transit-parser :as transit-parser]
+            [app.lib.jwk-parser :as jwk-parser]
             ;; [app.lib.fast-json-parser :as json-parser]
             [oops.core :as oops]))
 
@@ -21,6 +22,7 @@
               (case content-type
                 "application/json" (:json-parser parsers)
                 "application/transit+json" (:transit-parser parsers)
+                "application/jwk+json" (:jwk-parser parsers)
                 ;; "application/transit+msgpack" (:transit-parser parsers)
                 "application/x-www-form-urlencoded" (:form-parser parsers)
                 "multipart/form-data" (:multipart-parser parsers)
@@ -38,6 +40,7 @@
         parsers {:form-parser (aget (oops/ocall restify "plugins.urlEncodedBodyParser" opts) 0)
                  :multipart-parser (oops/ocall restify "plugins.multipartBodyParser" opts)
                  :json-parser (aget (oops/ocall restify "plugins.jsonBodyParser" opts) 0)
-                 :transit-parser transit-parser/transit-parser}]
+                 :transit-parser transit-parser/transit-parser
+                 :jwk-parser jwk-parser/jwk-parser}]
     #js [body-reader (parse-body- parsers)]))
 

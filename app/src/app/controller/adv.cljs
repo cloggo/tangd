@@ -10,7 +10,6 @@
 (registrar/reg-evt :adv :restify respond [[:params :kid]]
                    {:headers #js {:content-type "application/json"}})
 
-(defn new-jwk [] (jose/json-dumps jose/jwk-ecmr jose/default-json-flag))
+(defn new-jwk [] jose/jwk-ecmr)
 
-(registrar/reg-evt :adv* :restify new-jwk [] {:headers #js {:content-type "application/json"}
-                                              :send-mode :sendRaw})
+(registrar/reg-evt :adv* :restify new-jwk [] {:headers #js {:content-type "application/jwk+json"}})

@@ -1,5 +1,7 @@
 (ns app.config
-  (:require [app.lib.transit-formatter :as transit-formatter]))
+  (:require
+   [app.lib.jwk-formatter :as jwk-formatter]
+   [app.lib.transit-formatter :as transit-formatter]))
 
 (def app-name "tangd")
 
@@ -9,7 +11,9 @@
   #js {:ignoreTrailingSlash true
        :name app-name
        :formatters (js-obj "application/transit+json"
-                           transit-formatter/transit-format)})
+                           transit-formatter/transit-format
+                           "application/jwk+json"
+                           jwk-formatter/jwk-format)})
 
 (def response-headers #js {:content-type "application/transit+json"})
 

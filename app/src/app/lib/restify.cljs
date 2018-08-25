@@ -8,6 +8,13 @@
    [app.lib.const* :as const]
    [oops.core :as oops]))
 
+
+(def response-defaults
+  (merge   {:status :OK
+            :send-mode :send
+            :next? false}
+           config/response-defaults))
+
 (defn extractor- [req path]
   (let [[first & rest] path
         is-transit? (oops/oget req "?isTransit")
@@ -22,7 +29,7 @@
     {:data data}))
 
 (defn apply-defaults [_ res-spec _]
-  {:res-spec (merge config/response-defaults res-spec)})
+  {:res-spec (merge response-defaults res-spec)})
 
 (defn apply-status [_ res-spec _]
   (let [{:keys [status]}  res-spec]
@@ -30,15 +37,16 @@
 
 (defn check-http-error [data] (cljs.core/instance? errors/HttpError data))
 
-(defn send- [res next* status data headers next?]
+(defn send- [res send-mode next* status data headers next?]
   (let [http-error? (check-http-error data)
         next? (if http-error? data next?)]
-    (when-not http-error? (oops/ocall res :send status data headers)) (next* next?)))
+    (when-not http-error? (oops/ocall+ res send-mode status data headers)) (next* next?)))
 
 (defn respond [data res-spec dispatch-data]
   (let [[req res next*] dispatch-data
-        {:keys [status headers next?]} res-spec]
-    (send- res next* status data headers next?)))
+        {:keys [status headers next? send-mode]} res-spec]
+    (println send-mode)
+    (send- res send-mode next* status data headers next?)))
 
 (defn wrap-skip-if-error [f data res-spec dispatch-data]
   (when-not (check-http-error data) (f data res-spec dispatch-data)))

@@ -45,7 +45,7 @@
 (defn respond [data res-spec dispatch-data]
   (let [[req res next*] dispatch-data
         {:keys [status headers next? send-mode]} res-spec]
-    (println send-mode)
+    #_(println send-mode)
     (send- res send-mode next* status data headers next?)))
 
 (defn wrap-skip-if-error [f data res-spec dispatch-data]

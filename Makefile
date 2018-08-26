@@ -1,13 +1,13 @@
 BUILDER_IMAGE := registry.delite.ca/docker/base/alpine/3_8:clojure-lein-node-jose
 SERVICE_IMAGE := registry.delite.ca/docker/base/node/10:dev-jose
-DOCKER_BUILDER_CMD := docker run --rm -it -w /app -v $(CURDIR)/tmp:/root -v $(CURDIR)/app:/app
-DOCKER_SERVICE_CMD := docker run --rm -it -w /app -v $(CURDIR)/app:/app
+DOCKER_BUILDER_CMD := docker run --rm -it -v $HOME/.npmrc:/root/.npmrc -w /app -v $(CURDIR)/tmp:/root -v $(CURDIR)/app:/app
+DOCKER_SERVICE_CMD := docker run --rm -it -v $HOME/.npmrc:/root/.npmrc -w /app -v $(CURDIR)/app:/app
 NODEMON_BIN := node_modules/.bin/nodemon
 DEV_MAIN_JS := target/js/compiled/app.js
 DEV_TEST_JS := target/js/compiled/test.js
 
 app/node_modules: app/package.json app/package-lock.json
-	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) npm install
+	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) npm install --registry https://npm.delite.ca
 
 .PHONY: figwheel
 

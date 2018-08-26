@@ -3,3 +3,4 @@ tangd/target
 *.npm
 app/.config
 /app/index.js
+/app/jwkStore.sqlite3

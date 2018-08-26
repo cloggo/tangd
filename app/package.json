@@ -10,7 +10,8 @@
         "@cljs-oss/module-deps": "^1.1.1",
         "c-jose": "^1.0.3",
         "restify": "^7.2.1",
-        "restify-errors": "^6.1.1"
+        "restify-errors": "^6.1.1",
+        "sqlite3": "^4.0.2"
     },
     "devDependencies": {
         "source-map-support": "^0.4.15",

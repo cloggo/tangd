@@ -7,6 +7,8 @@
 
 (def port 8080)
 
+(def dbname "./jwkStore.sqlite3")
+
 (def server-options
   #js {:ignoreTrailingSlash true
        :name app-name

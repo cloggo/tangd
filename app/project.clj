@@ -2,7 +2,7 @@
   {:restify "^7.2.1"
    ;; :fast-json-parse "^1.0.3"
    :sqlite3 "^4.0.2"
-   :c-jose "^1.0.2"
+   :c-jose "^1.0.1"
    :restify-errors "^6.1.1"})
 
 (def npm-dev

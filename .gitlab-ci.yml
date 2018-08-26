@@ -1,0 +1,62 @@
+image: registry.delite.ca/docker/docker:latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  NODE_MODULE_PATH: node_modules/.bin
+  MOCHA_BIN: $NODE_MODULE_PATH/mocha
+  NODEGYP_BIN: $NODE_MODULE_PATH/node-gyp
+  NODEPREGYP_BIN: $NODE_MODULE_PATH/node-pre-gyp
+  DOCKER_RUN: docker run --user root -t -e NODE_ENV=test -v $CI_PROJECT_DIR:/deploy $DEV_IMAGE
+
+stages:
+  - test
+  - build
+  - upload
+
+before_script:
+  - echo "//npm.delite.ca/:_authToken=\"${NPM_TOKEN}\"" > ~/.npmrc
+
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - node_modules/
+  - build/stage/
+
+test:
+  image: registry.delite.ca/docker/base/node/10:c-jose
+  stage: test
+  only:
+    - master
+  tags:
+    - linux
+  script:
+    - NODE_ENV=test
+    - npm install
+    - $NODEPREGYP_BIN configure
+    - $NODEPREGYP_BIN build --debug
+    - $MOCHA_BIN --timeout 100 "test/**/*.test.js"
+
+build:
+  image: registry.delite.ca/docker/base/node/10:c-jose
+  stage: build
+  only:
+    - master
+  tags:
+    - linux
+  script:
+    - $NODEPREGYP_BIN configure
+    - $NODEPREGYP_BIN build
+    - $NODEPREGYP_BIN package
+
+upload:
+  stage: upload
+  only:
+    - master
+  tags:
+    - linux
+  script:
+    - npm unpublish --force --registry https://npm.delite.ca
+    - npm publish --registry https://npm.delite.ca
+    - ./upload.sh build/stage gitlab-ci $JFROG_ARTIFACTORY_TOKEN
+

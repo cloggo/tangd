@@ -8,7 +8,7 @@
     "main": "index.js",
     "dependencies": {
         "@cljs-oss/module-deps": "^1.1.1",
-        "c-jose": "^1.0.3",
+        "c-jose": "^1.0.1",
         "restify": "^7.2.1",
         "restify-errors": "^6.1.1",
         "sqlite3": "^4.0.2"

@@ -1,7 +1,7 @@
 BUILDER_IMAGE := registry.delite.ca/docker/base/alpine/3_8:clojure-lein-node-jose
 SERVICE_IMAGE := registry.delite.ca/docker/base/node/10:dev-jose
-DOCKER_BUILDER_CMD := docker run --rm -it -v $HOME/.npmrc:/root/.npmrc -w /app -v $(CURDIR)/tmp:/root -v $(CURDIR)/app:/app
-DOCKER_SERVICE_CMD := docker run --rm -it -v $HOME/.npmrc:/root/.npmrc -w /app -v $(CURDIR)/app:/app
+DOCKER_BUILDER_CMD := docker run --rm -it -v $(HOME)/.npmrc:/root/.npmrc -w /app -v $(CURDIR)/tmp:/root -v $(CURDIR)/app:/app
+DOCKER_SERVICE_CMD := docker run --rm -it -v $(HOME)/.npmrc:/root/.npmrc -w /app -v $(CURDIR)/app:/app
 NODEMON_BIN := node_modules/.bin/nodemon
 DEV_MAIN_JS := target/js/compiled/app.js
 DEV_TEST_JS := target/js/compiled/test.js

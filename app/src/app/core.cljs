@@ -6,7 +6,7 @@
             #_[goog.array :as garray]
             [cljs.nodejs :as node]
             [interop.interop :as interop]
-            [interop.router :as router]
+            [restify.router :as router]
             [app.routes :as routes]
             [app.config :as config]))
 

@@ -1,4 +1,4 @@
-(ns interop.router
+(ns restify.router
   (:require
    [oops.core :as oops]))
 

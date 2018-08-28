@@ -2,9 +2,17 @@
   (:require [restify]
             [restify-errors :as errors]
             [restify.transit-parser :as transit-parser]
-            [restify.jwk-parser :as jwk-parser]
             ;; [app.lib.fast-json-parser :as json-parser]
             [oops.core :as oops]))
+
+(def ^{:dynamic true} *parsers*
+  {:form-parser #(aget (oops/ocall restify "plugins.urlEncodedBodyParser" %) 0)
+   :multipart-parser #(oops/ocall restify "plugins.multipartBodyParser" %)
+   :json-parser #(aget (oops/ocall restify "plugins.jsonBodyParser" %) 0)
+   :transit-parser (fn [_] transit-parser/transit-parser)} )
+
+(defn add-parser! [parser]
+  (set! *parsers* (merge parser *parsers*)))
 
 (defn parse-body- [parsers]
   (fn [req res next]
@@ -37,10 +45,6 @@
   (let [opts (or options #js {})
         _ (oops/oset! opts "!bodyReader" true)
         body-reader (oops/ocall restify "plugins.bodyReader" opts)
-        parsers {:form-parser (aget (oops/ocall restify "plugins.urlEncodedBodyParser" opts) 0)
-                 :multipart-parser (oops/ocall restify "plugins.multipartBodyParser" opts)
-                 :json-parser (aget (oops/ocall restify "plugins.jsonBodyParser" opts) 0)
-                 :transit-parser transit-parser/transit-parser
-                 :jwk-parser jwk-parser/jwk-parser}]
+        parsers (reduce-kv #(assoc %1 %2 (%3 opts)) {} *parsers*)]
     #js [body-reader (parse-body- parsers)]))
 

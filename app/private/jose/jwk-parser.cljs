@@ -1,4 +1,4 @@
-(ns restify.jwk-parser
+(ns jose.jwk-parser
   (:require [jose.jose :as jose]
             [oops.core :as oops]))
 

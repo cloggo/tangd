@@ -1,4 +1,4 @@
-(ns restify.jwk-formatter
+(ns jose.jwk-formatter
   (:require
    [jose.jose :as jose]
    [oops.core :as oops]))

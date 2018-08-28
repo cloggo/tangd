@@ -2,7 +2,6 @@
 
 (def atom- (atom {}))
 
-
 (defn set-data! [path data]
   (swap! atom- assoc-in path data))
 

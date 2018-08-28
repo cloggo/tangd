@@ -14,11 +14,9 @@
 
 (def server (oops/ocall restify :createServer config/server-options))
 
-#_(oops/ocall server :use (body-parser/body-parser #js {:mapParams true}))
 (oops/ocall server :use (body-parser/body-parser #js {:mapParams false}))
 
 (mapv (partial router/register-route server) routes/routes)
-
 
 (defn -main [& args]
   (oops/ocall server

@@ -1,7 +1,9 @@
 (ns app.config
   (:require
    [restify.restify :as restify]
-   [restify.jwk-formatter :as jwk-formatter]
+   [jose.jwk-formatter :as jwk-formatter]
+   [restify.body-parser :as body-parser]
+   [jose.jwk-parser :as jwk-parser]
    [restify.transit-formatter :as transit-formatter]))
 
 (def app-name "tangd")
@@ -19,5 +21,7 @@
                            jwk-formatter/jwk-format)})
 
 (def response-headers #js {:content-type "application/transit+json"})
+
+(body-parser/add-parser! {:jwk-parser (fn [_] jwk-parser/jwk-parser)})
 
 (restify/set-response-spec-defaults! {:headers response-headers})

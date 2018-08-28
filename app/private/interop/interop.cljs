@@ -5,7 +5,7 @@
    [oops.core :as oops]))
 
 
-(defn ometh [obj k]
+(defn bind [obj k]
   (.bind (oops/oget+ obj k) obj))
 
 

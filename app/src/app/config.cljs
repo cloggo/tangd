@@ -1,5 +1,6 @@
 (ns app.config
   (:require
+   [restify.restify :as restify]
    [restify.jwk-formatter :as jwk-formatter]
    [restify.transit-formatter :as transit-formatter]))
 
@@ -19,5 +20,4 @@
 
 (def response-headers #js {:content-type "application/transit+json"})
 
-(def response-defaults
-  {:headers response-headers})
+(restify/set-response-spec-defaults! {:headers response-headers})

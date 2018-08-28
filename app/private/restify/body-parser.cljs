@@ -11,7 +11,7 @@
    "application/json" #(aget (oops/ocall restify "plugins.jsonBodyParser" %) 0)
    "application/transit+json" (fn [_] transit-parser/transit-parser)} )
 
-(defn add-parser! [parser]
+(defn merge-parser! [parser]
   (set! *parsers* (merge parser *parsers*)))
 
 (defn parse-body- [parsers]

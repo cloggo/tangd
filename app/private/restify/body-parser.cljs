@@ -6,10 +6,10 @@
             [oops.core :as oops]))
 
 (def ^{:dynamic true} *parsers*
-  {:form-parser #(aget (oops/ocall restify "plugins.urlEncodedBodyParser" %) 0)
-   :multipart-parser #(oops/ocall restify "plugins.multipartBodyParser" %)
-   :json-parser #(aget (oops/ocall restify "plugins.jsonBodyParser" %) 0)
-   :transit-parser (fn [_] transit-parser/transit-parser)} )
+  {"application/x-www-form-urlencoded" #(aget (oops/ocall restify "plugins.urlEncodedBodyParser" %) 0)
+   "multipart/form-data" #(oops/ocall restify "plugins.multipartBodyParser" %)
+   "application/json" #(aget (oops/ocall restify "plugins.jsonBodyParser" %) 0)
+   "application/transit+json" (fn [_] transit-parser/transit-parser)} )
 
 (defn add-parser! [parser]
   (set! *parsers* (merge parser *parsers*)))
@@ -26,16 +26,9 @@
         (and (= length 0) (not is-chunked)) (next)
         :else
         (let [content-type (oops/ocall req :contentType)
-              content-parser
-              (case content-type
-                "application/json" (:json-parser parsers)
-                "application/transit+json" (:transit-parser parsers)
-                "application/jwk+json" (:jwk-parser parsers)
-                ;; "application/transit+msgpack" (:transit-parser parsers)
-                "application/x-www-form-urlencoded" (:form-parser parsers)
-                "multipart/form-data" (:multipart-parser parsers)
-                (when (re-matches #"(?i)application/.*\+json" content-type)
-                  (:json-parser parsers)))]
+              content-parser (get parsers content-type
+                                  (when (re-matches #"(?i)application/.*\+json" content-type)
+                                    (get parsers "application/json")))]
           (oops/oset! req "!_parsedBody" true)
           (if content-parser
             (content-parser req res next)

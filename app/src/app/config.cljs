@@ -22,6 +22,6 @@
 
 (def response-headers #js {:content-type "application/transit+json"})
 
-(body-parser/add-parser! {:jwk-parser (fn [_] jwk-parser/jwk-parser)})
+(body-parser/add-parser! {"application/jwk+json" (fn [_] jwk-parser/jwk-parser)})
 
 (restify/set-response-spec-defaults! {:headers response-headers})

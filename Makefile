@@ -31,7 +31,7 @@ build-test-auto: app/node_modules
 
 # older nodejs < 10 required must use nodemon -L to work properly
 start-test: app/node_modules
-	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) $(NODEMON_BIN) --watch src --watch test -L -e js,cljs --exec "lein" doo node test once
+	$(DOCKER_BUILDER_CMD) $(BUILDER_IMAGE) $(NODEMON_BIN) --watch src --watch test --watch lib -L -e js,cljs --exec "lein" doo node test once
 
 .PHONY: build-auto-daemon
 

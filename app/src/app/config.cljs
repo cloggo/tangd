@@ -1,7 +1,7 @@
 (ns app.config
   (:require
-   [app.lib.jwk-formatter :as jwk-formatter]
-   [app.lib.transit-formatter :as transit-formatter]))
+   [restify.jwk-formatter :as jwk-formatter]
+   [restify.transit-formatter :as transit-formatter]))
 
 (def app-name "tangd")
 

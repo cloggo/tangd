@@ -34,7 +34,7 @@
   ;; https://github.com/clojure/clojurescript-site/blob/master/content/reference/compiler-options.adoc
   :cljsbuild {
               :builds [{:id "dev"
-                        :source-paths ["src"]
+                        :source-paths ["src" "lib"]
                         :figwheel false
                         :compiler {
                                    :main app.core
@@ -48,7 +48,7 @@
                                    :optimizations :none
                                    :source-map-timestamp true}}
                        {:id "test"
-                        :source-paths ["test" "src"]
+                        :source-paths ["test" "src" "lib"]
                         :figwheel false
                         :compiler {
                                    :main test.core
@@ -62,7 +62,7 @@
                                    :optimizations :none
                                    :source-map-timestamp true}}
                        {:id "prod"
-                        :source-paths ["src"]
+                        :source-paths ["src" "lib"]
                         :compiler {
                                    :closure-defines {goog.DEBUG false}
                                    :output-to "index.js"

@@ -1,12 +1,12 @@
 (ns app.core
   (:require [restify]
             [app.loader]
-            [app.lib.body-parser :as body-parser]
+            [restify.body-parser :as body-parser]
             [oops.core :as oops] #_[body-parser]
             [goog.array :as garray]
             [cljs.nodejs :as node]
-            [app.lib.interop :as interop]
-            [app.lib.router :as router]
+            [interop.interop :as interop]
+            [restify.router :as router]
             [app.routes :as routes]
             [app.config :as config]))
 

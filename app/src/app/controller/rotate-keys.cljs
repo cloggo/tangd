@@ -2,8 +2,8 @@
   (:require
    [app.service.sqlite :as sqlite]
    [app.config :as config]
-   [app.lib.jose :as jose]
-   [app.registrar :as registrar]))
+   [jose.jose :as jose]
+   [registrar.registrar :as registrar]))
 
 
 (defn respond []

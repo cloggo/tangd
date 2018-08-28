@@ -1,5 +1,6 @@
 (ns app.config
   (:require
+   [registrar.registrar :as registrar]
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
    [restify.restify :as restify]
@@ -25,3 +26,5 @@
 (def response-headers #js {:content-type "application/transit+json"})
 
 (restify/add-response-spec-defaults! {:headers response-headers})
+
+(apply registrar/reg-fx :restify restify/registrar-params)

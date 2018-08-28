@@ -2,7 +2,6 @@
   (:require
    [restify-errors :as errors]
    [interop.interop :as interop]
-   [registrar.registrar :as registrar]
    [cljs.core]
    [restify.const* :as const]
    [oops.core :as oops]))
@@ -56,4 +55,4 @@
 (def pre-callback-fv (wrap-fv wrap-skip-if-error [extract-request]))
 (def post-callback-fv (wrap-fv wrap-skip-if-error [apply-spec apply-status]))
 
-(registrar/reg-fx :restify respond pre-callback-fv post-callback-fv)
+(def registrar-params [respond pre-callback-fv post-callback-fv])

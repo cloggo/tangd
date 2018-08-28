@@ -12,7 +12,7 @@
                                                 :send-mode :send
                                                 :next? false})
 
-(defn merge-response-spec-defaults! [spec]
+(defn add-response-spec-defaults! [spec]
   (set! *response-spec-defaults* (merge *response-spec-defaults* spec)))
 
 (defn extractor- [req path]

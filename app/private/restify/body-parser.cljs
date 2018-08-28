@@ -12,7 +12,7 @@
    "application/transit+json" (fn [_] transit-parser/transit-parser)} )
 
 (defn merge-parser! [parser]
-  (set! *parsers* (merge parser *parsers*)))
+  (set! *parsers* (merge *parsers* parser)))
 
 (defn parse-body- [parsers]
   (fn [req res next]

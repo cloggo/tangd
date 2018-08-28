@@ -1,8 +1,6 @@
 (ns interop.router
   (:require
-   [interop.interop :as interop]))
+   [oops.core :as oops]))
 
-
-(defn register-route [server r]
-  (let [[method & args] r]
-    (apply (interop/ometh server method) args)))
+(defn register-route [server]
+  (fn [[method route callback]] (oops/ocall+ server method route callback)))

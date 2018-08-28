@@ -5,7 +5,7 @@
             ;; [app.lib.fast-json-parser :as json-parser]
             [oops.core :as oops]))
 
-(def ^{:dynamic true} *parsers*
+(def ^{:dynamic true :private true} *parsers*
   {"application/x-www-form-urlencoded" #(aget (oops/ocall restify "plugins.urlEncodedBodyParser" %) 0)
    "multipart/form-data" #(oops/ocall restify "plugins.multipartBodyParser" %)
    "application/json" #(aget (oops/ocall restify "plugins.jsonBodyParser" %) 0)

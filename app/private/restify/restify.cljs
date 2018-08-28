@@ -8,7 +8,7 @@
    [oops.core :as oops]))
 
 
-(def ^{:dynamic true} *response-spec-defaults* {:status :OK
+(def ^{:dynamic true :private true} *response-spec-defaults* {:status :OK
                                                 :send-mode :send
                                                 :next? false})
 

@@ -1,7 +1,6 @@
 (ns restify.restify
   (:require
    [restify-errors :as errors]
-   [interop.interop :as interop]
    [cljs.core]
    [restify.const* :as const]
    [oops.core :as oops]))

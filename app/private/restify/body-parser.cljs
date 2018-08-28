@@ -34,10 +34,10 @@
             (content-parser req res next)
             (next (errors/UnsupportedMediaTypeError. content-type))))))))
 
-(defn body-parser [& [options]]
-  (let [opts (or options #js {})
-        _ (oops/oset! opts "!bodyReader" true)
-        body-reader (oops/ocall restify "plugins.bodyReader" opts)
-        parsers (reduce-kv #(assoc %1 %2 (%3 opts)) {} *parsers*)]
-    #js [body-reader (parse-body- parsers)]))
+(defn body-parser
+  ([] body-parser #js {})
+  ([opts] (let [_ (oops/oset! opts "!bodyReader" true)
+                body-reader (oops/ocall restify "plugins.bodyReader" opts)
+                parsers (reduce-kv #(assoc %1 %2 (%3 opts)) {} *parsers*)]
+            #js [body-reader (parse-body- parsers)])))
 

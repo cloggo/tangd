@@ -11,7 +11,14 @@
 ;; (jwk_id, jwk)
 ;;
 ;; TABLE: thumbprint
-;; (thumbprint, jwk_id)
+;; (thumbprint_id, thumbprint)
+
+;;; TABLE: thumbprint_jwk
+;; (thumbprint_id, jwk_id)
+
+;;; TABLE: jws
+;; (jwk_id, jws)
+
 ;;
 ;; 1. generate ECMR
 ;; 2. generate ES512
@@ -24,18 +31,19 @@
 (println "es512-prm: " (every? #(jose/jwk-prm jwk-es512 true %) ["sign" "verify"]))
 (println "ecmr-prm: " (jose/jwk-prm jwk-ecmr true "deriveKey"))
 
+(def jwk-es512-thp (jose/calc-thumbprint jwk-es512))
+(def jwk-ecmr-thp (jose/calc-thumbprint jwk-ecmr))
+
 (def jwk-es512-pub (jose/jwk-pub jwk-es512))
 (def jwk-ecmr-pub (jose/jwk-pub jwk-ecmr))
 
-(def jwk-es512-thp (jose/calc-thumbprint jwk-es512))
-(def jwk-ecmr-thp (jose/calc-thumbprint jwk-ecmr))
+(def payload (jose/jwks->keys jwk-es512-pub jwk-ecmr-pub))
 
 (println "thp: " jwk-es512-thp jwk-ecmr-thp)
 
 (def tmp "{\"protected\":{\"cty\":\"jwk-set+json\"}}")
 (def sig (jose/json-loads tmp))
 
-(def payload (jose/jwks->keys jwk-es512-pub jwk-ecmr-pub))
 
 (def jws (jose/jws-sig payload sig jwk-es512))
 (println "jws: " (jose/json-dumps jws))

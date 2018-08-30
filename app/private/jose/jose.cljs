@@ -17,10 +17,47 @@
 (defn json-loads [json]
    (oops/ocall jose :jose_json_loads json))
 
+
+(defn json-copy [json]
+  (oops/ocall jose :jose_json_deep_copy json))
+
+(defn json-array-append [arr & vals]
+  (mapv #(oops/ocall jose :jose_json_array_append arr %) vals) arr)
+
+(defn json-array [& [vals]]
+  (let [arr (oops/ocall jose :jose_json_array)]
+    (apply json-array-append arr vals)))
+
+(defn jwks->keys [& jwks]
+  (let [jwks (mapv json-dumps jwks)
+        jwks (string/join ["{\"keys\": \"" (string/join jwks) "\"}"])]
+    jwks))
+
+
+(defn b64-enc-sbuf [s]
+  (oops/ocall jose :jose_b64_enc_sbuf s))
+
+(defn b64-dec-sbuf [s]
+  (oops/ocall jose :jose_b64_dec_buf s))
+
+
 (defn jwk-gen [alg]
   (let [json (json-loads (string/join ["{\"alg\": \"" alg "\"}"]))
         ;; Whoa! modified in place
         _ (oops/ocall jose :jose_jwk_gen json)] json))
+
+(defn jwk-pub [jwk]
+  (let [jwk* (oops/ocall jose :jose_json_deep_copy jwk)]
+    (oops/ocall jose :jose_jwk_pub jwk*) jwk*))
+
+(defn jwk-prm [jwk req op]
+  (oops/ocall jose :jose_jwk_prm jwk req op))
+
+(defn jws-sig [payload sig jwk]
+  (let [pb64  (b64-enc-sbuf payload)
+        jws (json-loads (string/join ["{\"payload\":\"" pb64 "\"}"]) )]
+    (oops/ocall jose :jose_jws_sig jws sig jwk)
+    jws))
 
 (defn get-alg-kind [kind] (oops/oget+ jose :jose_alg_kind kind))
 
@@ -32,7 +69,7 @@
 
 
 (defn calc-thumbprint
-  ([jwk] calc-thumbprint jwk "S1")
+  ([jwk] (calc-thumbprint jwk "S1"))
   ([jwk alg]  (let [dlen (oops/ocall jose :jose_jwk_thp_buf js/undefined alg js/undefined 0)
                     buf (oops/ocall js/Buffer :alloc dlen)
                     olen (oops/ocall jose :jose_jwk_thp_buf jwk alg buf dlen)]

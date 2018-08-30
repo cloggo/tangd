@@ -4,3 +4,4 @@ tangd/target
 app/.config
 /app/index.js
 /app/jwkStore.sqlite3
+/.Makefile.swp

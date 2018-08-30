@@ -6,7 +6,7 @@ NODEMON_BIN := node_modules/.bin/nodemon
 DEV_MAIN_JS := target/js/compiled/app.js
 DEV_TEST_JS := target/js/compiled/test.js
 
-app/node_modules: app/package.json app/package-lock.json
+app/node_modules: app/package.json 
 	$(DOCKER_SERVICE_CMD)  $(SERVICE_IMAGE) npm install --registry https://npm.delite.ca
 
 .PHONY: figwheel

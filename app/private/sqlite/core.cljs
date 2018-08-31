@@ -2,7 +2,6 @@
   (:require
    [clojure.string :as string]
    [oops.core :as oops]
-   [jose.jose :as jose]
    [sqlite3]))
 
 (def ^{:dynamic true :private true} *db-name* ":memory:")

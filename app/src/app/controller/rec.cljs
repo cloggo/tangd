@@ -1,6 +1,6 @@
 (ns app.controller.rec
   (:require
-   [registrar.registrar :as registrar]))
+   [registrar.core :as registrar]))
 
 (defn rec-response [[kid name] res-spec]
   #js {:kid kid :name name})

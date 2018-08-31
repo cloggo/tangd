@@ -1,4 +1,4 @@
-(ns restify.restify
+(ns restify.core
   (:require
    [restify-errors :as errors]
    [cljs.core]

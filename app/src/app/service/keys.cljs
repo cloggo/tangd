@@ -1,7 +1,7 @@
 (ns app.service.keys
   (:require
    [oops.core :as oops]
-   [jose.jose :as jose]
+   [jose.core :as jose]
    [sqlite3]) )
 
 

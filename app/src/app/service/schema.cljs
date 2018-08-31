@@ -7,11 +7,12 @@
 ;; TABLE: jwk
 ;; (jwk_id, jwk)
 ;;
-;; TABLE: thumbprint
-;; (thumbprint_id, thumbprint)
+;; TABLE: thp
+;; thumbprint table
+;; (thp_id, thp)
 
-;;; TABLE: thumbprint_jwk
-;; (thumbprint_id, jwk_id)
+;;; TABLE: thp_jwk
+;; (thp_id, jwk_id)
 
 ;;; TABLE: jws
 ;; (jwk_id, jws)

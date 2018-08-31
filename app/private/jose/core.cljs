@@ -1,4 +1,4 @@
-(ns jose.jose
+(ns jose.core
   (:require
    [clojure.string :as string]
    [oops.core :as oops]

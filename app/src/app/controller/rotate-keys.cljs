@@ -2,8 +2,8 @@
   (:require
    [app.service.keys :as keys]
    [app.config :as config]
-   [jose.jose :as jose]
-   [registrar.registrar :as registrar]))
+   [jose.core :as jose]
+   [registrar.core :as registrar]))
 
 
 (defn respond []

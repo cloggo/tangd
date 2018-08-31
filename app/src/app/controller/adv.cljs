@@ -1,7 +1,7 @@
 (ns app.controller.adv
   (:require
    [app.service.keys :as keys]
-   [registrar.registrar :as registrar]))
+   [registrar.core :as registrar]))
 
 
 (defn respond [[kid]]

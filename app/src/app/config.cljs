@@ -1,9 +1,9 @@
 (ns app.config
   (:require
-   [registrar.registrar :as registrar]
+   [registrar.core :as registrar]
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
-   [restify.restify :as restify]
+   [restify.core :as restify]
    [restify.body-parser :as body-parser]
    [restify.transit-formatter :as transit-formatter]))
 

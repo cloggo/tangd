@@ -1,4 +1,4 @@
-(ns registrar.registrar)
+(ns registrar.core)
 
 (def atom- (atom {}))
 

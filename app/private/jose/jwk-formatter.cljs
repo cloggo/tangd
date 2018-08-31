@@ -1,6 +1,6 @@
 (ns jose.jwk-formatter
   (:require
-   [jose.jose :as jose]
+   [jose.core :as jose]
    [oops.core :as oops]))
 
 (defn jwk-format [req res body]

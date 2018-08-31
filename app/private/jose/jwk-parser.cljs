@@ -1,5 +1,5 @@
 (ns jose.jwk-parser
-  (:require [jose.jose :as jose]
+  (:require [jose.core :as jose]
             [oops.core :as oops]))
 
 (defn jwk-parser [req, res, next]

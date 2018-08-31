@@ -1,28 +1,14 @@
-(ns app.service.sqlite
+(ns app.service.keys
   (:require
    [oops.core :as oops]
    [jose.jose :as jose]
-   [sqlite3]))
+   [sqlite3]) )
 
-;; SCHEMA
-;; =======
-;;
-;; TABLE: jwk
-;; (jwk_id, jwk)
-;;
-;; TABLE: thumbprint
-;; (thumbprint_id, thumbprint)
 
-;;; TABLE: thumbprint_jwk
-;; (thumbprint_id, jwk_id)
+(defn rotate-keys [dbname]
+  (let [db (sqlite3/Database. dbname)]
+    (oops/ocall db :close)))
 
-;;; TABLE: jws
-;; (jwk_id, jws)
-
-;;
-;; 1. generate ECMR
-;; 2. generate ES512
-;; 3. calculate the jws from 1 and 2
 
 (def jwk-es512 (jose/jwk-gen "ES512"))
 (def jwk-ecmr (jose/jwk-gen "ECMR"))
@@ -54,8 +40,4 @@
 ;; (println "arr: " (jose/json-dumps sig-arr))
 (def jws2 (jose/jws-sig payload sig-arr jwk-arr))
 (println "jws2: " (jose/json-dumps jws2))
-
-(defn rotate-keys [dbname]
-  (let [db (sqlite3/Database. dbname)]
-    (oops/ocall db :close)))
 

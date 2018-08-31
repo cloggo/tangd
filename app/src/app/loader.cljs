@@ -3,4 +3,5 @@
             [app.controller.adv]
             [app.controller.rotate-keys]
             [app.controller.t-error]
+            [app.service.schema]
             [restify.restify]))

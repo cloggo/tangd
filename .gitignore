@@ -5,3 +5,4 @@ app/.config
 /app/index.js
 /app/jwkStore.sqlite3
 /.Makefile.swp
+/app/jwk_keys.sqlite3

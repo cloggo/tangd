@@ -11,14 +11,14 @@
 
 (defn set-db-name! [name] (set! *db-name* name))
 
+(defn err-handler [err]
+  (when err
+    (interop/log-error (oops/oget err :message))))
+
 (defn on-db* [dbname call-back]
-  (let [db (sqlite3/Database.
-            dbname
-            (fn [err]
-              (when err
-                (interop/log-error (oops/oget err :message)))))]
+  (let [db (sqlite3/Database. dbname err-handler)]
     (call-back db)
-    (oops/ocall db :close)))
+    (oops/ocall db :close err-handler)))
 
 (defn on-db [call-back]
   (on-db* *db-name* call-back))

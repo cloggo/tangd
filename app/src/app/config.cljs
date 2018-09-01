@@ -13,7 +13,7 @@
 
 (def port 8080)
 
-(def dbname "./jwk_keys.sqlite3")
+(def db-name "./jwk_keys.sqlite3")
 
 (def server-options
   #js {:ignoreTrailingSlash true
@@ -33,6 +33,6 @@
 
 ;; (sqlite/sqlite-verbose)
 
-(sqlite/set-db-name! dbname)
+(sqlite/set-db-name! db-name)
 
 (schema/init-db)

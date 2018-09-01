@@ -15,13 +15,12 @@
   (when err
     (interop/log-error (oops/oget err :message))))
 
-(defn on-db* [dbname call-back]
-  (let [db (sqlite3/Database. dbname err-handler)]
-    (call-back db)
-    (oops/ocall db :close err-handler)))
-
-(defn on-db [call-back]
-  (on-db* *db-name* call-back))
+(defn on-db
+  ([call-back] (on-db *db-name* call-back))
+  ([dbname call-back]
+   (let [db (sqlite3/Database. dbname err-handler)]
+     (call-back db)
+     (oops/ocall db :close err-handler))))
 
 ;; INDEX
 ;; =====
@@ -54,15 +53,19 @@
 
 (def table-constraints-handlers {"FOREIGN KEY" create-foreign-key})
 
+
 (defn create-columns [columns]
   (string/join ", " (mapv #(string/join " " %) columns)))
+
 
 (defn create-constraint [constraint]
   (let [[constraint-name & constraint-spec] constraint]
     (apply (get table-constraints-handlers constraint-name) constraint-spec)))
 
+
 (defn create-constraints [table-constraints]
   (string/join ", " (mapv create-constraint table-constraints)))
+
 
 (defn create-table-stmt [table-spec]
   (let [[table-name columns table-constraints] table-spec

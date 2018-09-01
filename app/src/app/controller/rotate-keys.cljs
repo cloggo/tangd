@@ -7,7 +7,7 @@
 
 
 (defn respond []
-  (keys/rotate-keys config/db-name))
+  (keys/rotate-keys))
 
 (registrar/reg-evt :rotate-keys :restify respond []
                    {:headers #js {:content-type "application/json"}

@@ -78,11 +78,31 @@
                       (string/join ", " (remove string/blank? [ columns constraints ]))
                       ");"])))
 
+(defn on-serialize
+  ([call-back] (on-db (fn [db] (on-serialize db call-back))))
+  ([db call-back]
+   (oops/ocall db :serialize
+               (fn [] (call-back db)))))
+
+
+(defn on-parallelize
+  ([call-back] (on-db (fn [db] (on-parallelize db call-back))))
+  ([db call-back]
+   (oops/ocall db :parallelize
+               (fn [] (call-back db)))))
+
+
+(defn on-db-cmd
+  ([cmd stmt-vec] (on-db (fn [db] (on-db-cmd db cmd stmt-vec))))
+  ([db cmd stmt-vec] (on-db-cmd db cmd stmt-vec nil))
+  ([db cmd stmt-vec bindings]
+   (let [db-cmd (interop/bind db cmd)
+         stmt (string/join ";" stmt-vec)]
+     (apply db-cmd stmt bindings))))
+
 
 (defn init-db [db-tables db-indexes]
-  (on-db
+  (on-serialize
    (fn [db]
-     (oops/ocall db :serialize
-                 (fn []
-                   (mapv #(oops/ocall db :run (create-table-stmt %)) db-tables)
-                   (mapv #(oops/ocall db :run (create-index-stmt %)) db-indexes))))))
+     (on-db-cmd db :run (mapv create-table-stmt db-tables))
+     (on-db-cmd db :run (mapv create-index-stmt db-indexes)))))

@@ -21,6 +21,6 @@
 (defn -main [& args]
   (oops/ocall server
               :listen config/port
-              #(interop/log "%s listening at %s" (.-name server) (.-url server))))
+              #(interop/logf "%s listening at %s" (.-name server) (.-url server))))
 
 (set! *main-cli-fn* -main)

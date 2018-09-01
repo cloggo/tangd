@@ -11,9 +11,16 @@
 
 (defn set-db-name! [name] (set! *db-name* name))
 
-(defn err-handler [err]
-  (when err
-    (interop/log-error (oops/oget err :message))))
+(defn err-handler
+  ([err] (when err (interop/log-error (.-message err)))))
+
+
+(defn cmd-result-handler [success-handler]
+  (fn [err]
+    (this-as this
+      (if err (interop/log-error (.-message err))
+          (success-handler this)))))
+
 
 (defn on-db
   ([call-back] (on-db *db-name* call-back))
@@ -82,7 +89,7 @@
   ([call-back] (on-db (fn [db] (on-serialize db call-back))))
   ([db call-back]
    (oops/ocall db :serialize
-               (fn [] (call-back db)))))
+               (call-back db))))
 
 
 (defn on-parallelize
@@ -104,6 +111,6 @@
 (defn init-db [db-tables db-indexes]
   (on-serialize
    (fn [db]
-     (-> db
-         (db-cmd :run (string/join ";" (mapv create-table-stmt db-tables)))
-         (db-cmd :run (string/join ";" (mapv create-index-stmt db-indexes)))))))
+     (fn []
+       (mapv #(db-cmd db :run (create-table-stmt %)) db-tables)
+       (mapv #(db-cmd db :run (create-index-stmt %)) db-indexes)))))

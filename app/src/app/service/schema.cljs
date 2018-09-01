@@ -26,7 +26,7 @@
 
 (def jwk-table ["jwk"
                 [["jwk_id" "INTEGER" "PRIMARY KEY" "DESC"]
-                 ["jwk" "TEXT"]]])
+                 ["jwk" "TEXT" "UNIQUE"]]])
 
 (def thp-table ["thp"
                 [["thp_id" "INTEGER" "PRIMARY KEY" "DESC"]
@@ -48,7 +48,7 @@
 (def thp-jwk-thp-jwk-index [nil "thp_jwk_thp_jwk_index" "thp_jwk" [[ "thp_id" ] [ "jwk_id" ]]])
 
 (def db-tables [jwk-table thp-table jws-table thp-jwk-table])
-(def db-indexes [thp-thp-index jws-jwk-index thp-jwk-thp-jwk-index])
+(def db-indexes [jws-jwk-index thp-thp-index thp-jwk-thp-jwk-index])
 
 ;; (mapv #(println (sqlite/create-table-stmt %)) db-tables)
 ;; (mapv #(println (sqlite/create-index-stmt %)) db-indexes)

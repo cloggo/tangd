@@ -8,10 +8,16 @@
 (defn bind [obj k]
   (.bind (oops/oget+ obj k) obj))
 
-
 (defn log [& args]
-  (.log js/console (apply gstring/format args)))
+  (oops/oapply js/console :log (into-array args)))
 
 
 (defn log-error [& args]
+  (oops/oapply js/console :error (into-array args)))
+
+(defn logf [& args]
+  (.log js/console (apply gstring/format args)))
+
+
+(defn logf-error [& args]
   (.error js/console (apply gstring/format args)))

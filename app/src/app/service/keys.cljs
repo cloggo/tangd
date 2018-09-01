@@ -1,16 +1,28 @@
 (ns app.service.keys
   (:require
+   [interop.core :as interop]
    [oops.core :as oops]
    [jose.core :as jose]
+   [sqlite.core :as sqlite]
    [sqlite3]) )
-
-
-(defn rotate-keys []
-  (on-db (fn [db])))
 
 
 (def jwk-es512 (jose/jwk-gen "ES512"))
 (def jwk-ecmr (jose/jwk-gen "ECMR"))
+
+
+(def insert-jwk-stmt "INSERT INTO jwk(jwk) VALUES(?);")
+
+
+(defn insert-jwk [jwk]
+  (sqlite/on-db-cmd
+   :run insert-jwk-stmt
+   #js [jwk]
+   (sqlite/cmd-result-handler #(interop/log (.-lastID %)))))
+
+
+(defn rotate-keys []
+  (insert-jwk jwk-ecmr))
 
 ;; (println "get-alg: " (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH)))
 ;; (println "es512-prm: " (every? #(jose/jwk-prm jwk-es512 true %) ["sign" "verify"]))

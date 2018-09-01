@@ -5,7 +5,7 @@
             [oops.core :as oops]
             #_[goog.array :as garray]
             [cljs.nodejs :as node]
-            [interop.interop :as interop]
+            [interop.core :as interop]
             [restify.router :as router]
             [app.routes :as routes]
             [app.config :as config]))

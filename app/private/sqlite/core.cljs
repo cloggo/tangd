@@ -1,15 +1,22 @@
 (ns sqlite.core
   (:require
+   [interop.core :as interop]
    [clojure.string :as string]
    [oops.core :as oops]
    [sqlite3]))
 
 (def ^{:dynamic true :private true} *db-name* ":memory:")
 
+(defn sqlite-verbose[] (oops/ocall sqlite3 :verbose))
+
 (defn set-db-name! [name] (set! *db-name* name))
 
 (defn on-db* [dbname call-back]
-  (let [db (sqlite3/Database. dbname)]
+  (let [db (sqlite3/Database.
+            dbname
+            (fn [err]
+              (when err
+                (interop/log-error (oops/oget err :message)))))]
     (call-back db)
     (oops/ocall db :close)))
 
@@ -29,7 +36,7 @@
                               "ON"
                               table-name
                               "("
-                              (string/join "," (mapv #(string/join " " %) columns))
+                              (string/join ", " (mapv #(string/join " " %) columns))
                               ");"]))))
 
 
@@ -65,5 +72,5 @@
                       "IF NOT EXISTS"
                       table-name
                       "("
-                      (string/join ", " [ columns constraints ])
+                      (string/join ", " (remove string/blank? [ columns constraints ]))
                       ");"])))

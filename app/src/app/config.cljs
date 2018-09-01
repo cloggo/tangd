@@ -4,6 +4,8 @@
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
    [restify.core :as restify]
+   [sqlite.core :as sqlite]
+   [app.service.schema :as schema]
    [restify.body-parser :as body-parser]
    [restify.transit-formatter :as transit-formatter]))
 
@@ -28,3 +30,9 @@
 (restify/add-response-spec-defaults! {:headers response-headers})
 
 (apply registrar/reg-fx :restify restify/registrar-params)
+
+;; (sqlite/sqlite-verbose)
+
+(sqlite/set-db-name! dbname)
+
+(schema/init-db)

@@ -1,4 +1,4 @@
-(ns interop.interop
+(ns interop.core
   (:require
    [goog.string :as gstring]
    [goog.string.format]

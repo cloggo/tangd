@@ -1,5 +1,7 @@
 (ns app.service.schema
-  (:require [sqlite.core :as sqlite]))
+  (:require
+   [oops.core :as oops]
+   [sqlite.core :as sqlite]))
 
 ;; SCHEMA
 ;; =======
@@ -45,6 +47,16 @@
 (def jws-jwk-index ["UNIQUE" "jws_jwk_index" "jws" [[ "jwk_id" ]]])
 (def thp-jwk-thp-jwk-index [nil "thp_jwk_thp_jwk_index" "thp_jwk" [[ "thp_id" ] [ "jwk_id" ]]])
 
+(def db-tables [jwk-table thp-table jws-table thp-jwk-table])
+(def db-indexes [thp-thp-index jws-jwk-index thp-jwk-thp-jwk-index])
 
-(println (sqlite/create-index-stmt thp-jwk-thp-jwk-index))
-(println (sqlite/create-table-stmt thp-jwk-table))
+;; (mapv #(println (sqlite/create-table-stmt %)) db-tables)
+;; (mapv #(println (sqlite/create-index-stmt %)) db-indexes)
+
+(defn init-db []
+  (sqlite/on-db
+   (fn [db]
+     (oops/ocall db :serialize
+                 (fn []
+                   (mapv #(oops/ocall db :run (sqlite/create-table-stmt %)) db-tables)
+                   (mapv #(oops/ocall db :run (sqlite/create-index-stmt %)) db-indexes))))))

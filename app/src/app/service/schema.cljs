@@ -54,9 +54,4 @@
 ;; (mapv #(println (sqlite/create-index-stmt %)) db-indexes)
 
 (defn init-db []
-  (sqlite/on-db
-   (fn [db]
-     (oops/ocall db :serialize
-                 (fn []
-                   (mapv #(oops/ocall db :run (sqlite/create-table-stmt %)) db-tables)
-                   (mapv #(oops/ocall db :run (sqlite/create-index-stmt %)) db-indexes))))))
+  (sqlite/init-db db-tables db-indexes))

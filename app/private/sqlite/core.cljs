@@ -92,17 +92,14 @@
                (fn [] (call-back db)))))
 
 
-(defn on-db-cmd
-  ([cmd stmt-vec] (on-db (fn [db] (on-db-cmd db cmd stmt-vec))))
-  ([db cmd stmt-vec] (on-db-cmd db cmd stmt-vec nil))
-  ([db cmd stmt-vec bindings]
-   (let [db-cmd (interop/bind db cmd)
-         stmt (string/join ";" stmt-vec)]
-     (apply db-cmd stmt bindings))))
+(defn on-db-cmd [db cmd stmt & bindings]
+   (let [db-cmd (interop/bind db cmd)]
+     (apply db-cmd stmt bindings)))
 
 
 (defn init-db [db-tables db-indexes]
   (on-serialize
    (fn [db]
-     (on-db-cmd db :run (mapv create-table-stmt db-tables))
-     (on-db-cmd db :run (mapv create-index-stmt db-indexes)))))
+     (-> db
+         (on-db-cmd :run (string/join ";" (mapv create-table-stmt db-tables)))
+         (on-db-cmd :run (string/join ";" (mapv create-index-stmt db-indexes)))))))

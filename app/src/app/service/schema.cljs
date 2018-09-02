@@ -26,7 +26,7 @@
 
 (def jwk-table ["jwk"
                 [["jwk_id" "INTEGER" "PRIMARY KEY" "DESC"]
-                 ["jwk" "TEXT" "UNIQUE"]]])
+                 ["jwk" "TEXT"]]])
 
 (def thp-table ["thp"
                 [["thp_id" "INTEGER" "PRIMARY KEY" "DESC"]

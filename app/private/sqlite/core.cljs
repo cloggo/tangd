@@ -99,13 +99,26 @@
                (fn [] (call-back db)))))
 
 
-(defn db-cmd [db cmd stmt & bindings]
+(defn db-cmd [db cmd stmt & params]
    (let [db-cmd (interop/bind db cmd)]
-     (apply db-cmd stmt bindings)))
+     (apply db-cmd stmt params)))
 
 
-(defn on-db-cmd [cmd stmt & bindings]
-  (on-db (fn [db] (apply db-cmd db cmd stmt bindings))))
+(defn on-db-cmd [cmd stmt & params]
+  (on-db (fn [db] (apply db-cmd db cmd stmt params))))
+
+
+(defn db-run-stmt [db stmt & params]
+  (fn [& handlers]
+    (db-cmd db
+     :run stmt
+     (into-array params)
+     (cmd-result-handler #((apply juxt handlers) (.-lastID %))))))
+
+
+(defn on-db-run-stmt [stmt & params]
+  (fn [& handlers]
+    (on-db (fn [db] (apply (apply db-run-stmt db stmt params) handlers)))))
 
 
 (defn init-db [db-tables db-indexes]

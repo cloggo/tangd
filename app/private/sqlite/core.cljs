@@ -7,28 +7,6 @@
 
 (def ^{:dynamic true :private true} *db-name* ":memory:")
 
-(defn sqlite-verbose[] (oops/ocall sqlite3 :verbose))
-
-(defn set-db-name! [name] (set! *db-name* name))
-
-(defn err-handler
-  ([err] (when err (interop/log-error (.-message err)))))
-
-
-(defn cmd-result-handler [success-handler]
-  (fn [err]
-    (this-as this
-      (if err (interop/log-error (.-message err))
-          (success-handler this)))))
-
-
-(defn on-db
-  ([call-back] (on-db *db-name* call-back))
-  ([dbname call-back]
-   (let [db (sqlite3/Database. dbname err-handler)]
-     (call-back db)
-     (oops/ocall db :close err-handler))))
-
 ;; INDEX
 ;; =====
 
@@ -85,6 +63,32 @@
                       (string/join ", " (remove string/blank? [ columns constraints ]))
                       ");"])))
 
+;; DB  commands
+;; ============
+
+(defn sqlite-verbose[] (oops/ocall sqlite3 :verbose))
+
+(defn set-db-name! [name] (set! *db-name* name))
+
+(defn err-handler
+  ([err] (when err (interop/log-error (.-message err)))))
+
+
+(defn cmd-result-handler [success-handler]
+  (fn [err]
+    (this-as this
+      (if err (interop/log-error (.-message err))
+          (success-handler this)))))
+
+
+(defn on-db
+  ([call-back] (on-db *db-name* call-back))
+  ([dbname call-back]
+   (let [db (sqlite3/Database. dbname err-handler)]
+     (call-back db)
+     (oops/ocall db :close err-handler))))
+
+
 (defn on-serialize
   ([call-back] (on-db (fn [db] (on-serialize db call-back))))
   ([db call-back]
@@ -120,6 +124,9 @@
   (fn [& handlers]
     (on-db (fn [db] (apply (apply db-run-stmt db stmt params) handlers)))))
 
+
+;; Initializtion
+;; ===============
 
 (defn init-db [db-tables db-indexes]
   (on-serialize

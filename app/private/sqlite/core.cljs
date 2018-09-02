@@ -128,9 +128,13 @@
 ;; Initializtion
 ;; ===============
 
+
+(defn x-stmt-exc [db creator]
+  (comp (map creator) (map #(db-cmd db :run %))) )
+
 (defn init-db [db-tables db-indexes]
   (on-serialize
    (fn [db]
      (fn []
-       (mapv #(db-cmd db :run (create-table-stmt %)) db-tables)
-       (mapv #(db-cmd db :run (create-index-stmt %)) db-indexes)))))
+       (transduce (x-stmt-exc db create-table-stmt) identity db-tables)
+       (transduce (x-stmt-exc db create-index-stmt) identity db-indexes)))))

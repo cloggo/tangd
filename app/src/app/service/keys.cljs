@@ -17,26 +17,31 @@
 (def insert-thp-jwk-stmt "INSERT INTO thp_jwk(thp_id, jwk_id) VALUES(?,?);")
 
 
-(defn insert-thp [f-thp]
+(defn insert-thp [db f-thp]
   (fn [jwk-id]
     (f-thp
      (fn [thp-id]
-       (sqlite/on-db-cmd :run insert-thp-jwk-stmt thp-id jwk-id)))))
+       (sqlite/db-cmd db :run insert-thp-jwk-stmt thp-id jwk-id)))))
 
-(defn insert-jws [jws]
+(defn insert-jws [db jws]
   (fn [jwk-id]
-    (sqlite/on-db-cmd :run insert-jws-stmt jwk-id jws)))
+    (sqlite/db-cmd db :run insert-jws-stmt jwk-id jws)))
 
-(defn insert-jwk* [jwk]
-  (let [thp (jose/calc-thumbprint jwk)
-        f-jwk (sqlite/on-db-run-stmt insert-jwk-stmt jwk)
-        f-thp (sqlite/on-db-run-stmt insert-thp-stmt thp)]
-    [ f-jwk (insert-thp f-thp) ]))
+
+(defn insert-jwk* [db jwk]
+  (let [f-jwk (sqlite/db-run-stmt db insert-jwk-stmt jwk)
+        algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
+        thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
+        f-thp-vec (mapv #(sqlite/db-run-stmt db insert-thp-stmt %) thp-vec)
+        f-thp-vec (mapv #(insert-thp db %) f-thp-vec) ]
+    (cons f-jwk f-thp-vec)))
 
 
 (defn insert-jwk-jws
-  ([jwk] (let [[f-jwk & handlers] (insert-jwk* jwk)] (apply f-jwk handlers)))
-  ([jwk jws] (let [[f-jwk & handlers] (insert-jwk* jwk)] (apply f-jwk (insert-jws jws) handlers))))
+  ([db jwk] (let [[f-jwk & handlers] (insert-jwk* db jwk)]
+              (apply f-jwk handlers)))
+  ([db jwk jws] (let [[f-jwk & handlers] (insert-jwk* db jwk)]
+                  (apply f-jwk (insert-jws db jws) handlers))))
 
 
 (defn create-payload [jwk-es512 jwk-ecmr]
@@ -53,10 +58,12 @@
     (jose/jws-sig payload sig jwks)))
 
 (defn rotate-keys []
-  (let [payload (create-payload jwk-es512 jwk-ecmr)
-        jws (create-jws payload jwk-es512) ]
-    (insert-jwk-jws jwk-ecmr)
-    (insert-jwk-jws jwk-es512 jws)))
+  (sqlite/on-db
+   (fn [db]
+     (let [payload (create-payload jwk-es512 jwk-ecmr)
+           jws (create-jws payload jwk-es512) ]
+       (insert-jwk-jws db jwk-ecmr)
+       (insert-jwk-jws db jwk-es512 jws)))))
 
 ;; (println "get-alg: " (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH)))
 ;; (println "es512-prm: " (every? #(jose/jwk-prm jwk-es512 true %) ["sign" "verify"]))

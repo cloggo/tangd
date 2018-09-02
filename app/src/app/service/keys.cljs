@@ -31,17 +31,20 @@
 (defn insert-jwk* [db jwk]
   (let [f-jwk (sqlite/db-run-stmt db insert-jwk-stmt jwk)
         algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
-        thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
-        f-thp-vec (mapv #(sqlite/db-run-stmt db insert-thp-stmt %) thp-vec)
-        f-thp-vec (mapv #(insert-thp db %) f-thp-vec) ]
+        thp-vec (map #(jose/calc-thumbprint jwk %) algs)
+        f-thp-vec (map #(sqlite/db-run-stmt db insert-thp-stmt %) thp-vec)
+        f-thp-vec (map #(insert-thp db %) f-thp-vec) ]
     (cons f-jwk f-thp-vec)))
 
 
+(defn eval-vec [v & rest]
+  (let [[f & args] v
+        args (concat args rest)] (apply f args)))
+
+
 (defn insert-jwk-jws
-  ([db jwk] (let [[f-jwk & handlers] (insert-jwk* db jwk)]
-              (apply f-jwk handlers)))
-  ([db jwk jws] (let [[f-jwk & handlers] (insert-jwk* db jwk)]
-                  (apply f-jwk (insert-jws db jws) handlers))))
+  ([db jwk] (eval-vec (insert-jwk* db jwk)))
+  ([db jwk jws] (eval-vec (insert-jwk* db jwk) (insert-jws db jws))))
 
 
 (defn create-payload [jwk-es512 jwk-ecmr]

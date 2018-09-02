@@ -42,7 +42,7 @@
                               "ON"
                               table-name
                               "("
-                              (string/join ", " (map #(string/join " " %) columns))
+                              (string/join ", " (mapv #(string/join " " %) columns))
                               ");"]))))
 
 
@@ -62,7 +62,7 @@
 
 
 (defn create-columns [columns]
-  (string/join ", " (map #(string/join " " %) columns)))
+  (string/join ", " (mapv #(string/join " " %) columns)))
 
 
 (defn create-constraint [constraint]
@@ -71,7 +71,7 @@
 
 
 (defn create-constraints [table-constraints]
-  (string/join ", " (map create-constraint table-constraints)))
+  (string/join ", " (mapv create-constraint table-constraints)))
 
 
 (defn create-table-stmt [table-spec]

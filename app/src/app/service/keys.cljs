@@ -31,9 +31,9 @@
 (defn insert-jwk* [db jwk]
   (let [f-jwk (sqlite/db-run-stmt db insert-jwk-stmt jwk)
         algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
-        thp-vec (map #(jose/calc-thumbprint jwk %) algs)
-        f-thp-vec (map #(sqlite/db-run-stmt db insert-thp-stmt %) thp-vec)
-        f-thp-vec (map #(insert-thp db %) f-thp-vec) ]
+        thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
+        f-thp-vec (mapv #(sqlite/db-run-stmt db insert-thp-stmt %) thp-vec)
+        f-thp-vec (mapv #(insert-thp db %) f-thp-vec) ]
     (cons f-jwk f-thp-vec)))
 
 

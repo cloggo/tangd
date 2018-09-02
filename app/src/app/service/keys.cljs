@@ -35,8 +35,8 @@
 
 
 (defn insert-jwk-jws
-  ([jwk] (let [[f-jwk h1] (insert-jwk* jwk)] (f-jwk h1)))
-  ([jwk jws] (let [[f-jwk h1] (insert-jwk* jwk)] (f-jwk h1 (insert-jws jws)))))
+  ([jwk] (let [[f-jwk & handlers] (insert-jwk* jwk)] (apply f-jwk handlers)))
+  ([jwk jws] (let [[f-jwk & handlers] (insert-jwk* jwk)] (apply f-jwk (insert-jws jws) handlers))))
 
 
 (defn create-payload [jwk-es512 jwk-ecmr]

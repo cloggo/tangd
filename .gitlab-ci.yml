@@ -8,7 +8,8 @@ variables:
   NODEPREGYP_BIN: $NODE_MODULE_PATH/node-pre-gyp
   DOCKER_RUN: docker run --user root -t -e NODE_ENV=test -v $CI_PROJECT_DIR:/deploy $DEV_IMAGE
 
-## stages:
+stages:
+  - test
 
 # before_script:
 #   - echo "//npm.delite.ca/:_authToken=\"${NPM_TOKEN}\"" > ~/.npmrc
@@ -19,4 +20,11 @@ variables:
 #   paths:
 #   - node_modules/
 #   - build/stage/
+
+test:
+  stage: test
+  tags:
+    - linux
+  script:
+   - echo "hello"
 

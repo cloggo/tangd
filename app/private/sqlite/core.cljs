@@ -71,44 +71,82 @@
 
 (defn set-db-name! [name] (set! *db-name* name))
 
+(defn err-handler
+  ([err] (when err (interop/log-error (.-message err)))))
+
+
+(defn cmd-result-handler [success-handler]
+  (fn [err]
+    (this-as this
+      (if err (interop/log-error (.-message err))
+          (success-handler this)))))
+
+
+(defn db-error-handler [success-handler]
+  (fn [err]
+    (this-as db
+      (if err (interop/log-error (.-message err))
+          (try
+            (success-handler db)
+            (catch :default e (interop/log-error e))
+            (finally (oops/ocall db :close err-handler)))))))
 
 (defn on-db
-  ([call-back] (on-db *db-name* call-back))
+  ([call-back]
+   (on-db *db-name* call-back))
+
   ([dbname call-back]
+   (p/promise
+    (fn [resolve reject]
       (sqlite3/Database.
        dbname
        (fn [err]
-         (this-as db
-           (if err
-             (interop/log-error err)
-             (->(call-back db)
-                (p/then (fn [_] (db-close db)))
-                (p/catch (fn [err] (interop/log-error err))))))))))
+         (this-as db (if err (reject err) (resolve db)))))))))
 
-(defn db-close [db]
-  (oops/ocall db :close (fn [err] (when err (interop/log-error err)))))
 
-(defn run-cmd-handler [resolve reject]
-  (fn [err]
-    (this-as result (if err (reject err) (resolve result)))))
+(defn on-serialize
+  ([call-back] (on-db (fn [db] (on-serialize db call-back))))
+  ([db call-back]
+   (oops/ocall db :serialize
+               (fn [] (call-back db)))))
 
-(def handlers
-  {:run run-cmd-handler})
 
-(defn on-cmd [db cmd stmt & params]
-  (p/promise
-   (fn [resolve reject]
-     (let [db-cmd (interop/bind db cmd)]
-       (db-cmd stmt (into-array params) ((cmd handlers) resolve reject))))))
+(defn on-parallelize
+  ([call-back] (on-db (fn [db] (on-parallelize db call-back))))
+  ([db call-back]
+   (oops/ocall db :parallelize
+               (fn [] (call-back db)))))
 
-;; Initialization
+
+(defn db-cmd [db cmd stmt & params]
+  (let [db-cmd (interop/bind db cmd)]
+    (try
+      (apply db-cmd stmt params)
+      (catch :default e (interop/log-error e)))))
+
+
+(defn on-db-cmd [cmd stmt & params]
+  (on-db (fn [db] (apply db-cmd db cmd stmt params))))
+
+
+(defn db-run-stmt [db stmt & params]
+  (fn [& handlers]
+    (db-cmd db
+     :run stmt
+     (into-array params)
+     (cmd-result-handler #((apply juxt handlers) (.-lastID %))))))
+
+
+(defn on-db-run-stmt [stmt & params]
+  (fn [& handlers]
+    (on-db (fn [db] (apply (apply db-run-stmt db stmt params) handlers)))))
+
+
+;; Initializtion
 ;; ===============
 
-(defn create-schema [db stmt-creator schema-vec]
-  (mapv #(on-cmd db :run (stmt-creator %)) schema-vec))
-
 (defn init-db [db-tables db-indexes]
-  (on-db
+  (on-serialize
    (fn [db]
-     (-> (p/all (create-schema db create-table-stmt db-tables))
-         (p/then (fn [_] (p/all (create-schema db create-index-stmt db-indexes))))))))
+     (mapv #(db-cmd db :run (create-table-stmt %)) db-tables)
+     (mapv #(db-cmd db :run (create-index-stmt %)) db-indexes))))

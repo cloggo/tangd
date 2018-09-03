@@ -10,6 +10,6 @@
 (registrar/reg-evt :adv :restify respond [[:params :kid]]
                    {:headers #js {:content-type "application/json"}})
 
-(defn new-jwk [] keys/jwk-ecmr)
+(defn new-jwk [] nil)
 
 (registrar/reg-evt :adv* :restify new-jwk [] {:headers #js {:content-type "application/jwk+json"}})

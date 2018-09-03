@@ -25,7 +25,7 @@
 ;; 3. calculate the jws from 1 and 2
 
 (def jwk-table ["jwk"
-                [["jwk_id" "INTEGER" "PRIMARY KEY" "DESC"]
+                [["jwk_id" "INTEGER" "PRIMARY KEY"]
                  ["jwk" "TEXT"]]])
 
 (def thp-table ["thp"
@@ -44,7 +44,7 @@
                      [ "FOREIGN KEY" [ "jwk_id" ] "jwk" [ "jwk_id" ] "ON" "DELETE" "CASCADE"] ]])
 
 (def thp-thp-index ["UNIQUE" "thp_thp_index" "thp" [["thp"]]])
-(def jws-jwk-index ["UNIQUE" "jws_jwk_index" "jws" [[ "jwk_id" ]]])
+(def jws-jwk-index [nil "jws_jwk_index" "jws" [[ "jwk_id" ]]])
 (def thp-jwk-thp-jwk-index [nil "thp_jwk_thp_jwk_index" "thp_jwk" [[ "thp_id" ] [ "jwk_id" ]]])
 
 (def db-tables [jwk-table thp-table jws-table thp-jwk-table])

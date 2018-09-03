@@ -81,9 +81,9 @@
          (this-as db
            (if err
              (interop/log-error err)
-             (p/then
-              (call-back db)
-              (fn [_] (db-close db)))))))))
+             (->(call-back db)
+                (p/then (fn [_] (db-close db)))
+                (p/catch (fn [err] (interop/log-error err))))))))))
 
 (defn db-close [db]
   (oops/ocall db :close (fn [err] (when err (interop/log-error err)))))

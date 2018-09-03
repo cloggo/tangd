@@ -10,13 +10,13 @@ variables:
 
 ## stages:
 
-before_script:
-  - echo "//npm.delite.ca/:_authToken=\"${NPM_TOKEN}\"" > ~/.npmrc
+# before_script:
+#   - echo "//npm.delite.ca/:_authToken=\"${NPM_TOKEN}\"" > ~/.npmrc
 
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-  - node_modules/
-  - build/stage/
+# cache:
+#   key: ${CI_COMMIT_REF_SLUG}
+#   paths:
+#   - node_modules/
+#   - build/stage/
 

@@ -46,6 +46,11 @@
        (db-cmd stmt (into-array params)
                (fn [err]
                  (if err (interop/log-error err)
+                     (this-as result (callback result))))))
+      ([callback err-handler]
+       (db-cmd stmt (into-array params)
+               (fn [err]
+                 (if err (err-handler err)
                      (this-as result (callback result)))))))))
 
 

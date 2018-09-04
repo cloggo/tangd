@@ -31,19 +31,23 @@
                           (when err (interop/log-error err)))))
 
 
-(defn exec-on-cmd [db cmd stmt callback params]
-  (let [db-cmd (interop/bind db cmd)]
-    #_(println stmt)
-    (db-cmd stmt (into-array params)
-            (fn [err]
-              (if err (interop/log-error err)
-                  (this-as result (callback result)))))))
-
-
 (defn on-cmd [db cmd stmt & params]
-  (fn cmd-wrap
-    [callback]
-      (exec-on-cmd db cmd stmt callback params)))
+  (let [db-cmd (interop/bind db cmd)]
+    (apply db-cmd stmt params)))
+
+
+(defn on-cmd* [db cmd stmt & params]
+  (let [db-cmd (interop/bind db cmd)]
+    (fn cmd-wrap
+      ([]
+       (db-cmd stmt (into-array params)
+               (fn [err] (when err (interop/log-error err)))))
+      ([callback]
+       (db-cmd stmt (into-array params)
+               (fn [err]
+                 (if err (interop/log-error err)
+                     (this-as result (callback result)))))))))
+
 
 ;; cmd-wrap2 cmd-wrap1 cmd-wrap0
 ;; cmd-wrap0  => x0  (close database)
@@ -63,7 +67,7 @@
 
 (defn init-db [init-stmts]
   (let [db (on-db)
-        cmds (mapv #(on-cmd db :run %) init-stmts)
+        cmds (mapv #(on-cmd* db :run %) init-stmts)
         close-f (partial db-close db)
         executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)
         #_executor #_(func/foldr serialize-wrapper (serialize-wrapper close-f) cmds)]

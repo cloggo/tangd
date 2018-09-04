@@ -54,6 +54,7 @@
   (fn ([v0] (fn [_] (handler v0)))
     ([v0 v1] (fn [_] (handler (v1 v0))))))
 
+;; create execution stack (chaining callback)
 (defn serializer [wrapper-func]
   (defn serialize
     ([cmd-wrap-vec]

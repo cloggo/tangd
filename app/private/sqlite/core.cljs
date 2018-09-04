@@ -4,6 +4,7 @@
    [interop.core :as interop]
    [clojure.string :as string]
    [oops.core :as oops]
+   #_[func.core :as func]
    [sqlite3]))
 
 (def ^{:dynamic true :private true} *db-name* ":memory:")
@@ -56,21 +57,6 @@
   ([v0] (fn [_] (v0)))
   ([v0 v1] (fn [_] (v1 v0))))
 
-;; create execution stack (chaining callback)
-(defn serializer [wrapper-func]
-  (defn serialize
-    ([cmd-wrap-vec]
-         (serialize (wrapper-func (peek cmd-wrap-vec)) cmd-wrap-vec))
-    ([executor cmd-wrap-vec]
-     (let [cmd-wrap-vec (pop cmd-wrap-vec)
-           cmd-wrap (peek cmd-wrap-vec)]
-       #_(println cmd-wrap)
-       (if (empty? cmd-wrap-vec)
-         executor
-         (recur (wrapper-func executor cmd-wrap) cmd-wrap-vec)))))
-  serialize)
-
-
 
 ;; Initializtion
 ;; ===============
@@ -78,7 +64,8 @@
 (defn init-db [init-stmts]
   (let [db (on-db)
         cmds (mapv #(on-cmd db :run %) init-stmts)
-        cmd-wrap-vec (conj cmds (partial db-close db))
-        executor ((serializer serialize-wrapper) cmd-wrap-vec)]
+        close-f (partial db-close db)
+        executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)
+        #_executor #_((func/foldr serialize-wrapper) cmd-wrap-vec)]
     #_(println cmd-wrap-vec)
     (executor)))

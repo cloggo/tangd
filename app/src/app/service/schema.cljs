@@ -54,5 +54,9 @@
 (def insert-thp-jwk "INSERT INTO thp_jwk(thp_id, jwk_id) VALUES(?,?);")
 (def select-all-jwk "SELECT jwk_id, jwk FROM jwk;")
 
-(def init-stmts [create-jwk-table create-thp-table create-jws-table create-thp-jwk-table
-               create-jws-jwk-index create-thp-thp-index create-thp-jwk-thp-jwk-index])
+;;; for fold right
+;; (def init-stmts [create-jwk-table create-thp-table create-jws-table create-thp-jwk-table
+;;                create-jws-jwk-index create-thp-thp-index create-thp-jwk-thp-jwk-index])
+
+(def init-stmts [create-jws-jwk-index create-thp-thp-index create-thp-jwk-thp-jwk-index
+                 create-thp-jwk-table create-jws-table create-thp-table create-jwk-table])

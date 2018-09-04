@@ -63,9 +63,9 @@
 
 (defn init-db [init-stmts]
   (let [db (on-db)
-        cmds (map #(on-cmd db :run %) init-stmts)
+        cmds (mapv #(on-cmd db :run %) init-stmts)
         close-f (partial db-close db)
         executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)
-        #_executor #_((func/foldr serialize-wrapper) cmd-wrap-vec)]
+        #_executor #_(func/foldr serialize-wrapper (serialize-wrapper close-f) cmds)]
     #_(println cmd-wrap-vec)
     (executor)))

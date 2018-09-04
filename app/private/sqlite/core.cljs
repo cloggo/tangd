@@ -31,16 +31,20 @@
                           (when err (interop/log-error err)))))
 
 
+(defn exec-on-cmd [db cmd stmt callback params]
+  (let [db-cmd (interop/bind db cmd)]
+    #_(println stmt)
+    (db-cmd stmt (into-array params)
+            (fn [err]
+              (if err (interop/log-error err)
+                  (this-as result (callback result)))))))
+
+
 (defn on-cmd [cmd stmt & params]
-  (defn cmd-wrap
+  (fn cmd-wrap
     [callback]
     (fn [db]
-      (let [db-cmd (interop/bind db cmd)]
-        #_(println stmt)
-        (db-cmd stmt (into-array params)
-                (fn [err]
-                  (if err (interop/log-error err)
-                      (this-as result (callback result)))))))))
+      (exec-on-cmd db cmd stmt callback params))))
 
 ;; cmd-wrap2 cmd-wrap1 cmd-wrap0
 ;; cmd-wrap0  => x0  (close database)

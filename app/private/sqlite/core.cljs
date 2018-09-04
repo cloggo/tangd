@@ -15,16 +15,6 @@
 
 (defn set-db-name! [name] (set! *db-name* name))
 
-(defn on-db*
-  ([] (on-db* *db-name*))
-  ([db-name]
-   (fn [callback]
-     (sqlite3/Database.
-      db-name
-      (fn [err]
-        (if err (interop/log-error err)
-            (this-as db (callback db))))))))
-
 (defn on-db
   ([] (on-db *db-name*))
   ([db-name]
@@ -36,24 +26,18 @@
 
 (defn db-close [db]
   (oops/ocall db :close (fn [err]
-                          (println "closed db")
+                          #_(println "closed db")
                           (when err (interop/log-error err)))))
 
 
 (defn exec-on-cmd [db cmd stmt callback params]
   (let [db-cmd (interop/bind db cmd)]
-    (println stmt)
+    #_(println stmt)
     (db-cmd stmt (into-array params)
             (fn [err]
               (if err (interop/log-error err)
                   (this-as result (callback result)))))))
 
-
-(defn on-cmd* [cmd stmt & params]
-  (fn cmd-wrap
-    [callback]
-    (fn [db]
-      (exec-on-cmd db cmd stmt callback params))))
 
 (defn on-cmd [db cmd stmt & params]
   (fn cmd-wrap
@@ -67,10 +51,6 @@
 ;; (fn [_] (x1 db)) => w1
 ;; (cmd-wrap2 w1) => x2
 ;; (fn [_] (x2 db)) => w2
-
-(defn serialize-wrapper* [handler]
-  (fn ([v0] (fn [_] (handler v0)))
-    ([v0 v1] (fn [_] (handler (v1 v0))))))
 
 (defn serialize-wrapper
   ([v0] (fn [_] (v0)))

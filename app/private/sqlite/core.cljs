@@ -15,8 +15,8 @@
 
 (defn set-db-name! [name] (set! *db-name* name))
 
-(defn on-db
-  ([] (on-db *db-name*))
+(defn on-db*
+  ([] (on-db* *db-name*))
   ([db-name]
    (fn [callback]
      (sqlite3/Database.
@@ -25,26 +25,40 @@
         (if err (interop/log-error err)
             (this-as db (callback db))))))))
 
+(defn on-db
+  ([] (on-db *db-name*))
+  ([db-name]
+   (sqlite3/Database.
+    db-name
+    (fn [err]
+      (when err (interop/log-error err))))))
+
+
 (defn db-close [db]
   (oops/ocall db :close (fn [err]
-                          #_(println "closed db")
+                          (println "closed db")
                           (when err (interop/log-error err)))))
 
 
 (defn exec-on-cmd [db cmd stmt callback params]
   (let [db-cmd (interop/bind db cmd)]
-    #_(println stmt)
+    (println stmt)
     (db-cmd stmt (into-array params)
             (fn [err]
               (if err (interop/log-error err)
                   (this-as result (callback result)))))))
 
 
-(defn on-cmd [cmd stmt & params]
+(defn on-cmd* [cmd stmt & params]
   (fn cmd-wrap
     [callback]
     (fn [db]
       (exec-on-cmd db cmd stmt callback params))))
+
+(defn on-cmd [db cmd stmt & params]
+  (fn cmd-wrap
+    [callback]
+      (exec-on-cmd db cmd stmt callback params)))
 
 ;; cmd-wrap2 cmd-wrap1 cmd-wrap0
 ;; cmd-wrap0  => x0  (close database)
@@ -54,9 +68,13 @@
 ;; (cmd-wrap2 w1) => x2
 ;; (fn [_] (x2 db)) => w2
 
-(defn serialize-wrapper [handler]
+(defn serialize-wrapper* [handler]
   (fn ([v0] (fn [_] (handler v0)))
     ([v0 v1] (fn [_] (handler (v1 v0))))))
+
+(defn serialize-wrapper
+  ([v0] (fn [_] (v0)))
+  ([v0 v1] (fn [_] (v1 v0))))
 
 ;; create execution stack (chaining callback)
 (defn serializer [wrapper-func]
@@ -78,10 +96,10 @@
 ;; ===============
 
 (defn init-db [db-tables db-indexes]
-  (let [db-h (on-db)
-        table-creators (mapv #(on-cmd :run %) db-tables)
-        index-creators (mapv #(on-cmd :run %) db-indexes)
-        cmd-wrap-vec (conj (into table-creators index-creators) db-close)
-        executor ((serializer (serialize-wrapper db-h)) cmd-wrap-vec)]
+  (let [db (on-db)
+        table-creators (mapv #(on-cmd db :run %) db-tables)
+        index-creators (mapv #(on-cmd db :run %) db-indexes)
+        cmd-wrap-vec (conj (into table-creators index-creators) (partial db-close db))
+        executor ((serializer serialize-wrapper) cmd-wrap-vec)]
     #_(println cmd-wrap-vec)
     (executor)))

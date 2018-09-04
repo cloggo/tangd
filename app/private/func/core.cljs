@@ -2,8 +2,8 @@
 
 ;; create execution stack (chaining callback)
 (defn foldr
-  ([f coll] (foldr f (peek coll) coll))
-  ([f v coll]
+  ([f coll] (foldr f (peek coll) coll)) ;; reduce from right based on foldr
+  ([f v coll] ;; actually doing foldr
    (defn foldr* [result coll]
      (let [coll (pop coll)
            val (peek coll)]

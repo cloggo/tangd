@@ -1,68 +1,12 @@
 (ns sqlite.core
   (:require
-   [promesa.core :as p]
+   #_[promesa.core :as p]
    [interop.core :as interop]
    [clojure.string :as string]
    [oops.core :as oops]
    [sqlite3]))
 
 (def ^{:dynamic true :private true} *db-name* ":memory:")
-
-;; INDEX
-;; =====
-
-(defn create-index-stmt [index-spec]
-  (let [[unique? index-name table-name columns] index-spec]
-    (string/join " " (remove string/blank?
-                             ["CREATE"
-                              unique?
-                              "INDEX" "IF NOT EXISTS"
-                              index-name
-                              "ON"
-                              table-name
-                              "("
-                              (string/join ", " (mapv #(string/join " " %) columns))
-                              ");"]))))
-
-
-
-
-;; TABLE
-;;; ======
-
-(defn create-foreign-key [columns foreign-table-name foreign-columns & clause]
-  (let [clause (string/join " " clause)
-        foreign-columns (string/join ["(" (string/join "," foreign-columns) ")"])
-        columns (string/join ["(" (string/join "," columns) ")"])]
-    (string/join " " ["FOREIGN KEY" columns
-                      "REFERENCES" foreign-table-name foreign-columns clause])))
-
-(def table-constraints-handlers {"FOREIGN KEY" create-foreign-key})
-
-
-(defn create-columns [columns]
-  (string/join ", " (mapv #(string/join " " %) columns)))
-
-
-(defn create-constraint [constraint]
-  (let [[constraint-name & constraint-spec] constraint]
-    (apply (get table-constraints-handlers constraint-name) constraint-spec)))
-
-
-(defn create-constraints [table-constraints]
-  (string/join ", " (mapv create-constraint table-constraints)))
-
-
-(defn create-table-stmt [table-spec]
-  (let [[table-name columns table-constraints] table-spec
-        columns (create-columns columns)
-        constraints (create-constraints table-constraints)]
-    (string/join " " ["CREATE TABLE"
-                      "IF NOT EXISTS"
-                      table-name
-                      "("
-                      (string/join ", " (remove string/blank? [ columns constraints ]))
-                      ");"])))
 
 ;; DB  commands
 ;; ============
@@ -71,82 +15,68 @@
 
 (defn set-db-name! [name] (set! *db-name* name))
 
-(defn err-handler
-  ([err] (when err (interop/log-error (.-message err)))))
-
-
-(defn cmd-result-handler [success-handler]
-  (fn [err]
-    (this-as this
-      (if err (interop/log-error (.-message err))
-          (success-handler this)))))
-
-
-(defn db-error-handler [success-handler]
-  (fn [err]
-    (this-as db
-      (if err (interop/log-error (.-message err))
-          (try
-            (success-handler db)
-            (catch :default e (interop/log-error e))
-            (finally (oops/ocall db :close err-handler)))))))
-
 (defn on-db
-  ([call-back]
-   (on-db *db-name* call-back))
+  ([] (on-db *db-name*))
+  ([db-name]
+   (fn [callback]
+     (sqlite3/Database.
+      db-name
+      (fn [err]
+        (if err (interop/log-error err)
+            (this-as db (callback db))))))))
 
-  ([dbname call-back]
-   (p/promise
-    (fn [resolve reject]
-      (sqlite3/Database.
-       dbname
-       (fn [err]
-         (this-as db (if err (reject err) (resolve db)))))))))
-
-
-(defn on-serialize
-  ([call-back] (on-db (fn [db] (on-serialize db call-back))))
-  ([db call-back]
-   (oops/ocall db :serialize
-               (fn [] (call-back db)))))
+(defn db-close [db]
+  (oops/ocall db :close (fn [err]
+                          #_(println "closed db")
+                          (when err (interop/log-error err)))))
 
 
-(defn on-parallelize
-  ([call-back] (on-db (fn [db] (on-parallelize db call-back))))
-  ([db call-back]
-   (oops/ocall db :parallelize
-               (fn [] (call-back db)))))
+(defn on-cmd [cmd stmt & params]
+  (defn cmd-wrap
+    [callback]
+    (fn [db]
+      (let [db-cmd (interop/bind db cmd)]
+        #_(println stmt)
+        (db-cmd stmt (into-array params)
+                (fn [err]
+                  (if err (interop/log-error err)
+                      (this-as result (callback result)))))))))
 
+;; cmd-wrap2 cmd-wrap1 cmd-wrap0
+;; cmd-wrap0  => x0  (close database)
+;; (fn [_] (x0 db)) => w0
+;; (cmd-wrap1 w0) => x1
+;; (fn [_] (x1 db)) => w1
+;; (cmd-wrap2 w1) => x2
+;; (fn [_] (x2 db)) => w2
 
-(defn db-cmd [db cmd stmt & params]
-  (let [db-cmd (interop/bind db cmd)]
-    (try
-      (apply db-cmd stmt params)
-      (catch :default e (interop/log-error e)))))
+(defn serialize-wrapper [handler]
+  (fn ([v0] (fn [_] (handler v0)))
+    ([v0 v1] (fn [_] (handler (v1 v0))))))
 
+(defn serializer [wrapper-func]
+  (defn serialize
+    ([cmd-wrap-vec]
+         (serialize (wrapper-func (peek cmd-wrap-vec)) cmd-wrap-vec))
+    ([executor cmd-wrap-vec]
+     (let [cmd-wrap-vec (pop cmd-wrap-vec)
+           cmd-wrap (peek cmd-wrap-vec)]
+       #_(println cmd-wrap)
+       (if (empty? cmd-wrap-vec)
+         executor
+         (recur (wrapper-func executor cmd-wrap) cmd-wrap-vec)))))
+  serialize)
 
-(defn on-db-cmd [cmd stmt & params]
-  (on-db (fn [db] (apply db-cmd db cmd stmt params))))
-
-
-(defn db-run-stmt [db stmt & params]
-  (fn [& handlers]
-    (db-cmd db
-     :run stmt
-     (into-array params)
-     (cmd-result-handler #((apply juxt handlers) (.-lastID %))))))
-
-
-(defn on-db-run-stmt [stmt & params]
-  (fn [& handlers]
-    (on-db (fn [db] (apply (apply db-run-stmt db stmt params) handlers)))))
 
 
 ;; Initializtion
 ;; ===============
 
 (defn init-db [db-tables db-indexes]
-  (on-serialize
-   (fn [db]
-     (mapv #(db-cmd db :run (create-table-stmt %)) db-tables)
-     (mapv #(db-cmd db :run (create-index-stmt %)) db-indexes))))
+  (let [db-h (on-db)
+        table-creators (mapv #(on-cmd :run %) db-tables)
+        index-creators (mapv #(on-cmd :run %) db-indexes)
+        cmd-wrap-vec (conj (into table-creators index-creators) db-close)
+        executor ((serializer (serialize-wrapper db-h)) cmd-wrap-vec)]
+    #_(println cmd-wrap-vec)
+    (executor)))

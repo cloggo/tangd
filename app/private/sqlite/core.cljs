@@ -75,11 +75,10 @@
 ;; Initializtion
 ;; ===============
 
-(defn init-db [db-tables db-indexes]
+(defn init-db [init-stmts]
   (let [db (on-db)
-        table-creators (mapv #(on-cmd db :run %) db-tables)
-        index-creators (mapv #(on-cmd db :run %) db-indexes)
-        cmd-wrap-vec (conj (into table-creators index-creators) (partial db-close db))
+        cmds (mapv #(on-cmd db :run %) init-stmts)
+        cmd-wrap-vec (conj cmds (partial db-close db))
         executor ((serializer serialize-wrapper) cmd-wrap-vec)]
     #_(println cmd-wrap-vec)
     (executor)))

@@ -1,7 +1,4 @@
-(ns app.service.schema
-  (:require
-   [oops.core :as oops]
-   [sqlite.core :as sqlite]))
+(ns app.service.schema)
 
 ;; SCHEMA
 ;; =======
@@ -57,8 +54,5 @@
 (def insert-thp-jwk "INSERT INTO thp_jwk(thp_id, jwk_id) VALUES(?,?);")
 (def select-all-jwk "SELECT jwk_id, jwk FROM jwk;")
 
-(def db-tables [create-jwk-table create-thp-table create-jws-table create-thp-jwk-table])
-(def db-indexes [create-jws-jwk-index create-thp-thp-index create-thp-jwk-thp-jwk-index])
-
-(defn init-db []
-  (sqlite/init-db db-tables db-indexes))
+(def init-stmts [create-jwk-table create-thp-table create-jws-table create-thp-jwk-table
+               create-jws-jwk-index create-thp-thp-index create-thp-jwk-thp-jwk-index])

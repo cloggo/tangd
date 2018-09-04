@@ -35,4 +35,4 @@
 
 (sqlite/set-db-name! db-name)
 
-(schema/init-db)
+(sqlite/init-db schema/init-stmts)

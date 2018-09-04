@@ -24,11 +24,11 @@
   (let [[fv1 fv2 fv3] (mapv (fn [v] (mapv #(partial wrap-filter %) v)) filters)
         [pre-callback post-callback post-dispatch] (mapv compose-fv [fv1 fv2 fv3])
         handler (partial wrap-filter handler)]
-    (swap! atom- assoc-in [:fx id] [handler pre-callback post-callback post-dispatch])))
+    (set-data! [:fx id] [handler pre-callback post-callback post-dispatch])))
 
 
 (defn reg-evt [id fx-id callback & [init-data init-spec]]
-  (swap! atom- assoc-in [:evt id] [fx-id (partial wrap-callback callback) init-data init-spec]))
+  (set-data! [:evt id] [fx-id (partial wrap-callback callback) init-data init-spec]))
 
 
 (defn dispatch! [evt-id & [dispatch-data]]

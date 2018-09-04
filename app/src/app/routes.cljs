@@ -1,11 +1,12 @@
 (ns app.routes
   (:require
-   [registrar.core :as registrar]))
+   [re-frame.core :as rf]
+   #_[registrar.core :as registrar]))
 
 ;; Restify don't support regexp path, only string and wildcard
 (def routes
-  [[ :get "/adv/"  #(registrar/dispatch! :adv* %&) ]
-   [ :get "/adv/:kid" #(registrar/dispatch! :adv %&) ]
-   [ :post "/keys/rotate" #(registrar/dispatch! :rotate-keys %&) ]
-   [ :get "/t-error/" #(registrar/dispatch! :t-error %&) ]
-   [ :post "/rec/:kid" #(registrar/dispatch! :rec %&)]])
+  [#_[ :get "/adv/"  #(registrar/dispatch! :adv* %&) ]
+   #_[ :get "/adv/:kid" #(registrar/dispatch! :adv %&) ]
+   #_[ :post "/keys/rotate" #(registrar/dispatch! :rotate-keys %&) ]
+   #_[ :get "/t-error/" #(registrar/dispatch! :t-error %&) ]
+   #_[ :post "/rec/:kid" #(registrar/dispatch! :rec %&)]])

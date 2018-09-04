@@ -6,13 +6,32 @@
    [oops.core :as oops]))
 
 
+;; defaults restify spec
+;; =====================
 (def ^{:dynamic true :private true} *response-spec-defaults* {:status :OK
                                                 :send-mode :send
                                                 :next? false})
 
+
 (defn add-response-spec-defaults! [spec]
   (set! *response-spec-defaults* (merge *response-spec-defaults* spec)))
 
+(defn apply-spec [_ res-spec _]
+  {:res-spec (merge *response-spec-defaults* res-spec)})
+
+
+;; get status code from status key
+;; ========
+(defn apply-status [_ res-spec _]
+  (let [{:keys [status]}  res-spec]
+    {:res-spec (assoc res-spec :status (status const/http-status))}))
+
+;; =========
+
+;; =================
+
+;; extract data from restify request object
+;; ========================================
 (defn extractor- [req path]
   (let [[first & rest] path
         is-transit? (oops/oget req "?isTransit")
@@ -26,13 +45,7 @@
         data (mapv extractor paths)]
     {:data data}))
 
-(defn apply-spec [_ res-spec _]
-  {:res-spec (merge *response-spec-defaults* res-spec)})
-
-(defn apply-status [_ res-spec _]
-  (let [{:keys [status]}  res-spec]
-    {:res-spec (assoc res-spec :status (status const/http-status))}))
-
+;; ====================
 (defn check-http-error [data] (cljs.core/instance? errors/HttpError data))
 
 (defn send- [res send-mode next* status data headers next?]

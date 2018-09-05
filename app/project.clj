@@ -14,7 +14,7 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [com.cognitect/transit-cljs "0.8.256"]
-                 #_[funcool/promesa "1.9.0"]
+                 [funcool/promesa "1.9.0"]
                  [re-frame "0.10.6"]
                  [binaryage/oops "0.6.2"]
                  [org.clojure/clojurescript "1.10.339"]]

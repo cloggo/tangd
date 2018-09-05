@@ -28,13 +28,15 @@
 
 ;; =================
 
+(defn create-error [status info]
+  (-> (js/Error.)
+      (oops/oset! "!info" err)
+      (oops/oset! "!statusCode" status)))
+
 (defn apply-error-payload [spec]
   (let [err (get spec :error)
         headers (:headers spec)]
-    (if err (assoc spec :next?
-                   (-> (js/Error.)
-                       (oops/oset! "!info" err)
-                       (oops/oset! "!statusCode" (:status spec))))
+    (if err (assoc spec :next? (create-error (:status spec) err))
         spec)))
 
 

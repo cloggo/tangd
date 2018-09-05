@@ -1,6 +1,8 @@
 (ns restify.body-parser
   (:require [restify]
-            [restify-errors :as errors]
+            #_[restify-errors :as errors]
+            [restify.core :as my-restify]
+            [restify.const* :as const]
             [restify.transit-parser :as transit-parser]
             ;; [app.lib.fast-json-parser :as json-parser]
             [oops.core :as oops]))
@@ -32,7 +34,9 @@
           (oops/oset! req "!_parsedBody" true)
           (if content-parser
             (content-parser req res next)
-            (next (errors/UnsupportedMediaTypeError. content-type))))))))
+            (next (my-restify/create-error
+                   (:UNSUPPORTED_MEDIA_TYPE const/http-status)
+                   content-type))))))))
 
 (defn body-parser
   ([] body-parser #js {})

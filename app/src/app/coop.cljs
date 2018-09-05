@@ -4,31 +4,39 @@
    [restify.core :as restify]))
 
 
-;;>customized event register
-(defn pass-context-intercept [target-fx]
-  (fn [context]
-    (let [[_ from-context] (get-in context [:coeffects :event])]
-      (update-in context [:effects target-fx]
-                 #(merge {:->context from-context} %)))))
+(def ^{:dynamic true} *context-receiver* [])
 
-(defn context-> [target-fx]
+;;>customized event register
+(defn pass-context-intercept [context]
+  (let [event (get-in context [:coeffects :event])
+        data (get (rest event) :->context)]
+    (if data
+      (reduce (fn [context target-fx]
+                (if (get-in context [:effects target-fx])
+                  (update-in context
+                             [:effects target-fx :->context]
+                             #(merge % data))
+                  context))
+              context
+              *context-receiver*)
+      context)))
+
+(def context->
   (rf/->interceptor
    :id :pass-context
-   :after (pass-context-intercept target-fx)))
+   :after pass-context-intercept))
 
-(defn reg-event-fx [target-fx]
-  (let [pass-context (context-> target-fx)]
-    (fn
-      ([id h] (rf/reg-event-fx id [pass-context] h))
-      ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-context) h)))))
+
+(defn reg-event-fx
+  ([id handler] (rf/reg-event-fx id [context->] handler))
+  ([id interceptor handler] (rf/reg-event-fx id (conj interceptor context->) handler)))
 
 ;;<=====================
 
+(defn reg-fx [id fx-handler]
+  (set! *context-receiver* (conj *context-receiver* id))
+  (rf/reg-fx id fx-handler))
 
-;;>restify events
-
-(def restify-event (reg-event-fx :restify))
-
-(rf/reg-fx :restify restify/restify-fx)
+(reg-fx :restify restify/restify-fx)
 
 ;;<==================

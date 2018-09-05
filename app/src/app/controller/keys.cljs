@@ -3,7 +3,7 @@
    [app.service.keys :as keys]
    [app.coop :as coop]))
 
-(coop/restify-event
+(coop/reg-event-fx
  :rotate-keys
- (fn [cfx [_ [req]]]
-   {:restify {:payload (keys/rotate-keys)}}))
+ (fn [cfx [_ params]]
+   {:restify {:payload (keys/rotate-keys) :->context params}}))

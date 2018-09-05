@@ -9,9 +9,8 @@
 ;;                                                                 "This is an error test.")))
 
 
-(coop/restify-event
+(coop/reg-event-fx
  :t-error
- [(coop/context-> :restify)]
- (fn [cfx [_ [req res]]]
+ (fn [cfx [_ params]]
    #_(println res)
-   {:restify {:error "Ooh no" :status :BAD_REQUEST}}))
+   {:restify {:error "Ooh no" :status :BAD_REQUEST :->context params}}))

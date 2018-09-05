@@ -42,15 +42,15 @@
   (let [spec (apply-defaults spec)
         spec (apply-status spec)
         spec (apply-error-payload spec)
-        {:keys [respond payload status headers next next? send-mode]} spec]
-    (when-not (get spec :error) (oops/ocall+ respond send-mode status payload headers))
-    (next next?)))
+        {:keys [response payload status headers next* next? send-mode]} spec]
+    (when-not (get spec :error) (oops/ocall+ response send-mode status payload headers))
+    (next* next?)))
 
 (defn pass-response-intercept [context]
   (let [[_ [req res next*]] (get-in context [:coeffects :event])
         handler-data (get-in context [:effects :restify])]
     (update-in context [:effects :restify]
-               #(merge {:respond res :next next*} %))))
+               #(merge {:response res :next* next*} %))))
 
 
 (def pass-response

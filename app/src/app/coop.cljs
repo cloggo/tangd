@@ -4,21 +4,15 @@
    [restify.core :as restify]))
 
 
-(defn pass-response-intercept [context]
-  (let [[_ restify-context] (get-in context [:coeffects :event])
-        handler-data (get-in context [:effects :restify])]
-    (update-in context [:effects :restify]
-               #(merge {:restify-context restify-context} %))))
+(defn from-context-intercept [target-fx]
+  (fn [context]
+    (let [[_ from-context] (get-in context [:coeffects :event])]
+      (update-in context [:effects target-fx]
+                 #(merge {:->context from-context} %)))))
 
-
-(def pass-response
+(defn context-> [target-fx]
   (rf/->interceptor
    :id :pass-response
-   :after pass-response-intercept))
-
-
-(defn reg-event-fx
-  ([id h] (rf/reg-event-fx id [pass-response] h))
-  ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-response) h)))
+   :after (from-context-intercept target-fx)))
 
 (rf/reg-fx :restify restify/restify-fx)

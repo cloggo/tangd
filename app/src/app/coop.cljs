@@ -4,6 +4,7 @@
    [restify.core :as restify]))
 
 
+;; customized event register
 (defn pass-context-intercept [target-fx]
   (fn [context]
     (let [[_ from-context] (get-in context [:coeffects :event])]
@@ -21,6 +22,13 @@
       ([id h] (rf/reg-event-fx id [pass-response] h))
       ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-response) h)))))
 
+;;; =====================
+
+
+;; restify events
+
 (def restify-event (reg-event-fx :restify))
 
 (rf/reg-fx :restify restify/restify-fx)
+
+;; ==================

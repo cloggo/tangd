@@ -8,13 +8,14 @@
 
 ;;>customized event register
 (defn pass-context-intercept [context]
-  (let [[_ data] (get-in context [:coeffects :event])]
-    (if data
+  (let [[_ params] (get-in context [:coeffects :event])
+        from-context (get params :->context)]
+    (if from-context
       (reduce (fn [context target-fx]
                 (if (get-in context [:effects target-fx])
                   (update-in context
                              [:effects target-fx :->context]
-                             #(merge % data))
+                             #(merge % from-context))
                   context))
               context
               *context-receiver*)

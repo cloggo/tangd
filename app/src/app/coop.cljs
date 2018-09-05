@@ -9,7 +9,7 @@
 ;;>customized event register
 (defn pass-context-intercept [context]
   (let [event (get-in context [:coeffects :event])
-        data (get (rest event) :->context)]
+        [_ data] event]
     (if data
       (reduce (fn [context target-fx]
                 (if (get-in context [:effects target-fx])

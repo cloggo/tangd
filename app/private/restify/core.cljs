@@ -1,8 +1,7 @@
 (ns restify.core
   (:require
-   [re-frame.core :as rf]
    #_[restify-errors :as errors]
-   [cljs.core]
+   #_[cljs.core]
    [restify.const* :as const]
    [oops.core :as oops]))
 
@@ -30,12 +29,11 @@
 
 (defn create-error [status info]
   (-> (js/Error.)
-      (oops/oset! "!info" err)
+      (oops/oset! "!info" info)
       (oops/oset! "!statusCode" status)))
 
 (defn apply-error-payload [spec]
-  (let [err (get spec :error)
-        headers (:headers spec)]
+  (let [err (get spec :error)]
     (if err (assoc spec :next? (create-error (:status spec) err))
         spec)))
 
@@ -47,22 +45,3 @@
         {:keys [response payload status headers next* next? send-mode]} spec]
     (when-not (get spec :error) (oops/ocall+ response send-mode status payload headers))
     (next* next?)))
-
-(defn pass-response-intercept [context]
-  (let [[_ [req res next*]] (get-in context [:coeffects :event])
-        handler-data (get-in context [:effects :restify])]
-    (update-in context [:effects :restify]
-               #(merge {:response res :next* next*} %))))
-
-
-(def pass-response
-  (rf/->interceptor
-   :id :pass-response
-   :after pass-response-intercept))
-
-
-(defn reg-event-fx
-  ([id h] (rf/reg-event-fx id [pass-response] h))
-  ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-response) h)))
-
-(rf/reg-fx :restify restify-fx)

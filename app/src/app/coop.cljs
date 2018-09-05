@@ -1,7 +1,6 @@
 (ns app.coop
   (:require
-   [re-frame.core :as rf]
-   [restify.core :as restify]))
+   [re-frame.core :as rf]))
 
 
 (def ^{:dynamic true} *context-receiver* [])
@@ -37,6 +36,5 @@
   (set! *context-receiver* (conj *context-receiver* id))
   (rf/reg-fx id fx-handler))
 
-(reg-fx :restify restify/restify-fx)
 
 ;;<==================

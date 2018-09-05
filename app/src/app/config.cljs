@@ -5,6 +5,7 @@
    [jose.jwk-parser :as jwk-parser]
    [restify.core :as restify]
    [sqlite.core :as sqlite]
+   [app.coop :as coop]
    [app.service.schema :as schema]
    [restify.body-parser :as body-parser]
    [restify.transit-formatter :as transit-formatter]))
@@ -36,3 +37,6 @@
 (sqlite/set-db-name! db-name)
 
 (sqlite/init-db schema/init-stmts)
+
+
+(coop/reg-fx :restify restify/restify-fx)

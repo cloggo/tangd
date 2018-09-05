@@ -1,5 +1,6 @@
 (ns restify.core
   (:require
+   [re-frame.core :as rf]
    [restify-errors :as errors]
    [cljs.core]
    [restify.const* :as const]
@@ -16,55 +17,46 @@
 (defn add-response-spec-defaults! [spec]
   (set! *response-spec-defaults* (merge *response-spec-defaults* spec)))
 
-(defn apply-spec [_ res-spec _]
-  {:res-spec (merge *response-spec-defaults* res-spec)})
+(defn apply-defaults [spec]
+  (merge *response-spec-defaults* spec))
 
 
 ;; get status code from status key
 ;; ========
-(defn apply-status [_ res-spec _]
-  (let [{:keys [status]}  res-spec]
-    {:res-spec (assoc res-spec :status (status const/http-status))}))
-
-;; =========
+(defn apply-status [spec]
+  (assoc spec :status ((:status spec) const/http-status)))
 
 ;; =================
 
-;; extract data from restify request object
-;; ========================================
-(defn extractor- [req path]
-  (let [[first & rest] path
-        is-transit? (oops/oget req "?isTransit")
-        extractor (if (and is-transit? (= :body first)) get-in #(oops/oget+ %1 %2))
-        o (oops/oget+ req first)
-        extractor (partial extractor o)]
-    (extractor rest)))
+(defn apply-error-payload [spec]
+  (let [err (get spec :error)
+        headers (:headers spec)]
+    (if err (assoc spec :next? (-> err (js/Error.) (oops/oset! "!statusCode" (:status spec))))
+        spec)))
 
-(defn extract-request [paths _ [req]]
-  (let [extractor (partial extractor- req)
-        data (mapv extractor paths)]
-    {:data data}))
+(defn restify-fx [spec]
+  (let [spec (apply-defaults spec)
+        spec (apply-status spec)
+        spec (apply-error-payload spec)
+        {:keys [respond payload status headers next next? send-mode]} spec]
+    (when-not (get spec :error) (oops/ocall+ respond send-mode status payload headers))
+    (next next?)))
 
-;; ====================
-(defn check-http-error [data] (cljs.core/instance? errors/HttpError data))
+(defn pass-response-intercept [context]
+  (let [[_ [req res next*]] (get-in context [:coeffects :event])
+        handler-data (get-in context [:effects :restify])]
+    (update-in context [:effects :restify]
+               #(merge {:respond res :next next*} %))))
 
-(defn send- [res send-mode next* status data headers next?]
-  (let [http-error? (check-http-error data)
-        next? (if http-error? data next?)]
-    (when-not http-error? (oops/ocall+ res send-mode status data headers)) (next* next?)))
 
-(defn respond [data res-spec dispatch-data]
-  (let [[req res next*] dispatch-data
-        {:keys [status headers next? send-mode]} res-spec]
-    #_(println send-mode)
-    (send- res send-mode next* status data headers next?)))
+(def pass-response
+  (rf/->interceptor
+   :id :pass-response
+   :after pass-response-intercept))
 
-(defn wrap-skip-if-error [f data res-spec dispatch-data]
-  (when-not (check-http-error data) (f data res-spec dispatch-data)))
 
-(defn wrap-fv [w fv] (mapv #(partial w %) fv))
+(defn reg-event-fx
+  ([id h] (rf/reg-event-fx id [pass-response] h))
+  ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-response) h)))
 
-(def pre-callback-fv (wrap-fv wrap-skip-if-error [extract-request]))
-(def post-callback-fv (wrap-fv wrap-skip-if-error [apply-spec apply-status]))
-
-(def registrar-params [respond pre-callback-fv post-callback-fv])
+(rf/reg-fx :restify restify-fx)

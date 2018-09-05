@@ -1,6 +1,6 @@
 (ns app.config
   (:require
-   [registrar.core :as registrar]
+   #_[registrar.core :as registrar]
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
    [restify.core :as restify]
@@ -29,7 +29,7 @@
 
 (restify/add-response-spec-defaults! {:headers response-headers})
 
-(apply registrar/reg-fx :restify restify/registrar-params)
+#_(apply registrar/reg-fx :restify restify/registrar-params)
 
 ;; (sqlite/sqlite-verbose)
 

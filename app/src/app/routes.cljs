@@ -8,5 +8,5 @@
   [#_[ :get "/adv/"  #(registrar/dispatch! :adv* %&) ]
    #_[ :get "/adv/:kid" #(registrar/dispatch! :adv %&) ]
    #_[ :post "/keys/rotate" #(registrar/dispatch! :rotate-keys %&) ]
-   #_[ :get "/t-error/" #(registrar/dispatch! :t-error %&) ]
+   [ :get "/t-error/" #(rf/dispatch [:t-error %&]) ]
    #_[ :post "/rec/:kid" #(registrar/dispatch! :rec %&)]])

@@ -42,6 +42,7 @@
   (let [spec (apply-defaults spec)
         spec (apply-status spec)
         spec (apply-error-payload spec)
-        {:keys [response payload status headers next* next? send-mode]} spec]
-    (when-not (get spec :error) (oops/ocall+ response send-mode status payload headers))
+        {:keys [restify-context payload status headers next? send-mode]} spec
+        [req resp next*] restify-context]
+    (when-not (get spec :error) (oops/ocall+ resp send-mode status payload headers))
     (next* next?)))

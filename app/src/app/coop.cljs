@@ -5,10 +5,10 @@
 
 
 (defn pass-response-intercept [context]
-  (let [[_ [req res next*]] (get-in context [:coeffects :event])
+  (let [[_ restify-context] (get-in context [:coeffects :event])
         handler-data (get-in context [:effects :restify])]
     (update-in context [:effects :restify]
-               #(merge {:response res :next* next*} %))))
+               #(merge {:restify-context restify-context} %))))
 
 
 (def pass-response

@@ -23,7 +23,6 @@
     #_(println (jose/json-dumps (jose/jws-sig payload sig jwks)))
     (jose/jws-sig payload sig jwks)))
 
-
 (defn rotate-keys []
   (let [jwk-es512 (jose/jwk-gen "ES512")
         jwk-ecmr (jose/jwk-gen "ECMR")

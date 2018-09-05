@@ -69,6 +69,17 @@
 (defn stmt-finalize [stmt]
   (oops/ocall stmt :finalize))
 
+
+(defn sqlite-cmd-fx [spec]
+  (let [{:keys [cmd stmt params callback err-handler ->context]} spec
+        ->context (update-in ->context [:db] #(if % % (sqlite/on-db)))
+        db (:db ->context)
+        callback (when callback (fn [result] (callback {:result result :->context ->context})))
+        handlers [callback]
+        handlers (if (and callback err-handler) (conj handlers err-handler) handlers)
+        handlers (remove nil? handlers)
+    (apply (apply on-cmd db stmt params) handlers)))
+
 ;; cmd-wrap2 cmd-wrap1 cmd-wrap0
 ;; cmd-wrap0  => x0  (close database)
 ;; (fn [_] (x0 db)) => w0

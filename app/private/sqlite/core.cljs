@@ -1,10 +1,8 @@
 (ns sqlite.core
   (:require
-   [promesa.core :as p]
    [interop.core :as interop]
    [clojure.string :as string]
    [oops.core :as oops]
-   #_[func.core :as func]
    [sqlite3]))
 
 (def ^{:dynamic true :private true} *db-name* ":memory:")
@@ -50,7 +48,7 @@
    :each each-handler-sig
    :prepare run-handler-sig})
 
-(defn on-cmd* [db cmd stmt & params]
+(defn on-cmd [db cmd stmt & params]
   (let [db-cmd (interop/bind db cmd)]
     (fn cmd-wrap
       ([] (db-cmd stmt (into-array params)
@@ -60,32 +58,13 @@
       ([callback err-handler]
        (db-cmd stmt (into-array params) ((cmd handler-sig) callback err-handler))))))
 
-
-(defn on-cmd [db cmd stmt & params]
-  (p/promise
-   (fn [resolve reject]
-     ((apply on-cmd* db cmd stmt params)
-      (fn [result] (resolve result))
-      (fn [err] (reject err))))))
-
-
-(defn on-cmd-stmt
-  ([stmt cmd]
-   (let [stmt-cmd (interop/bind stmt cmd)]
-     (p/promise
-      (fn [resolve reject]
-        (stmt-cmd (fn [err]
-                    (if err (reject err)
-                        (this-as result (resolve result)))))))))
-
-  ([stmt cmd params]
-   (let [stmt-cmd (interop/bind stmt cmd)]
-     (p/promise
-      (fn [resolve reject]
-        (stmt-cmd (into-array params)
-                  (fn [err]
-                    (if err (reject err)
-                        (this-as result (resolve result))))))))))
+(defn on-cmd-stmt [o-stmt cmd & params]
+   (let [stmt-cmd (interop/bind o-stmt cmd)
+         stmt-cmd (if (empty? params) (apply partial stmt-cmd stmt-cmd (into-array params)))]
+     (defn on-cmd-stmt*
+       ([] (on-cmd-stmt* identity log-error-handler))
+       ([callback] (on-cmd-stmt* callback log-error-handler))
+       ([callback err-handler] (stmt-cmd ((cmd handler-sig) callback err-handler))))))
 
 (defn stmt-finalize [stmt]
   (oops/ocall stmt :finalize))
@@ -108,9 +87,7 @@
 
 (defn init-db [init-stmts]
   (let [db (on-db)
-        cmds (mapv #(on-cmd* db :run %) init-stmts)
+        cmds (mapv #(on-cmd db :run %) init-stmts)
         close-f (partial db-close db)
-        executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)
-        #_executor #_(func/foldr serialize-wrapper (serialize-wrapper close-f) cmds)]
-    #_(println cmd-wrap-vec)
+        executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)]
     (executor)))

@@ -19,8 +19,8 @@
 (defn reg-event-fx [target-fx]
   (let [pass-context (context-> target-fx)]
     (fn
-      ([id h] (rf/reg-event-fx id [pass-response] h))
-      ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-response) h)))))
+      ([id h] (rf/reg-event-fx id [pass-context] h))
+      ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-context) h)))))
 
 ;;<=====================
 

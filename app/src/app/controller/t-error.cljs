@@ -1,6 +1,5 @@
 (ns app.controller.t-error
   (:require
-   [re-frame.core :as rf]
    [app.coop :as coop]
    #_[restify-errors :as errors]
    #_[registrar.core :as registrar]))
@@ -10,7 +9,7 @@
 ;;                                                                 "This is an error test.")))
 
 
-(rf/reg-event-fx
+(coop/restify-event
  :t-error
  [(coop/context-> :restify)]
  (fn [cfx [_ [req res]]]

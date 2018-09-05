@@ -15,4 +15,12 @@
    :id :pass-context
    :after (pass-context-intercept target-fx)))
 
+(defn reg-event-fx [target-fx]
+  (let [pass-context (context-> target-fx)]
+    (fn
+      ([id h] (rf/reg-event-fx id [pass-response] h))
+      ([id interceptor h] (rf/reg-event-fx id (conj interceptor pass-response) h)))))
+
+(def restify-event (reg-event-fx :restify))
+
 (rf/reg-fx :restify restify/restify-fx)

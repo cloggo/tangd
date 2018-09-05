@@ -60,7 +60,7 @@
 
 (defn on-cmd-stmt [o-stmt cmd & params]
    (let [stmt-cmd (interop/bind o-stmt cmd)
-         stmt-cmd (if (empty? params) (apply partial stmt-cmd stmt-cmd (into-array params)))]
+         stmt-cmd (when-not (empty? params) (apply partial stmt-cmd stmt-cmd (into-array params)))]
      (defn on-cmd-stmt*
        ([] (on-cmd-stmt* identity log-error-handler))
        ([callback] (on-cmd-stmt* callback log-error-handler))
@@ -72,11 +72,11 @@
 
 (defn sqlite-cmd-fx [spec]
   (let [{:keys [cmd stmt params callback err-handler ->context]} spec
-        ->context (update-in ->context [:db] #(if % % (on-db)))
+        ->context (update-in ->context [:db] #(or % (on-db)))
         db (:db ->context)
         callback (when callback (fn [result] (callback {:result result :->context ->context})))
-        handlers [callback]
-        handlers (if (and callback err-handler) (conj handlers err-handler) handlers)
+        err-handler (and callback err-handler)
+        handlers [callback err-handler]
         handlers (remove nil? handlers)]
     (apply (apply on-cmd db stmt params) handlers)))
 

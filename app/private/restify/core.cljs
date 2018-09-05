@@ -1,7 +1,7 @@
 (ns restify.core
   (:require
    [re-frame.core :as rf]
-   [restify-errors :as errors]
+   #_[restify-errors :as errors]
    [cljs.core]
    [restify.const* :as const]
    [oops.core :as oops]))
@@ -31,8 +31,12 @@
 (defn apply-error-payload [spec]
   (let [err (get spec :error)
         headers (:headers spec)]
-    (if err (assoc spec :next? (-> err (js/Error.) (oops/oset! "!statusCode" (:status spec))))
+    (if err (assoc spec :next?
+                   (-> (js/Error.)
+                       (oops/oset! "!info" err)
+                       (oops/oset! "!statusCode" (:status spec))))
         spec)))
+
 
 (defn restify-fx [spec]
   (let [spec (apply-defaults spec)

@@ -1,7 +1,7 @@
 (ns app.controller.t-error
   (:require
    [restify.core :as restify]
-   [restify-errors :as errors]
+   #_[restify-errors :as errors]
    #_[registrar.core :as registrar]))
 
 ;; (registrar/reg-evt :t-error :restify #(identity

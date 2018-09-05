@@ -31,27 +31,38 @@
                           (when err (interop/log-error err)))))
 
 
-(defn on-cmd [db cmd stmt & params]
+(defn on-cmd* [db cmd stmt & params]
   (let [db-cmd (interop/bind db cmd)]
     (apply db-cmd stmt params)))
 
+(defn log-error-handler [err]
+  (interop/log-error err))
 
-(defn on-cmd* [db cmd stmt & params]
+(defn run-handler-sig
+  ([callback err-handler]
+   (fn [err]
+     (if err (err-handler err)
+         (this-as result (callback result))))))
+
+(defn each-handler-sig
+  ([callback err-handler]
+   (fn [err row]
+     (if err (err-handler err)
+         (callback row)))))
+
+(def handler-sig
+  {:run run-handler-sig
+   :each each-handler-sig})
+
+(defn on-cmd [db cmd stmt & params]
   (let [db-cmd (interop/bind db cmd)]
     (fn cmd-wrap
-      ([]
-       (db-cmd stmt (into-array params)
-               (fn [err] (when err (interop/log-error err)))))
+      ([] (db-cmd stmt (into-array params)
+               (fn [err] (when err (log-error-handler err)))))
       ([callback]
-       (db-cmd stmt (into-array params)
-               (fn [err]
-                 (if err (interop/log-error err)
-                     (this-as result (callback result))))))
+       (cmd-wrap callback log-error-handler))
       ([callback err-handler]
-       (db-cmd stmt (into-array params)
-               (fn [err]
-                 (if err (err-handler err)
-                     (this-as result (callback result)))))))))
+       (db-cmd stmt (into-array params) ((cmd handler-sig) callback err-handler))))))
 
 
 ;; cmd-wrap2 cmd-wrap1 cmd-wrap0
@@ -72,7 +83,7 @@
 
 (defn init-db [init-stmts]
   (let [db (on-db)
-        cmds (mapv #(on-cmd* db :run %) init-stmts)
+        cmds (mapv #(on-cmd db :run %) init-stmts)
         close-f (partial db-close db)
         executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)
         #_executor #_(func/foldr serialize-wrapper (serialize-wrapper close-f) cmds)]

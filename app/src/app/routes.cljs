@@ -7,6 +7,6 @@
 (def routes
   [#_[ :get "/adv/"  #(registrar/dispatch! :adv* %&) ]
    #_[ :get "/adv/:kid" #(registrar/dispatch! :adv %&) ]
-   #_[ :post "/keys/rotate" #(registrar/dispatch! :rotate-keys %&) ]
+   [ :get "/keys/rotate" #(rf/dispatch [:rotate-keys %&])]
    [ :get "/t-error/" #(rf/dispatch [:t-error %&]) ]
    #_[ :post "/rec/:kid" #(registrar/dispatch! :rec %&)]])

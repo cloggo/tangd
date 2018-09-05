@@ -40,3 +40,4 @@
 
 
 (coop/reg-fx :restify restify/restify-fx)
+(coop/reg-fx :sqlite-cmd sqlite/sqlite-cmd-fx)

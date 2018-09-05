@@ -4,7 +4,7 @@
    [restify.core :as restify]))
 
 
-(defn from-context-intercept [target-fx]
+(defn pass-context-intercept [target-fx]
   (fn [context]
     (let [[_ from-context] (get-in context [:coeffects :event])]
       (update-in context [:effects target-fx]
@@ -12,7 +12,7 @@
 
 (defn context-> [target-fx]
   (rf/->interceptor
-   :id :pass-response
-   :after (from-context-intercept target-fx)))
+   :id :pass-context
+   :after (pass-context-intercept target-fx)))
 
 (rf/reg-fx :restify restify/restify-fx)

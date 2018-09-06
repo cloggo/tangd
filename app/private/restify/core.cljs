@@ -37,12 +37,12 @@
     (if err (assoc spec :next? (create-error (:status spec) err))
         spec)))
 
-
 (defn restify-fx [spec]
-  (let [spec (apply-defaults spec)
+  (let [[spec ->context] spec
+        spec (apply-defaults spec)
         spec (apply-status spec)
         spec (apply-error-payload spec)
-        {:keys [->context payload status headers next? send-mode]} spec
-        [req resp next*] ->context]
+        {:keys [payload status headers next? send-mode]} spec
+        [req resp next*] (:restify ->context)]
     (when-not (get spec :error) (oops/ocall+ resp send-mode status payload headers))
     (next* next?)))

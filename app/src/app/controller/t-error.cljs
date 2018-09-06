@@ -1,8 +1,6 @@
 (ns app.controller.t-error
   (:require
-   [app.coop :as coop]
-   #_[restify-errors :as errors]
-   #_[registrar.core :as registrar]))
+   [app.coop :as coop]))
 
 ;; (registrar/reg-evt :t-error :restify #(identity
 ;;                                        (errors/BadRequestError. #{:info #{:baz "tada"}}
@@ -12,5 +10,6 @@
 (coop/reg-event-fx
  :t-error
  (fn [cfx [_ params]]
-   #_(println res)
-   {:restify {:error "Ooh no" :status :BAD_REQUEST :->context params}}))
+   {:restify [{:error "Ooh no" :status :BAD_REQUEST}
+              ^{:->context true}
+              {:restify params}]}))

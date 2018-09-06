@@ -1,6 +1,7 @@
 (ns app.service.keys
   (:require
    [interop.core :as interop]
+   [app.coop :as coop]
    [oops.core :as oops]
    [jose.core :as jose]
    [app.service.schema :as schema]
@@ -23,10 +24,18 @@
     #_(println (jose/json-dumps (jose/jws-sig payload sig jwks)))
     (jose/jws-sig payload sig jwks)))
 
-(defn rotate-keys []
+
+(defn rotate-keys [cfx [_ params]]
   (let [jwk-es512 (jose/jwk-gen "ES512")
         jwk-ecmr (jose/jwk-gen "ECMR")
         payload (create-payload jwk-es512 jwk-ecmr)
-        jws (create-jws payload jwk-es512)
-        db (sqlite/on-db)]
-    (jose/json-dumps jws)))
+        jws (create-jws payload jwk-es512)]
+    {:dispatch [:insert-jwk-ecmr [{:params [jwk-ecmr]}
+                                  ^{:->context true} {:restify params}]]}))
+
+
+(coop/reg-event-fx
+ :insert-jwk-ecmr
+ (fn [cfx [_ [spec]]]
+   (println "insert-jwk-ecmr: " spec)
+   {:restify [{:payload {:message "hello"} }]}))

@@ -5,17 +5,30 @@
 
 (def ^{:dynamic true} *context-receiver* [])
 
+(defn ->context? [params]
+  (when (vector? params)
+    (let [->context (peek params)
+          ->context-meta (meta ->context)]
+      (when (get ->context-meta :->context) ->context))))
+
+(defn update->context [->context context target-fx]
+  (let [params* (get-in context [:effects target-fx])]
+    (if params*
+      (update-in context [:effects target-fx]
+                 (fn [params**]
+                   (let [->context* (->context? params**)]
+                     (if ->context*
+                       (conj (pop params**) (merge ->context* ->context))
+                       (conj params** ->context)))))
+      context)))
+
 ;;>customized event register
 (defn pass-context-intercept [context]
   (let [[_ params] (get-in context [:coeffects :event])
-        from-context (get params :->context)]
-    (if from-context
+        ->context (->context? params)]
+    (if ->context
       (reduce (fn [context target-fx]
-                (if (get-in context [:effects target-fx])
-                  (update-in context
-                             [:effects target-fx :->context]
-                             #(merge % from-context))
-                  context))
+                (update->context ->context context target-fx))
               context
               *context-receiver*)
       context)))

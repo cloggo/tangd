@@ -36,9 +36,10 @@
                         :compiler {
                                    :main app.core
                                    :closure-defines {goog.DEBUG true}
-                                   :asset-path "target/js/compiled/dev"
+                                   ;; :asset-path "target/js/compiled/dev"
                                    :output-to "target/js/compiled/app.js"
                                    :output-dir "target/js/compiled/dev"
+                                   :source-map true
                                    :target :nodejs
                                    :install-deps true
                                    :npm-deps ~npm-dev
@@ -55,6 +56,7 @@
                                    :output-dir "target/js/compiled/test"
                                    :install-deps true
                                    :npm-deps ~npm-dev
+                                   :source-map true
                                    :target :nodejs
                                    :optimizations :none
                                    :source-map-timestamp true}}
@@ -72,7 +74,7 @@
 
   :profiles {:dev {:dependencies [[figwheel-sidecar "0.5.16"]
                                   [cider/piggieback "0.3.8"]]
-                   :source-paths ["src" "dev"]
+                   :source-paths ["src" "dev" "private"]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                   :host "0.0.0.0"
                                   :server-port 3449

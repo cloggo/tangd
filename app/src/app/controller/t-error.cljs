@@ -2,14 +2,7 @@
   (:require
    [app.coop :as coop]))
 
-;; (registrar/reg-evt :t-error :restify #(identity
-;;                                        (errors/BadRequestError. #{:info #{:baz "tada"}}
-;;                                                                 "This is an error test.")))
-
-
-(coop/reg-event-fx
+(coop/restify-route-event
  :t-error
  (fn [cfx [_ params]]
-   {:restify [{:error "Ooh no" :status :BAD_REQUEST}
-              ^{:->context true}
-              {:restify params}]}))
+   {:restify [{:error "Ooh no" :status :BAD_REQUEST}]}))

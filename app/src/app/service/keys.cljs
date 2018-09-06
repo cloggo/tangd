@@ -30,11 +30,13 @@
         jwk-ecmr (jose/jwk-gen "ECMR")
         payload (create-payload jwk-es512 jwk-ecmr)
         jws (create-jws payload jwk-es512)]
-    {:dispatch [:insert-jwk-ecmr [{:params [jwk-ecmr]}
-                                  ^{:->context true} {:restify params}]]}))
+    #_(println "rotate-keys: params - " params)
+    {:dispatch [:insert-jwk-ecmr [{:params [jwk-ecmr]}]]}))
 
 
 (coop/reg-event-fx
  :insert-jwk-ecmr
  (fn [cfx [_ [spec]]]
+   #_(println "insert-jwk-ecmr: " spec)
+   #_(println (jose/json-dumps ((:params spec) 0)))
    {:restify [{:payload {:message "hello"} }]}))

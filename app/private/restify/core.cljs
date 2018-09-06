@@ -38,6 +38,7 @@
         spec)))
 
 (defn restify-fx [spec]
+  (println "restify-fx: " spec)
   (let [[spec ->context] spec
         spec (apply-defaults spec)
         spec (apply-status spec)

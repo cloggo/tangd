@@ -3,6 +3,6 @@
    [app.service.keys :as keys]
    [app.coop :as coop]))
 
-(coop/reg-event-fx
+(coop/restify-route-event
  :rotate-keys
  keys/rotate-keys)

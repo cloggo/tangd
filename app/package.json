@@ -12,9 +12,9 @@
         "sqlite3": "^4.0.2"
     },
     "devDependencies": {
+        "nodemon": "^1.18.4",
         "source-map-support": "^0.4.15",
         "utf-8-validate": "^5.0.1",
-        "nodemon": "^1.18.0",
         "ws": "^6.0.0"
     }
 }

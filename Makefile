@@ -54,6 +54,9 @@ nrepl:
 start-dev: app/node_modules
 	$(DOCKER_SERVICE_CMD) -e NODE_ENV=dev -p 8081:8080 $(SERVICE_IMAGE) $(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) $(DEV_MAIN_JS)
 
+start-dbg: app/node_modules
+	$(DOCKER_SERVICE_CMD) -e NODE_ENV=dev -p 9229:9229 -p 8082:8080 $(SERVICE_IMAGE) $(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) --inspect-brk=0.0.0.0 $(DEV_MAIN_JS)
+
 .PHONY: start
 
 start: app/node_modules

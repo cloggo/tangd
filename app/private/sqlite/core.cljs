@@ -71,10 +71,11 @@
 
 
 (defn sqlite-cmd-fx [spec]
-  (let [{:keys [cmd stmt params callback err-handler ->context]} spec
+  (let [[spec ->context] spec
+        {:keys [cmd stmt params callback err-handler]} spec
         ->context (update-in ->context [:db] #(or % (on-db)))
         db (:db ->context)
-        callback (when callback (fn [result] (callback {:result result :->context ->context})))
+        callback (when callback (fn [result] (callback [result ->context])))
         err-handler (and callback err-handler)
         handlers [callback err-handler]
         handlers (remove nil? handlers)]

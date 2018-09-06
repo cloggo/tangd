@@ -37,5 +37,4 @@
 (coop/reg-event-fx
  :insert-jwk-ecmr
  (fn [cfx [_ [spec]]]
-   (println "insert-jwk-ecmr: " spec)
    {:restify [{:payload {:message "hello"} }]}))

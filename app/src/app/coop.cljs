@@ -7,11 +7,10 @@
 (def ^{:dynamic true} *context-receiver* [:dispatch])
 
 (defn ->context? [->context]
-  (when ->context
-    (-> ->context
-        (meta)
-        (get :->context)
-        (when ->context))))
+  (-> ->context
+      (meta)
+      (get :->context)
+      (when ->context)))
 
 
 ;;>passing :->context from coeffects to effects

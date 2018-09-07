@@ -7,36 +7,18 @@
 
 (defn ->context? [params]
   (when (vector? params)
-    #_(println "->context? - params: " params)
+    (println "->context? - params: " params)
     (let [->context (peek params)
           ->context-meta (meta ->context)]
-      #_(println "->context? ->context-meta: " ->context-meta)
+      (println "->context? ->context-meta: " ->context-meta)
       (when (get ->context-meta :->context) ->context))))
-
-(defn update->context [->context context target-fx]
-  (let [[v* params*] (get-in context [:effects target-fx])
-        ;; _ #_(println "update->context: target-fx params* " target-fx params*)
-        context*
-        (if params*
-          (update-in context [:effects target-fx]
-                     (fn [[id params**]]
-                       #_(println "id: " id)
-                       (let [->context* (->context? params**)
-                             params**
-                             (if ->context*
-                               (conj (pop params**) (merge ->context* ->context))
-                               (conj params** ->context))]
-                         #_(println "update->context: after params** " params**)
-                         [id params**])))
-          context)]
-    (println "context*:v* effects " v* (get-in context* [:effects]))
-    context*))
 
 ;;>passing :->context from coeffects to effects
 (defn pass-context-intercept [context]
-  (let [[eventID params] (get-in context [:coeffects :event])
+  (let [[eventID & params] (get-in context [:coeffects :event])
+        params (vec params)
         ->context (->context? params)]
-    (println ->context)
+    #_(println ->context)
     (if ->context
       ;; passing :->context to effects
       (reduce (fn [context* target-fx]
@@ -44,6 +26,7 @@
                   (if params*
                     (update-in context* [:effects target-fx]
                                (fn [params*]
+                                 #_(println params)
                                  ;; target fx is in *context-receiver*
                                  (let [->context* (->context? params*)]
                                    (if ->context*
@@ -68,7 +51,7 @@
   (let [[_ params] (get-in context [:coeffects :event])
         context* (update-in context [:coeffects :event]
                             (fn [event]
-                              (conj (pop event) [^{:->context true} {:restify params}])))]
+                              (conj (pop event) ^{:->context true} {:restify params})))]
     #_(println "rci: " context*)
     context*))
 

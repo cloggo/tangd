@@ -5,33 +5,26 @@
 
 (def ^{:dynamic true} *context-receiver* [:dispatch])
 
-(defn ->context? [params]
-  (when (vector? params)
-    (let [->context (peek params)
-          ->context-meta (meta ->context)]
-      (when (get ->context-meta :->context) ->context))))
+(defn ->context? [->context]
+  (when ->context
+    (-> ->context
+        (meta)
+        (get :->context)
+        (when ->context))))
+
 
 ;;>passing :->context from coeffects to effects
 (defn pass-context-intercept [context]
-  (let [[eventID & params] (get-in context [:coeffects :event])
-        params (vec params)
-        ->context (->context? params)]
-    (if ->context
+  (let [->context (peek (get-in context [:coeffects :event]))]
+    (if-let [->context (->context? ->context)]
       ;; passing :->context to effects
       (reduce (fn [context* target-fx]
-                (let [params* (get-in context* [:effects target-fx])]
-                  (if params*
-                    (update-in context* [:effects target-fx]
-                               (fn [params*]
-                                 ;; target fx is in *context-receiver*
-                                 (let [->context* (->context? params*)]
-                                   (if ->context*
-                                     ;; merge with existing context
-                                     (conj (pop params*) (merge ->context* ->context))
-                                     ;; append to end of params
-                                     (conj params* ->context)))))
-                    ;; target fx is not in *context-receiver*
-                    context*)))
+                (if-let [params* (get-in context* [:effects target-fx])]
+                  (assoc-in context* [:effects target-fx]
+                            (if-let [->context* (->context? (peek params*))]
+                              (conj (pop params*) (merge ->context* ->context))
+                              (conj params* ->context)))
+                  context*))
               context
               *context-receiver*)
       ;; coeffects does not contains :->context
@@ -44,10 +37,10 @@
 
 
 (defn restify-context-intercept [context]
-  (let [[_ params] (get-in context [:coeffects :event])
+  (let [[id params] (get-in context [:coeffects :event])
         context* (update-in context [:coeffects :event]
                             (fn [event]
-                              (conj (pop event) ^{:->context true} {:restify params})))]
+                              [id ^{:->context true} {:restify params}]))]
     context*))
 
 (def restify-context->

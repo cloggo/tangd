@@ -1,3 +1,4 @@
+FOREVER_BIN := node_modules/.bin/forever
 NODEMON_BIN := node_modules/.bin/nodemon
 DEV_MAIN_JS := target/js/compiled/app.js
 DEV_TEST_JS := target/js/compiled/test.js

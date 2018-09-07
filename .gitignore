@@ -7,3 +7,4 @@ app/.config
 /.Makefile.swp
 /app/jwk_keys.sqlite3
 /app/index.js.gz
+/app/nohup.out

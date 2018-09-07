@@ -41,11 +41,11 @@
        (when (interop/js-type-name? (first v) "IncomingMessage") v)))
 
 (defn restify-context-intercept [context]
-  (let [event-vec (get-in context [:coeffects :event])
-        event-vec (mapv #(if (restify-route-params? %) ^{:->context true} {:restify %} %)
-                           event-vec)
-        context (assoc-in context [:coeffects :event] event-vec)]
-    context))
+  (-> context
+      (get-in [:coeffects :event])
+      (->>
+       (mapv #(if (restify-route-params? %) ^{:->context true} {:restify %} %))
+       (assoc-in context [:coeffects :event]))))
 
 (def restify-context->
   (rf/->interceptor

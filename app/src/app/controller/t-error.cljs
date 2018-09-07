@@ -4,5 +4,5 @@
 
 (coop/restify-route-event
  :t-error
- (fn [cfx [_ params]]
+ (fn [cfx [params]]
    {:restify [{:error "Ooh no" :status :BAD_REQUEST}]}))

@@ -1,5 +1,6 @@
 (ns app.coop
   (:require
+   [interop.core :as interop]
    [re-frame.core :as rf]))
 
 
@@ -36,12 +37,16 @@
    :after pass-context-intercept))
 
 
+(defn restify-route-params? [v]
+  (and (seq? v)
+       (when (interop/js-type-name? (first v) "IncomingMessage") v)))
+
 (defn restify-context-intercept [context]
-  (let [[id params] (get-in context [:coeffects :event])
-        context* (update-in context [:coeffects :event]
-                            (fn [event]
-                              [id ^{:->context true} {:restify params}]))]
-    context*))
+  (let [event-vec (get-in context [:coeffects :event])
+        event-vec (mapv #(if (restify-route-params? %) ^{:->context true} {:restify %} %)
+                           event-vec)
+        context (assoc-in context [:coeffects :event] event-vec)]
+    context))
 
 (def restify-context->
   (rf/->interceptor
@@ -63,10 +68,10 @@
 
 
 (def reg-event-fx
-  (append-interceptor-event-register context->))
+  (append-interceptor-event-register rf/trim-v context->))
 
 
 (def restify-route-event
-  (append-interceptor-event-register restify-context-> context->))
+  (append-interceptor-event-register rf/trim-v restify-context-> context->))
 
 ;;<==================

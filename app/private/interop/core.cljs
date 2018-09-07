@@ -21,3 +21,7 @@
 
 (defn logf-error [& args]
   (.error js/console (apply gstring/format args)))
+
+(defn js-type-name? [o name]
+  (when (= (oops/oget o "constructor.name") name) o))
+

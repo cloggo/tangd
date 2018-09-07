@@ -24,7 +24,7 @@
     (jose/jws-sig payload sig jwks)))
 
 
-(defn rotate-keys [cfx [_ params]]
+(defn rotate-keys [cfx [params]]
   (let [jwk-es512 (jose/jwk-gen "ES512")
         jwk-ecmr (jose/jwk-gen "ECMR")
         payload (create-payload jwk-es512 jwk-ecmr)
@@ -34,5 +34,5 @@
 
 (coop/reg-event-fx
  :insert-jwk-ecmr
- (fn [cfx [_ spec]]
+ (fn [cfx [spec]]
    {:restify [{:payload {:message "hello"} }]}))

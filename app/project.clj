@@ -14,6 +14,7 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [com.cognitect/transit-cljs "0.8.256"]
+                 [binaryage/devtools "0.9.10"]
                  #_[funcool/promesa "1.9.0"]
                  [re-frame "0.10.6"]
                  [binaryage/oops "0.6.2"]
@@ -42,6 +43,7 @@
                                    :source-map true
                                    :target :nodejs
                                    :install-deps true
+                                   :preloads [devtools.preload]
                                    :npm-deps ~npm-dev
                                    :optimizations :none
                                    :source-map-timestamp true}}
@@ -56,6 +58,7 @@
                                    :output-dir "target/js/compiled/test"
                                    :install-deps true
                                    :npm-deps ~npm-dev
+                                   :preloads [devtools.preload]
                                    :source-map true
                                    :target :nodejs
                                    :optimizations :none

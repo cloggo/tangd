@@ -23,7 +23,6 @@
                   (if params*
                     (update-in context* [:effects target-fx]
                                (fn [params*]
-                                 #_(println params)
                                  ;; target fx is in *context-receiver*
                                  (let [->context* (->context? params*)]
                                    (if ->context*

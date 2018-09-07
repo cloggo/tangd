@@ -7,10 +7,8 @@
 
 (defn ->context? [params]
   (when (vector? params)
-    #_(println "->context? - params: " params)
     (let [->context (peek params)
           ->context-meta (meta ->context)]
-      #_(println "->context? ->context-meta: " ->context-meta)
       (when (get ->context-meta :->context) ->context))))
 
 ;;>passing :->context from coeffects to effects
@@ -18,7 +16,6 @@
   (let [[eventID & params] (get-in context [:coeffects :event])
         params (vec params)
         ->context (->context? params)]
-    #_(println ->context)
     (if ->context
       ;; passing :->context to effects
       (reduce (fn [context* target-fx]
@@ -52,7 +49,6 @@
         context* (update-in context [:coeffects :event]
                             (fn [event]
                               (conj (pop event) ^{:->context true} {:restify params})))]
-    #_(println "rci: " context*)
     context*))
 
 (def restify-context->
@@ -63,7 +59,7 @@
 
 (defn append-interceptor-event-register [& intercept]
   (fn
-    ([id handler] #_(println "append: " (vector? intercept)) (rf/reg-event-fx id intercept handler))
+    ([id handler] (rf/reg-event-fx id intercept handler))
     ([id interceptor handler] (rf/reg-event-fx id (into interceptor intercept) handler))))
 
 ;;<=====================

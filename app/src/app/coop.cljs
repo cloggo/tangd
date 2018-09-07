@@ -7,10 +7,10 @@
 
 (defn ->context? [params]
   (when (vector? params)
-    (println "->context? - params: " params)
+    #_(println "->context? - params: " params)
     (let [->context (peek params)
           ->context-meta (meta ->context)]
-      (println "->context? ->context-meta: " ->context-meta)
+      #_(println "->context? ->context-meta: " ->context-meta)
       (when (get ->context-meta :->context) ->context))))
 
 ;;>passing :->context from coeffects to effects

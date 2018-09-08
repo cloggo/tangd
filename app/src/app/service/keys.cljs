@@ -29,10 +29,12 @@
         jwk-ecmr (jose/jwk-gen "ECMR")
         payload (create-payload jwk-es512 jwk-ecmr)
         jws (create-jws payload jwk-es512)]
-    {:dispatch [:insert-jwk-ecmr {:params [jwk-ecmr]}]}))
+    {:dispatch [:insert-jwk-ecmr jwk-ecmr]}))
+
+(defn insert-jwk [db jwk])
 
 
 (coop/reg-event-fx
  :insert-jwk-ecmr
- (fn [cfx [spec]]
+ (fn [cfx [jwk-ecmr]]
    {:restify [{:payload {:message "hello"} }]}))

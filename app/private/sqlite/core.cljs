@@ -66,6 +66,7 @@
        ([callback] (on-cmd-stmt* callback log-error-handler))
        ([callback err-handler] (stmt-cmd ((cmd handler-sig) callback err-handler))))))
 
+
 (defn stmt-finalize [stmt]
   (oops/ocall stmt :finalize))
 
@@ -80,6 +81,7 @@
         handlers [callback err-handler]
         handlers (remove nil? handlers)]
     (apply (apply on-cmd db stmt params) handlers)))
+
 
 ;; cmd-wrap2 cmd-wrap1 cmd-wrap0
 ;; cmd-wrap0  => x0  (close database)
@@ -97,9 +99,8 @@
 ;; Initializtion
 ;; ===============
 
-(defn init-db [init-stmts]
-  (let [db (on-db)
-        cmds (mapv #(on-cmd db :run %) init-stmts)
+(defn init-db [db init-stmts]
+  (let [cmds (mapv #(on-cmd db :run %) init-stmts)
         close-f (partial db-close db)
         executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)]
     (executor)))

@@ -42,14 +42,7 @@
  :open-sqlite-db
  coop/open-db)
 
-(rf/reg-event-fx
- :init-sqlite-db
- coop/init-db)
-
-
-(rf/dispatch [:open-sqlite-db])
-(rf/dispatch [:init-sqlite-db schema/init-stmts])
-
+(rf/dispatch [:open-sqlite-db schema/init-stmts])
 
 (coop/reg-fx :restify restify/restify-fx)
 (coop/reg-fx :sqlite-cmd sqlite/sqlite-cmd-fx)

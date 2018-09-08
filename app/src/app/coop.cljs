@@ -1,6 +1,7 @@
 (ns app.coop
   (:require
    #_[oops.core :as oops]
+   #_[node-cleanup :as nc]
    [sqlite.core :as sqlite]
    [app.context :as c]
    [interop.core :as interop]
@@ -34,15 +35,12 @@
 ;;> sqlite
 
 ;; to be used with re-frame
-(defn open-db [{:keys [db]}]
+(defn open-db [{:keys [db]} [_ init-stmts]]
   (let [sqlite-db (sqlite/on-db)]
-    ;; close sqlite db when node js exit
-    (.on js/process "exit" (fn [_] (sqlite/db-close sqlite-db)))
+    ;; close sqlite db when node js exit: already done by the library destructor
+    ;; (nc (fn [_ _] (sqlite/db-close sqlite-db)))
+    (sqlite/init-db sqlite-db init-stmts)
     {:db (assoc-in db [:sqlite :db] sqlite-db)}))
-
-(defn init-db [{:keys [db]} [_ init-stmts]]
-  (sqlite/init-db (get-in db [:sqlite :db]) init-stmts)
-  {})
 
 
 ;;<========

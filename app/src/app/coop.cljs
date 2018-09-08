@@ -44,7 +44,7 @@
   (-> context
       (get-in [:coeffects :event])
       (->>
-       (mapv #(if (restify-route-params? %) ^{:->context true} {:restify %} %))
+       (mapv #(if (restify-route-params? %) ^:->context {:restify %} %))
        (assoc-in context [:coeffects :event]))))
 
 (def restify-context->

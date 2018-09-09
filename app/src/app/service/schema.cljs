@@ -54,6 +54,7 @@
 (def insert-thp-jwk "INSERT INTO thp_jwk(thp_id, jwk_id) VALUES(?,?);")
 (def select-all-jwk "SELECT jwk_id, jwk FROM jwk;")
 
+(def drop-jws-table "DROP TABLE IF EXISTS jws;")
 (def clear-jws "DELETE FROM jws;")
 (def vacuum "VACUUM;")
 

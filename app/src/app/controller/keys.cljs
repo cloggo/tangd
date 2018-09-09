@@ -1,5 +1,6 @@
 (ns app.controller.keys
   (:require
+   [clojure.string :as s]
    [jose.core :as jose]
    [app.service.schema :as schema]
    [app.service.keys :as keys]
@@ -10,21 +11,32 @@
  (fn [{:keys [db]} [->context]]
    (let [[es512 ecmr payload jws] (keys/rotate-keys)
          sqlite-context ^:->context {:sqlite {:payload payload
+                                              :default-jwk-ecmr ecmr
                                               :default-jwk-es512 es512
                                               :default-jws jws}}
          ->context (merge ->context sqlite-context)]
-     {:dispatch-n [[:clear-jws ->context]
-                   [:insert-jwk es512 ->context]
+     {:dispatch-n [[:insert-jwk es512 ->context]
                    [:insert-jwk ecmr ->context]
-                   [:insert-all-jws ->context]
-                   [:vacuum ->context]
+                   [:reset-all-jws ->context]
                    [:rotate-keys-response ->context]]})))
+
 
 
 (coop/restify-route-event
  :rotate-keys-response
  (fn [{:keys [db]}]
    {:restify [{:payload {:msg "ok"}}]}))
+
+
+(coop/restify-route-event
+ :reset-all-jws
+ (fn [{:keys [db]}]
+   {:sqlite-cmd [{:db (get-in db [:sqlite :db])
+                  :cmd :run
+                  :stmt (s/join [schema/drop-jws-table
+                                 schema/create-jws-table
+                                 schema/create-jws-jwk-index])
+                  :callback :insert-all-jws}]}))
 
 
 (coop/restify-route-event
@@ -44,23 +56,8 @@
          {:keys [jwk default-jws]} (:sqlite ->context)]
      #_(println ->context)
      {:dispatch-n [[:insert-thp jwk-id jwk ->context]
-                   (when (jose/jwk-prm jwk true "sign")
+                   #_(when (jose/jwk-prm jwk true "sign")
                      [:insert-jws* jwk-id default-jws ->context])]})))
-
-(coop/reg-event-fx
- :clear-jws
- (fn [{:keys [db]}]
-   {:sqlite-cmd [{:db (get-in db [:sqlite :db])
-                  :cmd :run
-                  :stmt schema/clear-jws}]}))
-
-(coop/reg-event-fx
- :vacuum
- (fn [{:keys [db]}]
-   {:sqlite-cmd [{:db (get-in db [:sqlite :db])
-                  :cmd :run
-                  :stmt schema/vacuum}]}))
-
 
 (defn insert-jws** [db jwk-id jws]
   (println "insert-jws**" jwk-id ":" (jose/json-dumps jws))

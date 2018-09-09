@@ -13,3 +13,9 @@
          (recur (f result val) coll))))
    (foldr* v coll)))
 
+
+(defn zip-vector [v]
+  (reduce-kv
+   (fn [arr _ val] [(conj (first arr) (first val)) (conj (second arr) (second val))])
+   [[][]]
+   v))

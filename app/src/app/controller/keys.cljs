@@ -11,14 +11,35 @@
 
 
 (defn restify-handlers [->context]
-  [(fn [sucess] (rf/dispatch [:http-response {:payload {:msg "ok"}} ->context]))
+  [(fn [success] (rf/dispatch [:http-response {:payload {:msg "ok"}} ->context]))
    (fn [err] (rf/dispatch [:http-response {:status :METHOD_FAILURE :error err} ->context]))])
+
+
+(defn insert-jwk [db jwk]
+  (sqlite/on-cmd db :run schema/insert-jwk (jose/json-dumps jwk)))
+
+
+(defn insert-thp-jwk [db jwk-id]
+  (fn [result]
+    (let [thp-id (.-lastID result)]
+      (sqlite/on-cmd db :run schema/insert-thp-jwk thp-id jwk-id))))
+
+
+(defn insert-thp [db jwk]
+  (fn [result]
+    (let [jwk-id (.-lastID result)
+          algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
+          thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
+          thp-id-vec (mapv #(sqlite/on-cmd db :run schema/insert-thp %) thp-vec)]
+      (sqlite/map* (insert-thp-jwk db jwk-id) thp-id-vec))))
 
 
 (defn rotate-keys [db ->context]
   (let [[es512 ecmr payload jws] (keys/rotate-keys)]
-    (-> (sqlite/on-cmd db :run schema/insert-jwk (jose/json-dumps ecmr))
-        ((apply sqlite/then (restify-handlers ->context))))))
+    (->> (insert-jwk db ecmr)
+        ((insert-thp db ecmr))
+        ((apply sqlite/go (restify-handlers ->context))))))
+
 
 (coop/restify-route-event
  :rotate-keys

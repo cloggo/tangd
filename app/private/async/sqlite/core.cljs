@@ -1,6 +1,7 @@
 (ns async.sqlite.core
   #_(:require-macros [cljs.core.async.macros :as m-async :refer [alt!]])
   (:require
+   [func.core :as func]
    [interop.core :as interop]
    [sqlite.core :as q]
    [clojure.core.async :as async :refer [alts!]]))
@@ -34,7 +35,7 @@
        [resolve reject]))))
 
 
-(defn then
+(defn go
   ([f e] (fn [[resolve reject]]
            (async/go
              (async/alt!
@@ -45,3 +46,16 @@
            (async/alt!
              [resolve] ([result] (f result))
              [reject] [resolve reject])))))
+
+(defn map* [f v-ch]
+  (let [ [v-result v-error] (func/zip-vector v-ch)
+        error (async/merge v-error)
+        result (async/map f v-result)]
+    [result error]))
+
+
+(defn merge* [f v-ch]
+  (let [ [v-result v-error] (func/zip-vector v-ch)
+        error (async/merge v-error)
+        result (async/merge v-result)]
+    [result error]))

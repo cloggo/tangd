@@ -20,7 +20,7 @@
                 (if-let [params* (get-in context* [:effects target-fx])]
                   (assoc-in context* [:effects target-fx]
                             (if-let [->context* (->context? (peek params*))]
-                              (conj (pop params*) (merge ->context* ->context))
+                              (conj (pop params*) (merge-with merge ->context* ->context))
                               (conj params* ->context)))
                   context*))
               context

@@ -8,3 +8,4 @@ app/.config
 /app/jwk_keys.sqlite3
 /app/index.js.gz
 /app/nohup.out
+/app/jwk_keys.sqlite3-journal

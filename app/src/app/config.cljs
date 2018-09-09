@@ -11,11 +11,10 @@
    [restify.body-parser :as body-parser]
    [restify.transit-formatter :as transit-formatter]))
 
+;;> restify configurations
 (def app-name "tangd")
 
 (def port 8080)
-
-(def db-name "./jwk_keys.sqlite3")
 
 (def server-options
   #js {:ignoreTrailingSlash true
@@ -31,18 +30,26 @@
 
 (restify/add-response-spec-defaults! {:headers response-headers})
 
-#_(apply registrar/reg-fx :restify restify/registrar-params)
+;;< =====================
 
-;; (sqlite/sqlite-verbose)
 
-(sqlite/set-db-name! db-name)
-
+;;> re-frame registrations
 
 (rf/reg-event-fx
  :open-sqlite-db
  coop/open-db)
 
+(coop/reg-fx :restify restify/restify-fx)
+(coop/reg-fx :sqlite-cmd coop/sqlite-cmd-fx)
+
+;;< =======================
+
+
+;;> sqlite initializations
+
+(def db-name "./jwk_keys.sqlite3")
+
+(sqlite/set-db-name! db-name)
 (rf/dispatch [:open-sqlite-db schema/init-stmts])
 
-(coop/reg-fx :restify restify/restify-fx)
-(coop/reg-fx :sqlite-cmd sqlite/sqlite-cmd-fx)
+;;< ========================

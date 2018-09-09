@@ -43,6 +43,16 @@
     {:db (assoc-in db [:sqlite :db] sqlite-db)}))
 
 
+(defn sqlite-cmd-fx [v]
+  (let [[spec ->context] v]
+    (as-> spec &
+      (get & :callback)
+      (if & (assoc spec
+                   :callback
+                   (fn [result] (rf/dispatch [& result ->context])))
+          spec)
+      (sqlite/cmd-fx &))))
+
 ;;<========
 
 (def reg-fx c/reg-fx)

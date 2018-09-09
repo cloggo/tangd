@@ -71,16 +71,12 @@
   (oops/ocall stmt :finalize))
 
 
-(defn sqlite-cmd-fx [spec]
-  (let [[spec ->context] spec
-        {:keys [cmd stmt params callback err-handler]} spec
-        ->context (update-in ->context [:db] #(or % (on-db)))
-        db (:db ->context)
-        callback (when callback (fn [result] (callback [result ->context])))
+(defn cmd-fx [spec]
+  (let [{:keys [db cmd stmt params callback err-handler]} spec
         err-handler (and callback err-handler)
         handlers [callback err-handler]
         handlers (remove nil? handlers)]
-    (apply (apply on-cmd db stmt params) handlers)))
+    (apply (apply on-cmd db cmd stmt params) handlers)))
 
 
 ;; cmd-wrap2 cmd-wrap1 cmd-wrap0
@@ -101,6 +97,5 @@
 
 (defn init-db [db init-stmts]
   (let [cmds (mapv #(on-cmd db :run %) init-stmts)
-        close-f (partial db-close db)
-        executor (reduce serialize-wrapper (serialize-wrapper close-f) cmds)]
+        executor (reduce serialize-wrapper identity cmds)]
     (executor)))

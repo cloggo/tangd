@@ -30,6 +30,11 @@
 (def restify-route-event
   (c/append-interceptor-event-register rf/trim-v restify-context-> c/context->))
 
+(restify-route-event
+ :http-response
+ (fn [{:keys [db]} [result ->context]]
+   {:restify [result]}))
+
 ;;<========
 
 ;;> sqlite

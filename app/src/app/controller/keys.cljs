@@ -18,16 +18,24 @@
         [success error] (restify-handlers ->context)]
     (go
       (-> (go-try
-           (-> (keys/insert-jwk db ecmr)
+           (-> (keys/begin-transaction db)
+               (<?) ((fn [_](keys/insert-jwk db ecmr)))
                (<?) ((keys/insert-thp db ecmr))
                (<?) ((fn [_] (keys/insert-jwk db es512)))
                (<?) ((keys/insert-thp db es512))
-               (<?) ((fn [_] (keys/reset-jws-table db)))
+               (<?) ((fn [_] (keys/drop-jws-table db)))
+               (<?) ((fn [_] (keys/create-jws-table db)))
+               (<?) ((fn [_] (keys/create-jws-jwk-index db)))
                (<?) ((fn [_] (keys/select-all-jwk db)))
-               #_(#(while true (take! % (keys/insert-jws db payload es512))))
                (#(let [insert-func (keys/insert-jws db payload es512)]
-                   (go-try (while true (insert-func (<? %))))))
-               (#(go-try (if % (success #_(<? %)) (success))))))
+                   (go-try
+                    (loop [doc (<? %)]
+                      (if (number? doc) doc
+                          (do (insert-func doc)
+                              (recur (<? %))))))))
+               (<?) (#(if %
+                        (do (keys/commit-transaction db) (success %))
+                        (do (keys/rollback-transaction db) (success "rollback."))))))
           (<!) error))))
 
 

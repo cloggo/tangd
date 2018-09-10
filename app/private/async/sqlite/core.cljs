@@ -9,7 +9,7 @@
 
 
 (defn create-db-error [err]
-  (interop/create-error (:METHOD_FAILURE const/http-status) err))
+  #_(interop/create-error (:METHOD_FAILURE const/http-status) err) err)
 
 (defn on-cmd** [ch db cmd stmt & params]
   ((apply q/on-cmd db cmd stmt params)

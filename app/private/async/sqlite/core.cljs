@@ -1,6 +1,7 @@
 (ns async.sqlite.core
   #_(:require-macros [cljs.core.async.macros :as m-async :refer [alt!]])
   (:require
+   #_[cljs.core.async.impl.channels :refer [ManyToManyChannel]]
    [func.core :as func]
    [interop.core :as interop]
    [sqlite.core :as q]
@@ -35,17 +36,22 @@
        [resolve reject]))))
 
 
-(defn go
-  ([f e] (fn [[resolve reject]]
-           (async/go
-             (async/alt!
-               [resolve] ([result] (f result))
-               [reject] ([error] (e error))))))
-  ([f] (fn [[resolve reject]]
-         (async/go
-           (async/alt!
-             [resolve] ([result] (f result))
-             [reject] [resolve reject])))))
+(defn go** [f]
+  (fn [c] (if (vector? c) (f c) (async/take! c f) )))
+
+
+(defn go*
+  ([f e] (go** (fn [[resolve reject]]
+                (async/go
+                  (async/alt!
+                    [resolve] ([result] (f result))
+                    [reject] ([error] (e error)))))))
+  ([f] (go** (fn [[resolve reject]]
+              (async/go
+                (async/alt!
+                  [resolve] ([result] (f result))
+                  [reject] [resolve reject]))))))
+
 
 (defn map* [f v-ch]
   (let [ [v-result v-error] (func/zip-vector v-ch)
@@ -54,7 +60,7 @@
     [result error]))
 
 
-(defn merge* [f v-ch]
+(defn any* [f v-ch]
   (let [ [v-result v-error] (func/zip-vector v-ch)
         error (async/merge v-error)
         result (async/merge v-result)]

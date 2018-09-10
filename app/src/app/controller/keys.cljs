@@ -37,8 +37,8 @@
 (defn rotate-keys [db ->context]
   (let [[es512 ecmr payload jws] (keys/rotate-keys)]
     (->> (insert-jwk db ecmr)
-        ((insert-thp db ecmr))
-        ((apply sqlite/go (restify-handlers ->context))))))
+         ((sqlite/go* (insert-thp db ecmr)))
+         ((apply sqlite/go* (restify-handlers ->context))))))
 
 
 (coop/restify-route-event

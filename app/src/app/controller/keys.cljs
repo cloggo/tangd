@@ -1,21 +1,23 @@
 (ns app.controller.keys
   (:require
    [app.coop :as coop]
-   [async-error.core :refer-macros [go-try <? <??] :refer [throw-err]]
+   [async-error.core :refer-macros [go-try <?] :refer [throw-err]]
    [re-frame.core :as rf]
    [clojure.core.async :as async :refer [go take! <!]]
    [app.service.keys :as keys]))
 
 
 (defn restify-handlers [->context]
-  [(fn [success] (rf/dispatch [:http-response {:payload {:msg success}} ->context]))
+  [(fn [success] (rf/dispatch [:http-response {:status :NO_CONTENT} ->context]))
    (fn [err] (if err
-               (rf/dispatch [:http-response {:status :METHOD_FAILURE :error err} ->context])
+               (do (println err)
+                   (rf/dispatch [:http-response {:status :METHOD_FAILURE :error err} ->context])     ) 
                err))])
 
 (defn rotate-keys [db ->context]
   (let [[es512 ecmr payload jws] (get-in ->context [:jose :init-vals])
         [success error] (restify-handlers ->context)]
+    #_(println "rotating keys")
     (go
       (-> (go-try
            (-> (keys/begin-transaction db)

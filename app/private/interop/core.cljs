@@ -25,3 +25,8 @@
 (defn js-type-name? [o name]
   (when (= (oops/oget o "constructor.name") name) o))
 
+(defn create-error [status info]
+  (-> (js/Error.)
+      (oops/oset! "!info" info)
+      (oops/oset! "!statusCode" status)))
+

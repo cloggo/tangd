@@ -1,8 +1,8 @@
 (ns app.controller.keys
   (:require
+   [async-error.core :refer-macros [go-try <?]]
    [re-frame.core :as rf]
-   [async.core :as async]
-   [async.sqlite.core :as sqlite]
+   [clojure.core.async :as async :refer [go <!]]
    [clojure.string :as s]
    [jose.core :as jose]
    [app.service.schema :as schema]
@@ -12,33 +12,24 @@
 
 (defn restify-handlers [->context]
   [(fn [success] (rf/dispatch [:http-response {:payload {:msg "ok"}} ->context]))
-   (fn [err] (rf/dispatch [:http-response {:status :METHOD_FAILURE :error err} ->context]))])
-
-
-(defn insert-jwk [db jwk]
-  (sqlite/on-cmd db :run schema/insert-jwk (jose/json-dumps jwk)))
-
-
-(defn insert-thp-jwk [db jwk-id]
-  (fn [result]
-    (let [thp-id (.-lastID result)]
-      (sqlite/on-cmd db :run schema/insert-thp-jwk thp-id jwk-id))))
-
-
-(defn insert-thp [db jwk]
-  (fn [result]
-    (let [jwk-id (.-lastID result)
-          algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
-          thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
-          thp-id-vec (mapv #(sqlite/on-cmd db :run schema/insert-thp %) thp-vec)]
-      (async/map* (insert-thp-jwk db jwk-id) thp-id-vec))))
+   (fn [err] (when err
+                (rf/dispatch [:http-response {:status :METHOD_FAILURE :error err} ->context])))])
 
 
 (defn rotate-keys [db ->context]
-  (let [[es512 ecmr payload jws] (keys/rotate-keys)]
-    (->> (insert-jwk db ecmr)
-         ((async/go* (insert-thp db ecmr)))
-         ((apply async/go* (restify-handlers ->context))))))
+  (let [[es512 ecmr payload jws] (keys/rotate-keys)
+        [success error] (restify-handlers ->context)]
+    (go
+      (-> (go-try
+           (-> (keys/insert-jwk db ecmr)
+               (<?) ((keys/insert-thp db ecmr))
+               (<?) ((fn [_] (keys/insert-jwk db es512)))
+               (<?) ((keys/insert-thp db es512))
+               (<?) ((fn [_] (keys/reset-jws-table db)))
+               (<?) ((fn [_] (keys/select-all-jwk db)))
+               (<?) ((keys/insert-jws db payload es512))
+               (#(if % (success (<? %)) (success)))))
+          (<!) error))))
 
 
 (coop/restify-route-event

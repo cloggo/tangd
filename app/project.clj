@@ -15,6 +15,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [com.cognitect/transit-cljs "0.8.256"]
                  [org.clojure/core.async "0.4.474"]
+                 [org.clojars.akiel/async-error "0.3"]
                  [binaryage/devtools "0.9.10"]
                  [funcool/promesa "1.9.0"]
                  [re-frame "0.10.6"]

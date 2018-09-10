@@ -2,6 +2,7 @@
   (:require
    #_[restify-errors :as errors]
    #_[cljs.core]
+   [interop.core :as interop]
    [restify.const* :as const]
    [oops.core :as oops]))
 
@@ -27,15 +28,14 @@
 
 ;; =================
 
-(defn create-error [status info]
-  (-> (js/Error.)
-      (oops/oset! "!info" info)
-      (oops/oset! "!statusCode" status)))
-
 (defn apply-error-payload [spec]
-  (let [err (get spec :error)]
-    (if err (assoc spec :next? (create-error (:status spec) err))
-        spec)))
+  (if-let [err (get spec :error)]
+    (assoc spec
+           :next?
+           (if (instance? js/Error err)
+             err
+             (interop/create-error (:status spec) err)))
+    spec))
 
 (defn restify-fx [spec]
   #_(println "restify-fx: " spec)

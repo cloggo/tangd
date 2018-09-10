@@ -1,7 +1,7 @@
 (ns restify.body-parser
   (:require [restify]
             #_[restify-errors :as errors]
-            [restify.core :as my-restify]
+            [interop.core :as interop]
             [restify.const* :as const]
             [restify.transit-parser :as transit-parser]
             ;; [app.lib.fast-json-parser :as json-parser]
@@ -34,7 +34,7 @@
           (oops/oset! req "!_parsedBody" true)
           (if content-parser
             (content-parser req res next)
-            (next (my-restify/create-error
+            (next (interop/create-error
                    (:UNSUPPORTED_MEDIA_TYPE const/http-status)
                    content-type))))))))
 

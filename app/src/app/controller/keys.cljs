@@ -1,17 +1,14 @@
 (ns app.controller.keys
   (:require
+   [app.coop :as coop]
    [async-error.core :refer-macros [go-try <?]]
    [re-frame.core :as rf]
    [clojure.core.async :as async :refer [go <!]]
-   [clojure.string :as s]
-   [jose.core :as jose]
-   [app.service.schema :as schema]
-   [app.service.keys :as keys]
-   [app.coop :as coop]))
+   [app.service.keys :as keys]))
 
 
 (defn restify-handlers [->context]
-  [(fn [success] (rf/dispatch [:http-response {:payload {:msg "ok"}} ->context]))
+  [(fn [success] (rf/dispatch [:http-response {:payload {:msg success}} ->context]))
    (fn [err] (when err
                 (rf/dispatch [:http-response {:status :METHOD_FAILURE :error err} ->context])))])
 

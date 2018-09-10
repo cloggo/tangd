@@ -4,7 +4,6 @@
    #_[cljs.core.async.impl.channels :refer [ManyToManyChannel]]
    [clojure.core.async :as async :refer [put!]]
    [restify.const* :as const]
-   [func.core :as func]
    [interop.core :as interop]
    [sqlite.core :as q]))
 

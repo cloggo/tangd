@@ -67,5 +67,6 @@
       (when (jose/jwk-prm jwk true "sign")
         (let [jwk-id (.-jwk_id result)
               jws (create-jws payload jwk default-es512)]
+          (println (jose/json-dumps jws))
           (sqlite/on-cmd db :run jwk-id (jose/json-dumps jws)))))))
 

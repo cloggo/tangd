@@ -2,15 +2,14 @@
   #_(:require-macros [cljs.core.async.macros :as m-async :refer [alt!]])
   (:require
    #_[cljs.core.async.impl.channels :refer [ManyToManyChannel]]
-   [async.core :as async*]
+   [async.core :as async]
    [func.core :as func]
    [interop.core :as interop]
-   [sqlite.core :as q]
-   [clojure.core.async :as async :refer [alts!]]))
+   [sqlite.core :as q]))
 
 
 (defn on-cmd [db cmd stmt & params]
-  (async*/promise
+  (async/promise
    (fn [resolve reject]
      ((apply q/on-cmd db cmd stmt params)
       (fn [result] (async/put! resolve result))
@@ -22,7 +21,7 @@
   [stmt cmd & params]
   (let [stmt-cmd (interop/bind stmt cmd)
         stmt-cmd (if (empty? params) stmt-cmd (apply partial stmt-cmd params))]
-    (promise
+    (async/promise
      (fn [resolve reject]
        (stmt-cmd
         (fn [err]

@@ -5,6 +5,7 @@
    [func.core :as func]
    [clojure.core.async :as async :refer [alts!]]) )
 
+(def put! async/put!)
 
 (defn promise [f]
   (let [resolve-channel (async/chan)

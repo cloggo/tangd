@@ -2,7 +2,7 @@
   #_(:require-macros [cljs.core.async.macros :as m-async :refer [alt!]])
   (:require
    #_[cljs.core.async.impl.channels :refer [ManyToManyChannel]]
-   [clojure.core.async :as async :refer [put!]]
+   [clojure.core.async :as async]
    [restify.const* :as const]
    [interop.core :as interop]
    [sqlite.core :as q]))
@@ -11,13 +11,23 @@
 (defn create-db-error [err]
   (interop/create-error (:METHOD_FAILURE const/http-status) err))
 
+(defn on-cmd** [ch db cmd stmt & params]
+  ((apply q/on-cmd db cmd stmt params)
+   (fn [result] (async/put! ch result))
+   (fn [err] (throw (create-db-error err)))))
+
 
 (defn on-cmd [db cmd stmt & params]
   (let [ch (async/chan)]
-     ((apply q/on-cmd db cmd stmt params)
-      (fn [result] (async/put! ch result))
-      (fn [err] (throw (create-db-error err))))
-     ch))
+    (apply on-cmd** ch db cmd stmt params)
+    ch))
+
+
+(defn on-cmd* [ch-buf-size]
+  (let [ch (async/chan ch-buf-size)]
+    (fn [db cmd stmt & params]
+      (apply on-cmd** ch db cmd stmt params)
+      ch)))
 
 
 (defn on-cmd-stmt [stmt cmd & params]

@@ -40,7 +40,7 @@
   [(fn [err row]
      (if err (err-handler err)
          (callback row)))
-   (fn [err] (callback false))])
+   (fn [err nrow] (println nrow) (callback false))])
 
 (def handler-sig
   {:run run-handler-sig

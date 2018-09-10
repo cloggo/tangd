@@ -58,15 +58,15 @@
 
 
 (defn select-all-jwk [db]
-  (sqlite/on-cmd db :each schema/select-all-jwk))
+  ((sqlite/on-cmd* 16) db :each schema/select-all-jwk))
 
 
 (defn insert-jws [db payload default-es512]
-  (fn [result]
-    (let [jwk (jose/json-loads (.-jwk result))]
-      (when (jose/jwk-prm jwk true "sign")
-        (let [jwk-id (.-jwk_id result)
-              jws (create-jws payload jwk default-es512)]
-          (println (jose/json-dumps jws))
-          (sqlite/on-cmd db :run jwk-id (jose/json-dumps jws)))))))
-
+    (fn [result]
+      (let [jwk (jose/json-loads (.-jwk result))]
+        (when (jose/jwk-prm jwk true "sign")
+          (let [jwk-id (.-jwk_id result)
+                jws (create-jws payload jwk default-es512)]
+            #_(println (jose/json-dumps jws))
+            #_(println (swap! count inc) result)
+            (sqlite/on-cmd db :run schema/insert-jws jwk-id (jose/json-dumps jws)))))))

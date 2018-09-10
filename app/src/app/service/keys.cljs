@@ -89,3 +89,4 @@
           #_(println (jose/json-dumps jws))
           #_(println (swap! count inc))
           (sqlite/on-cmd db :run schema/insert-jws jwk-id (jose/json-dumps jws)))))))
+

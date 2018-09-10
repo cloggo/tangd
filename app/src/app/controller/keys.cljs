@@ -14,7 +14,7 @@
                err))])
 
 (defn rotate-keys [db ->context]
-  (let [[es512 ecmr payload jws] (keys/rotate-keys)
+  (let [[es512 ecmr payload jws] (get-in ->context [:jose :init-vals])
         [success error] (restify-handlers ->context)]
     (go
       (-> (go-try
@@ -42,6 +42,9 @@
 (coop/restify-route-event
  :rotate-keys
  (fn [{:keys [db]} [->context]]
-   (rotate-keys (get-in db [:sqlite :db]) ->context)
-   {}))
+   (let [init-vals (keys/rotate-keys)
+         ->context (assoc-in ->context [:jose :init-vals] init-vals)
+         [es512 ecmr payload jws] init-vals]
+     (rotate-keys (get-in db [:sqlite :db]) ->context)
+     {:db (assoc-in db [:jose] {:default-jws jws :payload payload})})))
 

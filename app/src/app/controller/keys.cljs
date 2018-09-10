@@ -1,7 +1,7 @@
 (ns app.controller.keys
   (:require
    [re-frame.core :as rf]
-   [clojure.core.async :as async]
+   [async.core :as async]
    [async.sqlite.core :as sqlite]
    [clojure.string :as s]
    [jose.core :as jose]
@@ -31,14 +31,14 @@
           algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
           thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
           thp-id-vec (mapv #(sqlite/on-cmd db :run schema/insert-thp %) thp-vec)]
-      (sqlite/map* (insert-thp-jwk db jwk-id) thp-id-vec))))
+      (async/map* (insert-thp-jwk db jwk-id) thp-id-vec))))
 
 
 (defn rotate-keys [db ->context]
   (let [[es512 ecmr payload jws] (keys/rotate-keys)]
     (->> (insert-jwk db ecmr)
-         ((sqlite/go* (insert-thp db ecmr)))
-         ((apply sqlite/go* (restify-handlers ->context))))))
+         ((async/go* (insert-thp db ecmr)))
+         ((apply async/go* (restify-handlers ->context))))))
 
 
 (coop/restify-route-event

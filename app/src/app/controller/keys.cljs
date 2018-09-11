@@ -33,6 +33,13 @@
                                                       :error "Change not committed."})))))))
 
 
+(defn handle-result [result ->context]
+  (-> (if (instance? js/Error result)
+        {:status :INTERNAL_SERVER_ERROR :error result}
+        result)
+      (#(rf/dispatch [:http-response % ->context]))))
+
+
 (coop/restify-route-event
  :rotate-keys
  (fn [{:keys [db]} [->context]]
@@ -41,7 +48,5 @@
          [es512 ecmr payload jws] init-vals
          sqlite-db (get-in db [:sqlite :db])]
      (go (-> (rotate-keys sqlite-db ->context)
-             (<!) (#(if (instance? js/Error %)
-                      {:status :INTERNAL_SERVER_ERROR :error %} %))
-             (#(rf/dispatch [:http-response % ->context]))))
+             (<!) (handle-result ->context)))
      {:db (assoc-in db [:jose] {:default-jws jws :payload payload})})))

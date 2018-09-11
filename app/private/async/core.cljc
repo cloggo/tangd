@@ -7,6 +7,7 @@
 
 #?(:clj
    (defmacro <?*
+     ;; repeatedly consumes
      ([ch handler]
       `(let [ch# ~ch]
          (async-error.core/go-try
@@ -19,3 +20,10 @@
               result#                  ;; terminating case
               (do (~handler result#) ;; recuring case
                   (recur (async-error.core/<? ch#))))))))))
+
+
+#?(:clj
+   ;; swallow - consumes and then ignores
+   (defmacro <?_
+     [ch f]
+     `((fn [_#] ~f) (async-error.core/<? ~ch))))

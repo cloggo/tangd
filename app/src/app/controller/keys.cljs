@@ -1,7 +1,7 @@
 (ns app.controller.keys
   (:require
    [app.coop :as coop]
-   [async.core :as async* :refer-macros [<?*]]
+   [async.core :as async* :refer-macros [<?* <?_]]
    [async-error.core :refer-macros [go-try <?] :refer [throw-err]]
    [re-frame.core :as rf]
    [clojure.core.async :as async :refer [go take! <!]]
@@ -12,14 +12,14 @@
   (let [[es512 ecmr payload jws] (get-in ->context [:jose :init-vals])]
     (go-try
      (-> (keys/begin-transaction db)
-         (<?) ((fn [_] (keys/insert-jwk db ecmr)))
+         (<?_ (keys/insert-jwk db ecmr))
          (<?) ((keys/insert-thp db ecmr))
-         (<?) ((fn [_] (keys/insert-jwk db es512)))
+         (<?_ (keys/insert-jwk db es512))
          (<?) ((keys/insert-thp db es512))
-         (<?) ((fn [_] (keys/drop-jws-table db)))
-         (<?) ((fn [_] (keys/create-jws-table db)))
-         (<?) ((fn [_] (keys/create-jws-jwk-index db)))
-         (<?) ((fn [_] (keys/select-all-jwk db)))
+         (<?_ (keys/drop-jws-table db))
+         (<?_ (keys/create-jws-table db))
+         (<?_ (keys/create-jws-jwk-index db))
+         (<?_ (keys/select-all-jwk db))
          (<?* number? (keys/insert-jws db payload es512))
          (<?) (#(if %
                   (do (keys/commit-transaction db) {:status :CREATED})

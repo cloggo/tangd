@@ -1,6 +1,7 @@
 (ns restify.body-parser
   (:require [restify]
             #_[restify-errors :as errors]
+            [restify.core :as restify*]
             [interop.core :as interop]
             [restify.const* :as const]
             [restify.transit-parser :as transit-parser]
@@ -34,8 +35,8 @@
           (oops/oset! req "!_parsedBody" true)
           (if content-parser
             (content-parser req res next)
-            (next (interop/create-error
-                   (:UNSUPPORTED_MEDIA_TYPE const/http-status)
+            (next (restify*/create-error
+                   :UNSUPPORTED_MEDIA_TYPE
                    content-type))))))))
 
 (defn body-parser

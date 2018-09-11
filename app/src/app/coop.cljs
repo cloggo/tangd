@@ -50,13 +50,11 @@
 
 (defn sqlite-cmd-fx [v]
   (let [[spec ->context] v]
-    (as-> spec &
-      (get & :callback)
-      (if & (assoc spec
-                   :callback
-                   (fn [result] (rf/dispatch [& result ->context])))
-          spec)
-      (sqlite/cmd-fx &))))
+    (-> (get spec :callback)
+        (#(if % (assoc spec
+                       :callback
+                       (fn [result] (rf/dispatch [% result ->context]))) spec))
+        (sqlite/cmd-fx))))
 
 ;;<========
 

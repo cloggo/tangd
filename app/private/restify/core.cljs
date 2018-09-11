@@ -43,13 +43,20 @@
              (create-error (:status spec) err)))
     spec))
 
-(defn restify-fx [spec]
-  #_(println "restify-fx: " spec)
+
+(defn restify-fx* [spec]
+  "designed for re-frame"
   (let [[spec ->context] spec
-        spec (apply-defaults spec)
+        ->context (:restify ->context)]
+    (restify-fx spec ->context)))
+
+
+(defn restify-fx [spec ->context]
+  #_(println "restify-fx: " spec)
+  (let [spec (apply-defaults spec)
         spec (apply-error-payload spec)
         spec (apply-status spec)
         {:keys [error payload status headers next? send-mode]} spec
-        [req resp next*] (:restify ->context)]
+        [req resp next*] ->context]
     (when-not error (oops/ocall+ resp send-mode status payload headers))
     (next* next?)))

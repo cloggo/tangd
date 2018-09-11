@@ -39,7 +39,7 @@
  :open-sqlite-db
  coop/open-db)
 
-(coop/reg-fx :restify restify/restify-fx)
+(coop/reg-fx :restify restify/restify-fx*)
 (coop/reg-fx :sqlite-cmd coop/sqlite-cmd-fx)
 
 ;;< =======================
@@ -50,6 +50,7 @@
 (def db-name "./jwk_keys.sqlite3")
 
 (sqlite/set-db-name! db-name)
-(rf/dispatch [:open-sqlite-db schema/init-stmts])
+;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
+(sqlite/init-db (sqlite/on-db) schema/init-stmts)
 
 ;;< ========================

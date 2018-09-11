@@ -14,13 +14,22 @@
 
 (defn set-db-name! [name] (set! *db-name* name))
 
-(defn on-db
-  ([] (on-db *db-name*))
+(def ^:dynamic *db* nil)
+
+
+(defn on-db*
+  ([] (on-db* *db-name*))
   ([db-name]
    (sqlite3/Database.
     db-name
     (fn [err]
       (when err (interop/log-error err))))))
+
+
+(defn on-db
+  ([name] (or *db* (set! *db* (on-db* name)) *db*))
+  ([] (on-db *db-name*)))
+  
 
 
 (defn db-close [db]

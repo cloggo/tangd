@@ -11,11 +11,16 @@
      "predicate? if fail return true"
      [db params & body]
      (let [[commit-handler rollback-handler predicate?] params
-           predicate? (or predicate? 'identity)]
+           rollback-handler (or rollback-handler
+                                `(fn [err#]
+                                   {:status :INTERNAL_SERVER_ERROR
+                                             :error (async.core/append-error-message
+                                                     err# " [Change not committed.]")}))
+           predicate? (or predicate? `async.core/error?)]
        `(async-error.core/go-try
          (-> (async.sqlite.core/begin-transaction ~db)
              (async.core/<?_ ~@body)
-             (async-error.core/<?)
+             (clojure.core.async/<!)
              (#(if (~predicate? %)
                  (do (async.sqlite.core/rollback-transaction ~db)
                      (~rollback-handler %))

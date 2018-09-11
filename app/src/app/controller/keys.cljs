@@ -13,10 +13,7 @@
 (defn rotate-keys [db init-vals]
   (let [[es512 ecmr payload jws] init-vals]
     (sqlite*/transaction
-     db [(fn [_] {:status :CREATED})
-         (fn [_] {:status :INTERNAL_SERVER_ERROR
-                  :error "Change not committed."})
-         async*/error?]
+     db [(fn [_] {:status :CREATED})]
      (go-try
       (-> (keys/insert-jwk db ecmr)
           (<?) ((keys/insert-thp db ecmr))
@@ -34,7 +31,7 @@
         [es512 ecmr payload jws] init-vals
         sqlite-db (sqlite/on-db)]
     (go-try (-> (<?_ ch (rotate-keys sqlite-db init-vals))
-                (<?) (sqlite*/handle-db-result)))))
+                (<!) (sqlite*/handle-db-result)))))
 
 
 (def handler (restify/handle-route restify-route-event))

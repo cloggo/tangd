@@ -1,6 +1,8 @@
 (ns async.core
   #?(:clj
      (:require
+      [clojure.string]
+      [oops.core]
       [async-error.core]
       [clojure.core.async])))
 
@@ -27,7 +29,6 @@
      "like <? but swallow data by wrapping the body inside a function"
      [ch & body]
      `((fn [_#] ~@body) (async-error.core/<? ~ch))))
-
 
 #?(:clj
    (defmacro error? [v]

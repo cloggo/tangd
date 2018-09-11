@@ -12,7 +12,7 @@
 (defn on-cmd** [ch db cmd stmt & params]
   ((apply q/on-cmd db cmd stmt params)
    (fn [result] (async/put! ch result))
-   (fn [err] (throw err))))
+   (fn [err] (async/put! ch err))))
 
 
 (defn on-cmd [db cmd stmt & params]
@@ -33,7 +33,7 @@
         stmt-cmd (interop/bind stmt cmd)
         stmt-cmd (if (empty? params) stmt-cmd (apply partial stmt-cmd params))]
     (stmt-cmd (fn [err]
-                (if err (throw err)
+                (if err (async/put! ch err)
                     (this-as result (async/put! ch result)))))
     ch))
 

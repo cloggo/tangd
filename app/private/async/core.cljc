@@ -7,7 +7,7 @@
 
 #?(:clj
    (defmacro <?*
-     ;; repeatedly consumes
+     "repeatedly consumes"
      ([ch handler]
       `(let [ch# ~ch]
          (async-error.core/go-try
@@ -23,7 +23,7 @@
 
 
 #?(:clj
-   ;; swallow - consumes and then ignores
    (defmacro <?_
-     [ch f]
-     `((fn [_#] ~f) (async-error.core/<? ~ch))))
+     "like <? but swallow data by wrapping the body inside a function"
+     [ch & body]
+     `((fn [_#] ~@body) (async-error.core/<? ~ch))))

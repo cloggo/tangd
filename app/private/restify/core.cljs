@@ -26,6 +26,12 @@
 (defn apply-status [spec]
   (assoc spec :status ((:status spec) const/http-status)))
 
+
+(defn create-error [status info]
+  (-> (js/Error.)
+      (oops/oset! "!info" info)
+      (oops/oset! "!statusCode" (status const/http-status))))
+
 ;; =================
 
 (defn apply-error-payload [spec]
@@ -34,15 +40,15 @@
            :next?
            (if (instance? js/Error err)
              err
-             (interop/create-error (:status spec) err)))
+             (create-error (:status spec) err)))
     spec))
 
 (defn restify-fx [spec]
   #_(println "restify-fx: " spec)
   (let [[spec ->context] spec
         spec (apply-defaults spec)
-        spec (apply-status spec)
         spec (apply-error-payload spec)
+        spec (apply-status spec)
         {:keys [error payload status headers next? send-mode]} spec
         [req resp next*] (:restify ->context)]
     (when-not error (oops/ocall+ resp send-mode status payload headers))

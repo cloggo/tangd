@@ -67,15 +67,6 @@
 (defn create-jws-jwk-index [db]
   (sqlite/on-cmd db :run schema/create-jws-jwk-index))
 
-
-#_(defn reset-jws-table [db]
-  (sqlite/on-cmd db :run
-                 (s/join [schema/begin-transaction
-                          schema/drop-jws-table
-                          schema/create-jws-table
-                          schema/create-jws-jwk-index
-                          schema/commit-transaction])))
-
 (defn select-all-jwk [db]
   ((sqlite/on-cmd* 16) db :each schema/select-all-jwk))
 

@@ -7,17 +7,8 @@
    [app.service.keys :as keys]))
 
 
-(defn restify-handlers [->context]
-  [(fn [success] (rf/dispatch [:http-response {:status :NO_CONTENT} ->context]))
-   (fn [err] (if err
-               (do (println err)
-                   (rf/dispatch [:http-response
-                                 {:status :METHOD_FAILURE :error err} ->context]))
-               err))])
-
 (defn rotate-keys [db ->context]
-  (let [[es512 ecmr payload jws] (get-in ->context [:jose :init-vals])
-        [success error] (restify-handlers ->context)]
+  (let [[es512 ecmr payload jws] (get-in ->context [:jose :init-vals])]
     #_(println "rotating keys")
     (go-try
      (-> (keys/begin-transaction db)
@@ -36,11 +27,10 @@
                     (do (insert-func doc)
                         (recur (<? %))))))))
          (<?) (#(if %
-                  (do (keys/commit-transaction db) (success %))
-                  (do (keys/rollback-transaction db) (success "rollback."))))))))
+                  (do (keys/commit-transaction db) {:status :CREATED})
+                  (do (keys/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR
+                                                      :error "Change not committed."})))))))
 
-
-(defn try-response [fn & params])
 
 (coop/restify-route-event
  :rotate-keys
@@ -48,9 +38,9 @@
    (let [init-vals (keys/rotate-keys)
          ->context (assoc-in ->context [:jose :init-vals] init-vals)
          [es512 ecmr payload jws] init-vals
-         [success error] (restify-handlers ->context)
          sqlite-db (get-in db [:sqlite :db])]
      (go (-> (rotate-keys sqlite-db ->context)
-             (<!) error))
+             (<!) (#(if (instance? js/Error %)
+                      {:status :INTERNAL_SERVER_ERROR :error %} %))
+             (#(rf/dispatch [:http-response % ->context]))))
      {:db (assoc-in db [:jose] {:default-jws jws :payload payload})})))
-

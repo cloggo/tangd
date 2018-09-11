@@ -8,13 +8,10 @@
    [sqlite.core :as q]))
 
 
-(defn create-db-error [err]
-  #_(interop/create-error (:METHOD_FAILURE const/http-status) err) err)
-
 (defn on-cmd** [ch db cmd stmt & params]
   ((apply q/on-cmd db cmd stmt params)
    (fn [result] (async/put! ch result))
-   (fn [err] (throw (create-db-error err)))))
+   (fn [err] (throw err))))
 
 
 (defn on-cmd [db cmd stmt & params]
@@ -35,7 +32,7 @@
         stmt-cmd (interop/bind stmt cmd)
         stmt-cmd (if (empty? params) stmt-cmd (apply partial stmt-cmd params))]
     (stmt-cmd (fn [err]
-                (if err (throw (create-db-error err))
+                (if err (throw err)
                     (this-as result (async/put! ch result)))))
     ch))
 

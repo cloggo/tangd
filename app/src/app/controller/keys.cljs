@@ -20,9 +20,8 @@
          (<?) ((fn [_] (keys/drop-jws-table db)))
          (<?) ((fn [_] (keys/create-jws-table db)))
          (<?) ((fn [_] (keys/create-jws-jwk-index db)))
-         #_(<?) #_((fn [_] (keys/commit-transaction db)))
          (<?) ((fn [_] (keys/select-all-jwk db)))
-         ((async*/async-stream number? (keys/insert-jws db payload es512)))
+         (async*/async-stream number? (keys/insert-jws db payload es512))
          (<?) (#(if %
                   (do (keys/commit-transaction db) {:status :CREATED})
                   (do (keys/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR

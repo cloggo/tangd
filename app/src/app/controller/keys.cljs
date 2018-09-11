@@ -10,7 +10,6 @@
 
 (defn rotate-keys [db ->context]
   (let [[es512 ecmr payload jws] (get-in ->context [:jose :init-vals])]
-    #_(println "rotating keys")
     (go-try
      (-> (keys/begin-transaction db)
          (<?) ((fn [_] (keys/insert-jwk db ecmr)))

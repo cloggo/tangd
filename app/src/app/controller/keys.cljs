@@ -1,7 +1,7 @@
 (ns app.controller.keys
   (:require
    [app.coop :as coop]
-   [async.core :as async* :refer-macros [go-try-loop]]
+   [async.core :as async* :refer-macros [async-stream]]
    [async-error.core :refer-macros [go-try <?] :refer [throw-err]]
    [re-frame.core :as rf]
    [clojure.core.async :as async :refer [go take! <!]]
@@ -13,16 +13,16 @@
     #_(println "rotating keys")
     (go-try
      (-> (keys/begin-transaction db)
-         (<?) ((fn [_](keys/insert-jwk db ecmr)))
+         (<?) ((fn [_] (keys/insert-jwk db ecmr)))
          (<?) ((keys/insert-thp db ecmr))
          (<?) ((fn [_] (keys/insert-jwk db es512)))
          (<?) ((keys/insert-thp db es512))
          (<?) ((fn [_] (keys/drop-jws-table db)))
          (<?) ((fn [_] (keys/create-jws-table db)))
          (<?) ((fn [_] (keys/create-jws-jwk-index db)))
+         #_(<?) #_((fn [_] (keys/commit-transaction db)))
          (<?) ((fn [_] (keys/select-all-jwk db)))
-         (#(let [insert-func (keys/insert-jws db payload es512)]
-             (go-try-loop number? % insert-func)))
+         ((async*/async-stream number? (keys/insert-jws db payload es512)))
          (<?) (#(if %
                   (do (keys/commit-transaction db) {:status :CREATED})
                   (do (keys/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR

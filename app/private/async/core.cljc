@@ -6,11 +6,12 @@
 
 
 #?(:clj
-   (defmacro go-try-loop
-     [predicate? ch handler]
-     `(async-error.core/go-try
-      (loop [result# (async-error.core/<? ~ch)]
-        (if (~predicate? result#)       ;; terminating predicate: number?
-          result#                  ;; terminating case
-          (do (~handler result#) ;; recuring case
-              (recur (async-error.core/<? ~ch))))))))
+   (defmacro async-stream
+     [predicate? handler]
+     `(fn [ch#]
+       (async-error.core/go-try
+        (loop [result# (async-error.core/<? ch#)]
+          (if (~predicate? result#)       ;; terminating predicate: number?
+            result#                  ;; terminating case
+            (do (~handler result#) ;; recuring case
+                (recur (async-error.core/<? ch#)))))))))

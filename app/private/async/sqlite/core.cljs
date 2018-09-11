@@ -36,3 +36,13 @@
                     (this-as result (async/put! ch result)))))
     ch))
 
+
+(defn begin-transaction [db]
+  (on-cmd db :run "BEGIN TRANSACTION;"))
+
+(defn commit-transaction [db]
+  (on-cmd db :run "COMMIT;"))
+
+(defn rollback-transaction [db]
+  (on-cmd db :run "ROLLBACK;"))
+

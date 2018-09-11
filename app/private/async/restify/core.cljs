@@ -6,9 +6,13 @@
 
 
 (defn handle-route [handler]
+  "Forcing handler to use async because we are expecting the handler to return
+   a channel: this is purposely enforced so that async database access will be
+   completed before we respond with restify"
   (let [ch (async/chan)]
     (fn [& restify-context]
       (async/put! ch restify-context)
+
       (async/go
         (-> (handler ch)
             (<!) (restify/restify-fx restify-context))))))

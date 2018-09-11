@@ -58,9 +58,6 @@
 (def clear-jws "DELETE FROM jws;")
 (def vacuum "VACUUM;")
 
-(def begin-transaction "BEGIN TRANSACTION;")
-(def commit-transaction "COMMIT;")
-(def rollback-transaction "ROLLBACK;")
 
 ;;; for fold right
 ;; (def init-stmts [create-jwk-table create-thp-table create-jws-table create-thp-jwk-table

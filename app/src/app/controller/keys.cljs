@@ -2,6 +2,7 @@
   (:require
    [async.restify.core :as restify]
    [sqlite.core :as sqlite]
+   [async.sqlite.core :as sqlite*]
    [app.coop :as coop]
    [async.core :as async* :refer-macros [<?* <?_]]
    [async-error.core :refer-macros [go-try <?] :refer [throw-err]]
@@ -13,7 +14,7 @@
 (defn rotate-keys [db init-vals]
   (let [[es512 ecmr payload jws] init-vals]
     (go-try
-     (-> (keys/begin-transaction db)
+     (-> (sqlite*/begin-transaction db)
          (<?_ (keys/insert-jwk db ecmr))
          (<?) ((keys/insert-thp db ecmr))
          (<?_ (keys/insert-jwk db es512))
@@ -24,8 +25,8 @@
          (<?_ (keys/select-all-jwk db))
          (<?* number? (keys/insert-jws db payload es512))
          (<?) (#(if %
-                  (do (keys/commit-transaction db) {:status :CREATED})
-                  (do (keys/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR
+                  (do (sqlite*/commit-transaction db) {:status :CREATED})
+                  (do (sqlite*/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR
                                                       :error "Change not committed."})))))))
 
 
@@ -44,15 +45,3 @@
 
 
 (def handler (restify/handle-route restify-route-event))
-
-
-;; (coop/restify-route-event
-;;  :rotate-keys
-;;  (fn [{:keys [db]} [->context]]
-;;    (let [init-vals (keys/rotate-keys)
-;;          ->context (assoc-in ->context [:jose :init-vals] init-vals)
-;;          [es512 ecmr payload jws] init-vals
-;;          sqlite-db (get-in db [:sqlite :db])]
-;;      (go (-> (rotate-keys sqlite-db ->context)
-;;              (<!) (handle-db-result ->context)))
-;;      {:db (assoc-in db [:jose] {:default-jws jws :payload payload})})))

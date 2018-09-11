@@ -49,15 +49,6 @@
       #_(println thp-id-vec)
       (async/map (insert-thp-jwk db jwk-id) thp-id-vec))))
 
-(defn begin-transaction [db]
-  (sqlite/on-cmd db :run schema/begin-transaction))
-
-(defn commit-transaction [db]
-  (sqlite/on-cmd db :run schema/commit-transaction))
-
-(defn rollback-transaction [db]
-  (sqlite/on-cmd db :run schema/rollback-transaction))
-
 (defn drop-jws-table [db]
   (sqlite/on-cmd db :run schema/drop-jws-table))
 

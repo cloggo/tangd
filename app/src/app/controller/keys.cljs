@@ -23,9 +23,10 @@
          (#(let [insert-func (keys/insert-jws db payload es512)]
              (go-try
               (loop [doc (<? %)]
-                (if (number? doc) doc
-                    (do (insert-func doc)
-                        (recur (<? %))))))))
+                (if (number? doc)       ;; terminating predicate: number?
+                  doc                   ;; terminating case
+                  (do (insert-func doc) ;; recuring case
+                      (recur (<? %))))))))
          (<?) (#(if %
                   (do (keys/commit-transaction db) {:status :CREATED})
                   (do (keys/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR

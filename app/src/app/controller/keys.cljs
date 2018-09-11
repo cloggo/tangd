@@ -29,18 +29,12 @@
           (<?* number? (keys/insert-jws db payload es512)))))))
 
 
-(defn handle-db-result [result]
-  (if (async*/error? result)
-    {:status :INTERNAL_SERVER_ERROR :error result}
-    result))
-
-
 (defn restify-route-event [ch]
   (let [init-vals (keys/rotate-keys)
         [es512 ecmr payload jws] init-vals
         sqlite-db (sqlite/on-db)]
     (go-try (-> (<?_ ch (rotate-keys sqlite-db init-vals))
-                (<?) (handle-db-result)))))
+                (<?) (sqlite*/handle-db-result)))))
 
 
 (def handler (restify/handle-route restify-route-event))

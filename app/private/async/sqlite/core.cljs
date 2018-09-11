@@ -2,6 +2,7 @@
   #_(:require-macros [cljs.core.async.macros :as m-async :refer [alt!]])
   (:require
    #_[cljs.core.async.impl.channels :refer [ManyToManyChannel]]
+   [async.core :as async*]
    [clojure.core.async :as async]
    [restify.const* :as const]
    [interop.core :as interop]
@@ -45,4 +46,10 @@
 
 (defn rollback-transaction [db]
   (on-cmd db :run "ROLLBACK;"))
+
+
+(defn handle-db-result [result]
+  (if (async*/error? result)
+    {:status :INTERNAL_SERVER_ERROR :error result}
+    result))
 

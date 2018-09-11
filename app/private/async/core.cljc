@@ -6,7 +6,7 @@
 
 
 #?(:clj
-   (defmacro async-stream
+   (defmacro <?*
      ([ch handler]
       `(let [ch# ~ch]
          (async-error.core/go-try

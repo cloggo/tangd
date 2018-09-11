@@ -1,7 +1,7 @@
 (ns app.controller.keys
   (:require
    [app.coop :as coop]
-   [async.core :as async* :refer-macros [async-stream]]
+   [async.core :as async* :refer-macros [<?*]]
    [async-error.core :refer-macros [go-try <?] :refer [throw-err]]
    [re-frame.core :as rf]
    [clojure.core.async :as async :refer [go take! <!]]
@@ -20,7 +20,7 @@
          (<?) ((fn [_] (keys/create-jws-table db)))
          (<?) ((fn [_] (keys/create-jws-jwk-index db)))
          (<?) ((fn [_] (keys/select-all-jwk db)))
-         (async*/async-stream number? (keys/insert-jws db payload es512))
+         (<?* number? (keys/insert-jws db payload es512))
          (<?) (#(if %
                   (do (keys/commit-transaction db) {:status :CREATED})
                   (do (keys/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR

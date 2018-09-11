@@ -1,6 +1,7 @@
 (ns app.controller.keys
   (:require
    [app.coop :as coop]
+   [async.core :as async* :refer-macros [go-try-loop]]
    [async-error.core :refer-macros [go-try <?] :refer [throw-err]]
    [re-frame.core :as rf]
    [clojure.core.async :as async :refer [go take! <!]]
@@ -21,12 +22,7 @@
          (<?) ((fn [_] (keys/create-jws-jwk-index db)))
          (<?) ((fn [_] (keys/select-all-jwk db)))
          (#(let [insert-func (keys/insert-jws db payload es512)]
-             (go-try
-              (loop [doc (<? %)]
-                (if (number? doc)       ;; terminating predicate: number?
-                  doc                   ;; terminating case
-                  (do (insert-func doc) ;; recuring case
-                      (recur (<? %))))))))
+             (go-try-loop number? % insert-func)))
          (<?) (#(if %
                   (do (keys/commit-transaction db) {:status :CREATED})
                   (do (keys/rollback-transaction db) {:status :INTERNAL_SERVER_ERROR

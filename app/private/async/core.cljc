@@ -27,3 +27,13 @@
      "like <? but swallow data by wrapping the body inside a function"
      [ch & body]
      `((fn [_#] ~@body) (async-error.core/<? ~ch))))
+
+
+#?(:clj
+   (defmacro error? [v]
+     `(instance? js/Error ~v)))
+
+
+#?(:clj
+   (defmacro not-error? [v]
+     `(not (instance? js/Error ~v))))

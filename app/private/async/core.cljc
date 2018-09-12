@@ -110,6 +110,9 @@
    (defmacro go-loop [& args] `(when-cljs (cljs.core.async/go-loop ~@args))))
 
 #?(:clj
+   (defmacro unsub [& args] `(when-cljs (cljs.core.async/unsub ~@args))))
+
+#?(:clj
    (defmacro sub [& args] `(when-cljs (cljs.core.async/sub ~@args))))
 
 #?(:clj

@@ -16,38 +16,48 @@
 
 ;;> restify configurations
 
+(def app-name "tangd")
+
+(def db-name "./jwk_keys.sqlite3")
+
+(def port 8080)
+
+(def response-headers #js {:content-type "application/transit+json"})
+
+(def formatters
+  (js-obj "application/transit+json"
+          transit-formatter/transit-format
+          "application/jwk+json"
+          jwk-formatter/jwk-format))
+
+(def server-options
+  #js {:ignoreTrailingSlash true
+       :name app-name
+       :formatters formatters})
+
+;;< ==============================
+
+(def config
+  {:options server-options
+   :port port
+   :parser (body-parser/body-parser #js {:mapParams false})
+   :routes routes/routes})
+
+
 (defn init-restify []
   (body-parser/add-parser! {"application/jwk+json" (fn [_] jwk-parser/jwk-parser)})
-
-  (def response-headers #js {:content-type "application/transit+json"})
 
   (restify*/add-response-spec-defaults! {:headers response-headers}))
 
 ;;> sqlite initializations
 
 (defn init-sqlite []
-  (def db-name "./jwk_keys.sqlite3")
   (sqlite/set-db-name! db-name)
   ;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
   (sqlite/init-db (sqlite/on-db) schema/init-stmts)
   (keys/rotate-keys))
 
 ;;< ========================
-
-(def server-options
-  #js {:ignoreTrailingSlash true
-       :name "tangd"
-       :formatters (js-obj "application/transit+json"
-                           transit-formatter/transit-format
-                           "application/jwk+json"
-                           jwk-formatter/jwk-format)})
-
-
-(def config
-  {:options server-options
-   :port 8080
-   :parser (body-parser/body-parser #js {:mapParams false})
-   :routes routes/routes})
 
 
 (defn start-server [config]

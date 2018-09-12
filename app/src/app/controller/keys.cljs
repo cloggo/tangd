@@ -6,6 +6,7 @@
    [async.core :as async :refer-macros [<?* <?_ <? go-try <!]]
    [app.service.keys :as keys]))
 
+
 (defn rotate-keys* [db init-vals]
   (let [[es512 ecmr payload jws] init-vals]
     (sqlite*/transaction
@@ -19,7 +20,11 @@
           (<?_ (keys/create-jws-table db))
           (<?_ (keys/create-jws-jwk-index db))
           (<?_ (keys/select-all-jwk db))
-          (<?* number? (keys/insert-jws db payload es512)))))))
+          (<?* number? (keys/insert-jws db payload es512))
+          ((fn [r]
+             (set! keys/*default-payload* payload)
+             (set! keys/*default-jws* jws)
+             r)))))))
 
 
 (defn rotate-keys []

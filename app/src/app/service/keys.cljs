@@ -8,6 +8,10 @@
 
 (def jose-hash-algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH)))
 
+(def ^:dynamic *default-payload* nil)
+
+(def ^:dynamic *default-jws* nil)
+
 (defn create-payload [jwk-es512 jwk-ecmr]
   (let [jwk-es512-pub (jose/jwk-pub jwk-es512)
         jwk-ecmr-pub (jose/jwk-pub jwk-ecmr) ]

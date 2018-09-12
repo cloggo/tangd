@@ -140,5 +140,8 @@
    (defmacro toggle [& args] `(when-cljs (cljs.core.async/toggle ~@args))))
 
 #?(:clj
+   (defmacro split [& args] `(when-cljs (cljs.core.async/split ~@args))))
+
+#?(:clj
    (defmacro transduce* [& args] `(when-cljs (cljs.core.async/transduce ~@args))))
 

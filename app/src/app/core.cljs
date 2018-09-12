@@ -1,9 +1,7 @@
 (ns app.core
   (:require [restify]
-            [app.loader]
             [restify.body-parser :as body-parser]
             [oops.core :as oops]
-            #_[goog.array :as garray]
             [cljs.nodejs :as node]
             [interop.core :as interop]
             [restify.router :as router]

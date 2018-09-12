@@ -6,6 +6,7 @@
    [restify.core :as restify]
    [sqlite.core :as sqlite]
    [app.service.schema :as schema]
+   [app.controller.keys :as keys]
    [restify.body-parser :as body-parser]
    [restify.transit-formatter :as transit-formatter]))
 
@@ -35,5 +36,7 @@
 (sqlite/set-db-name! db-name)
 ;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
 (sqlite/init-db (sqlite/on-db) schema/init-stmts)
+
+(keys/rotate-keys)
 
 ;;< ========================

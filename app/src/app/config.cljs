@@ -1,12 +1,10 @@
 (ns app.config
   (:require
    #_[registrar.core :as registrar]
-   [re-frame.core :as rf]
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
    [restify.core :as restify]
    [sqlite.core :as sqlite]
-   [app.coop :as coop]
    [app.service.schema :as schema]
    [restify.body-parser :as body-parser]
    [restify.transit-formatter :as transit-formatter]))

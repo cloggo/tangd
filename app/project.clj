@@ -17,8 +17,8 @@
                  [org.clojure/core.async "0.4.474"]
                  [org.clojars.akiel/async-error "0.3"]
                  [binaryage/devtools "0.9.10"]
-                 [funcool/promesa "1.9.0"]
-                 [re-frame "0.10.6"]
+                 #_[funcool/promesa "1.9.0"]
+                 #_[re-frame "0.10.6"]
                  [binaryage/oops "0.6.2"]
                  [org.clojure/clojurescript "1.10.339"]]
 

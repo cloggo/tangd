@@ -2,7 +2,6 @@
   (:require
    [app.controller.keys :as keys]
    [app.controller.t-error :as t-error]
-   [re-frame.core :as rf]
    #_[registrar.core :as registrar]))
 
 ;; Restify don't support regexp path, only string and wildcard

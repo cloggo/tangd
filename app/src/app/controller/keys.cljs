@@ -30,11 +30,8 @@
 
 
 (defn restify-route-event [ch]
-  (let [init-vals (keys/rotate-keys)
-        [es512 ecmr payload jws] init-vals
-        sqlite-db (sqlite/on-db)]
-    (go-try (-> (<?_ ch (rotate-keys))
-                (<!) (sqlite*/handle-db-result)))))
+  (go-try (-> (<?_ ch (rotate-keys))
+              (<!) (sqlite*/handle-db-result))))
 
 
 (def handler (restify/handle-route restify-route-event))

@@ -1,8 +1,10 @@
 (ns app.controller.t-error
   (:require
-   [app.coop :as coop]))
+   [async-error.core :refer-macros [go-try <?]]
+   [async.core :as async*]
+   [async.restify.core :as r]))
 
-(coop/restify-route-event
- :t-error
- (fn [cfx [params]]
-   {:restify [{:error "Ooh no" :status :BAD_REQUEST}]}))
+(def handler (r/handle-route
+              (fn [ch]
+                (go-try
+                 {:error "Ooh no" :status :BAD_REQUEST}))))

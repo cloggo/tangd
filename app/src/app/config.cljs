@@ -30,20 +30,6 @@
 
 (restify/add-response-spec-defaults! {:headers response-headers})
 
-;;< =====================
-
-
-;;> re-frame registrations
-
-(rf/reg-event-fx
- :open-sqlite-db
- coop/open-db)
-
-(coop/reg-fx :restify restify/restify-fx*)
-(coop/reg-fx :sqlite-cmd coop/sqlite-cmd-fx)
-
-;;< =======================
-
 
 ;;> sqlite initializations
 

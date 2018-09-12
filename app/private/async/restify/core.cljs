@@ -2,7 +2,7 @@
   (:require
    #_[async-error.core :refer-macros [go-try <?] :refer [throw-err]]
    [restify.core :as restify]
-   [clojure.core.async :as async] ))
+   [async.core :as async] ))
 
 
 (defn handle-route [handler]

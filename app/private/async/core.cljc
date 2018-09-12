@@ -1,10 +1,52 @@
 (ns async.core
   #?(:clj
      (:require
-      [clojure.string]
-      [oops.core]
       [async-error.core]
+      [cljs.core.async]
       [clojure.core.async])))
+
+#?(:clj
+   (defn cljs-env?
+     "Take the &env from a macro, and tell whether we are expanding into cljs."
+     [env]
+     (boolean (:ns env))))
+
+
+
+#?(:clj
+   (defmacro when-cljs
+     "Return then if we are generating cljs code and else for Clojure code.
+      https://groups.google.com/d/msg/clojurescript/iBY5HaQda4A/w1lAQi9_AwsJ"
+     [then]
+     (when (cljs-env? &env) then)))
+
+
+#?(:clj
+   (defmacro <? [& args] `(async-error.core/<? ~@args)))
+
+#?(:clj
+   (defmacro chan [& args] `(when-cljs (cljs.core.async/chan ~@args))))
+
+#?(:clj
+   (defmacro <! [& args] `(when-cljs (cljs.core.async/<! ~@args))))
+
+#?(:clj
+   (defmacro >! [& args] `(when-cljs (cljs.core.async/>! ~@args))))
+
+#?(:clj
+   (defmacro go-try [& args] `(async-error.core/go-try ~@args)))
+
+#?(:clj
+   (defmacro put! [& args] `(when-cljs (cljs.core.async/put! ~@args))))
+
+#?(:clj
+   (defmacro take! [& args] `(when-cljs (cljs.core.async/take! ~@args))))
+
+#?(:clj
+   (defmacro map* [& args] `(when-cljs (cljs.core.async/map ~@args))))
+
+#?(:clj
+   (defmacro go [& args] `(when-cljs (cljs.core.async/go ~@args))))
 
 
 #?(:clj

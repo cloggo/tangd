@@ -2,8 +2,7 @@
   #_(:require-macros [cljs.core.async.macros :as m-async :refer [alt!]])
   (:require
    #_[cljs.core.async.impl.channels :refer [ManyToManyChannel]]
-   [async.core :as async*]
-   [clojure.core.async :as async]
+   [async.core :as async]
    [restify.const* :as const]
    [interop.core :as interop]
    [sqlite.core :as q]))
@@ -49,7 +48,7 @@
 
 
 (defn handle-db-result [result]
-  (if (async*/error? result)
+  (if (async/error? result)
     {:status :INTERNAL_SERVER_ERROR :error result}
     result))
 

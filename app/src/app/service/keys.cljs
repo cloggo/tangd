@@ -1,7 +1,7 @@
 (ns app.service.keys
   (:require
    [clojure.string :as s]
-   [clojure.core.async :as async]
+   [async.core :as async]
    [async.sqlite.core :as sqlite]
    [jose.core :as jose]
    [app.service.schema :as schema]))
@@ -46,8 +46,7 @@
           algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
           thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
           thp-id-vec (mapv #(sqlite/on-cmd db :run schema/insert-thp %) thp-vec)]
-      #_(println thp-id-vec)
-      (async/map (insert-thp-jwk db jwk-id) thp-id-vec))))
+      (async/map* (insert-thp-jwk db jwk-id) thp-id-vec))))
 
 (defn drop-jws-table [db]
   (sqlite/on-cmd db :run schema/drop-jws-table))

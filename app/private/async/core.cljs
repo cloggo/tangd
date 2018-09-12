@@ -1,5 +1,10 @@
 (ns async.core
+  (:require-macros [async.core]
+                   [async-error.core]
+                   [clojure.core.async])
   (:require
+   [async-error.core]
+   [cljs.core.async]
    [clojure.string :as s]
    [oops.core :as oops]))
 

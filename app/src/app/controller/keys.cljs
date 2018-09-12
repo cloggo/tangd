@@ -8,9 +8,15 @@
 
 
 (defn rotate-keys* [db init-vals]
+  (defn cache-defaults [payload jws]
+    (set! keys/*default-payload* payload)
+    (set! keys/*default-jws* jws))
+
   (let [[es512 ecmr payload jws] init-vals]
     (sqlite*/transaction
-     db [(fn [_] {:status :CREATED})]
+     db [(fn [_]
+           (cache-defaults payload jws)
+           {:status :CREATED})]
      (go-try
       (-> (keys/insert-jwk db ecmr)
           (<?) ((keys/insert-thp db ecmr))
@@ -20,11 +26,7 @@
           (<?_ (keys/create-jws-table db))
           (<?_ (keys/create-jws-jwk-index db))
           (<?_ (keys/select-all-jwk db))
-          (<?* number? (keys/insert-jws db payload es512))
-          ((fn [r]
-             (set! keys/*default-payload* payload)
-             (set! keys/*default-jws* jws)
-             r)))))))
+          (<?* number? (keys/insert-jws db payload es512)))))))
 
 
 (defn rotate-keys []

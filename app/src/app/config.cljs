@@ -14,7 +14,7 @@
    [restify.body-parser :as body-parser]
    [restify.transit-formatter :as transit-formatter]))
 
-;;> restify configurations
+;;> app configurations
 
 (def app-name "tangd")
 
@@ -24,16 +24,19 @@
 
 (def response-headers #js {:content-type "application/transit+json"})
 
+(def server-options
+  #js {:ignoreTrailingSlash true
+       :name app-name
+       :formatters formatters})
+
 (def formatters
   (js-obj "application/transit+json"
           transit-formatter/transit-format
           "application/jwk+json"
           jwk-formatter/jwk-format))
 
-(def server-options
-  #js {:ignoreTrailingSlash true
-       :name app-name
-       :formatters formatters})
+(def extra-parsers {"application/jwk+json" (fn [_] jwk-parser/jwk-parser)})
+
 
 ;;< ==============================
 
@@ -45,7 +48,7 @@
 
 
 (defn init-restify []
-  (body-parser/add-parser! {"application/jwk+json" (fn [_] jwk-parser/jwk-parser)})
+  (body-parser/add-parser! extra-parsers)
 
   (restify*/add-response-spec-defaults! {:headers response-headers}))
 

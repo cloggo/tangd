@@ -1,9 +1,13 @@
 (ns app.config
   (:require
-   #_[registrar.core :as registrar]
+   [restify]
+   [app.routes :as routes]
+   [restify.router :as router]
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
-   [restify.core :as restify]
+   [restify.core :as restify*]
+   [oops.core :as oops]
+   [interop.core :as interop]
    [sqlite.core :as sqlite]
    [app.service.schema :as schema]
    [app.controller.keys :as keys]
@@ -11,32 +15,53 @@
    [restify.transit-formatter :as transit-formatter]))
 
 ;;> restify configurations
-(def app-name "tangd")
 
-(def port 8080)
+(defn init-restify []
+  (body-parser/add-parser! {"application/jwk+json" (fn [_] jwk-parser/jwk-parser)})
+
+  (def response-headers #js {:content-type "application/transit+json"})
+
+  (restify*/add-response-spec-defaults! {:headers response-headers}))
+
+;;> sqlite initializations
+
+(defn init-sqlite []
+  (def db-name "./jwk_keys.sqlite3")
+  (sqlite/set-db-name! db-name)
+  ;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
+  (sqlite/init-db (sqlite/on-db) schema/init-stmts)
+  (keys/rotate-keys))
+
+;;< ========================
 
 (def server-options
   #js {:ignoreTrailingSlash true
-       :name app-name
+       :name "tangd"
        :formatters (js-obj "application/transit+json"
                            transit-formatter/transit-format
                            "application/jwk+json"
                            jwk-formatter/jwk-format)})
 
-(body-parser/add-parser! {"application/jwk+json" (fn [_] jwk-parser/jwk-parser)})
 
-(def response-headers #js {:content-type "application/transit+json"})
+(def config
+  {:options server-options
+   :port 8080
+   :parser (body-parser/body-parser #js {:mapParams false})
+   :routes routes/routes})
 
-(restify/add-response-spec-defaults! {:headers response-headers})
 
-;;> sqlite initializations
+(defn start-server [config]
+  (let [{:keys [options parser routes port]} config
+        server (oops/ocall restify :createServer options)]
 
-(def db-name "./jwk_keys.sqlite3")
+    (init-sqlite)
 
-(sqlite/set-db-name! db-name)
-;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
-(sqlite/init-db (sqlite/on-db) schema/init-stmts)
+    (init-restify)
 
-(keys/rotate-keys)
+    (oops/ocall server :use parser)
 
-;;< ========================
+    (mapv (router/register-route server) routes)
+
+    (oops/ocall server
+                :listen port
+                #(interop/logf "%s listening at %s" (.-name server) (.-url server)))))

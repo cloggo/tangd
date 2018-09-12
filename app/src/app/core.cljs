@@ -1,24 +1,11 @@
 (ns app.core
-  (:require [restify]
-            [restify.body-parser :as body-parser]
-            [oops.core :as oops]
-            [cljs.nodejs :as node]
-            [interop.core :as interop]
-            [restify.router :as router]
-            [app.routes :as routes]
-            [app.config :as config]))
+  (:require
+   [cljs.nodejs :as node]
+   [app.config :as config]))
 
 (node/enable-util-print!)
 
-(def server (oops/ocall restify :createServer config/server-options))
-
-(oops/ocall server :use (body-parser/body-parser #js {:mapParams false}))
-
-(mapv (router/register-route server) routes/routes)
-
 (defn -main [& args]
-  (oops/ocall server
-              :listen config/port
-              #(interop/logf "%s listening at %s" (.-name server) (.-url server))))
+  (config/start-server config/config))
 
 (set! *main-cli-fn* -main)

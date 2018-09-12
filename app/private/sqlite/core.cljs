@@ -27,9 +27,8 @@
 
 
 (defn on-db
-  ([name] (or *db* (set! *db* (on-db* name)) *db*))
+  ([name] (or *db* (set! *db* (on-db* name))))
   ([] (on-db *db-name*)))
-  
 
 
 (defn db-close [db]

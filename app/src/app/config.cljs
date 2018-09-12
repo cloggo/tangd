@@ -30,7 +30,6 @@
 
 (restify/add-response-spec-defaults! {:headers response-headers})
 
-
 ;;> sqlite initializations
 
 (def db-name "./jwk_keys.sqlite3")

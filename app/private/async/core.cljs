@@ -10,7 +10,7 @@
 
 (def route-chan (async/chan))
 
-(def *routes* (atom {}))
+(def *classes* (atom {}))
 
 
 (defn append-error-message [err msg]
@@ -18,17 +18,15 @@
         err (if msg* (oops/oset! err "message" (s/join [msg* msg])) err)]
     err))
 
-(defn reg-route [name]
-  (swap! *routes* assoc name (async/pub route-chan name)))
+(defn reg-handler-class [name]
+  (swap! *classes* assoc name (async/pub route-chan name)))
 
-(defn subscribe [route-name handler-class ch]
-  (async/sub (route-name @*routes*) handler-class ch))
+(defn subscribe [handler-class route-name ch]
+  (async/sub (handler-class @*classes*) route-name ch))
 
-(defn unsubscribe [route-name handler-class ch]
-  (async/unsub (route-name @*routes*) handler-class ch))
+(defn unsubscribe [handler-class route-name  ch]
+  (async/unsub (handler-class @*classes*) route-name  ch))
 
-(def reg-handler subscribe)
-
-(defn push [route-name handler-class data]
-  (async/put! route-chan {route-name handler-class :data data}))
+(defn push [handler-class route-name data]
+  (async/put! route-chan {handler-class route-name :data data}))
 

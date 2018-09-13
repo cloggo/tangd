@@ -8,14 +8,10 @@
 
 
 (defn rotate-keys* [db init-vals]
-  (defn cache-defaults [payload jws]
-    (set! keys/*default-payload* payload)
-    (set! keys/*default-jws* jws))
-
   (let [[es512 ecmr payload jws] init-vals]
     (sqlite*/transaction
      db [(fn [_]
-           (cache-defaults payload jws)
+           (keys/cache-defaults jws)
            {:status :CREATED})]
      (go-try
       (-> (keys/insert-jwk db ecmr)

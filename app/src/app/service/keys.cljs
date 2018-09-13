@@ -8,8 +8,6 @@
 
 (def jose-hash-algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH)))
 
-(def ^:dynamic *default-payload* nil)
-
 (def ^:dynamic *default-jws* nil)
 
 (def default-jws *default-jws*)
@@ -74,7 +72,9 @@
       (when (jose/jwk-prm jwk true "sign")
         (let [jwk-id (.-jwk_id result)
               jws (create-jws payload jwk default-es512)]
-          #_(println (jose/json-dumps jws))
-          #_(println (swap! count inc))
           (sqlite/on-cmd db :run schema/insert-jws jwk-id (jose/json-dumps jws)))))))
+
+
+(defn cache-defaults [jws]
+  (set! keys/*default-jws* jws))
 

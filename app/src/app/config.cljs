@@ -14,6 +14,7 @@
    [app.service.schema :as schema]
    [app.controller.keys :as keys]
    [restify.body-parser :as body-parser]
+   [app.service.default-jws :as default-jws]
    [restify.transit-formatter :as transit-formatter]))
 
 ;;> app configurations
@@ -61,7 +62,7 @@
   (sqlite/set-db-name! db-name)
   ;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
   (sqlite/init-db (sqlite/on-db) schema/init-stmts)
-  (keys/rotate-keys))
+  (default-jws/cache-default-jws (sqlite/on-db)))
 
 ;;< ========================
 

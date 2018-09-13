@@ -58,7 +58,7 @@
 (def clear-jws "DELETE FROM jws;")
 (def vacuum "VACUUM;")
 
-
+(def select-default-jwk "SELECT jwk FROM jwk ORDER BY jwk_id DESC LIMIT 2;")
 ;;; for fold right
 ;; (def init-stmts [create-jwk-table create-thp-table create-jws-table create-thp-jwk-table
 ;;                create-jws-jwk-index create-thp-thp-index create-thp-jwk-thp-jwk-index])

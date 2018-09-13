@@ -1,11 +1,13 @@
 (ns app.config
   (:require
    [restify]
+   [app.loader]
    [app.routes :as routes]
    [restify.router :as router]
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
    [restify.core :as restify*]
+   [async.restify.core :as async-restify]
    [oops.core :as oops]
    [interop.core :as interop]
    [sqlite.core :as sqlite]
@@ -48,6 +50,10 @@
 
 
 (defn init-restify []
+  (async-restify/init-async-restify)
+
+  (app.loader/load-controllers)
+
   (body-parser/add-parser! extra-parsers)
 
   (restify*/add-response-spec-defaults! {:headers response-headers}))

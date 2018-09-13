@@ -3,7 +3,7 @@
    [async.restify.core :as restify]
    [sqlite.core :as sqlite]
    [async.sqlite.core :as sqlite* :refer-macros [transaction]]
-   [async.core :as async :refer-macros [<?* <?_ <? go-try <!]]
+   [async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
    [app.service.keys :as keys]))
 
 
@@ -36,9 +36,13 @@
     (rotate-keys* sqlite-db init-vals)))
 
 
-(defn restify-route-event [ch]
-  (go-try (-> (<?_ ch (rotate-keys))
-              (<!) (sqlite*/handle-db-result))))
+(defn handler []
+  (restify/reg-http-request-handler
+   :keys
+   (fn [context]
+     (go
+       (->> (rotate-keys)
+            (<!) (sqlite*/handle-db-result)
+            (restify/http-response :keys))))))
 
-
-(def handler (restify/handle-route restify-route-event))
+;; (def handler (restify/handle-route restify-route-event))

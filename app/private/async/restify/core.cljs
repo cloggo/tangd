@@ -29,7 +29,5 @@
 (defn http-response [route-name spec]
   (async/push :http-response route-name spec))
 
-
-(defn init-async-restify []
-  (async/reg-handler-class :http-request)
-  (async/reg-handler-class :http-response))
+(async/reg-handler-class :http-request)
+(async/reg-handler-class :http-response)

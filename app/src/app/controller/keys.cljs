@@ -36,13 +36,12 @@
     (rotate-keys* sqlite-db init-vals)))
 
 
-(defn handler []
-  (restify/reg-http-request-handler
-   :keys
-   (fn [context]
-     (go
-       (->> (rotate-keys)
-            (<!) (sqlite*/handle-db-result)
-            (restify/http-response :keys))))))
+(restify/reg-http-request-handler
+ :keys
+ (fn [context]
+   (go
+     (->> (rotate-keys)
+          (<!) (sqlite*/handle-db-result)
+          (restify/http-response :keys)))))
 
 ;; (def handler (restify/handle-route restify-route-event))

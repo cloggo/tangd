@@ -50,9 +50,6 @@
 
 
 (defn init-restify []
-  (async-restify/init-async-restify)
-
-  (app.loader/load-controllers)
 
   (body-parser/add-parser! extra-parsers)
 

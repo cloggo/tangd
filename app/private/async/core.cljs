@@ -13,15 +13,14 @@
 (defn reg-route [route-key ch pub]
   (swap! *routes* assoc route-key [ch pub]))
 
-(defn subscribe [route-key handler-class ch]
-  (async/sub (get-route-pub route-key) handler-class ch))
-
 (defn get-route-ch [route-key]
   (get-in @*routes* [route-key 0]))
 
 (defn get-route-pub [route-key]
   (get-in @*routes* [route-key 1]))
 
+(defn subscribe [route-key handler-class ch]
+  (async/sub (get-route-pub route-key) handler-class ch))
 
 (defn append-error-message [err msg]
   (let [msg* (oops/oget err "message")

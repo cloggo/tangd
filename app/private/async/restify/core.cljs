@@ -17,8 +17,8 @@
         res-ch (async/chan)
         route-pub (async/pub ch route-key)]
     (async/reg-route route-key ch route-pub)
-    (async/sub route-pub :http-request req-ch)
-    (async/sub route-pub :http-response res-ch)
+    (async/subscribe route-key :http-request req-ch)
+    (async/subscribe route-key :http-response res-ch)
     (async/go-loop []
       (let [{:keys [data]} (<! req-ch)]
         (run-response res-ch data)

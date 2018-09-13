@@ -8,9 +8,16 @@
    [clojure.string :as s]
    [oops.core :as oops]))
 
-(def route-chan (async/chan))
+(def *routes* (atom {}))
 
-(def *classes* (atom {}))
+(defn reg-route [route-key ch pub]
+  (swap! *routes* assoc route-key [ch pub]))
+
+(defn get-route-ch [route-key]
+  (get-in @*routes* [route-key 0]))
+
+(defn get-route-pub [route-key]
+  (get-in @*routes* [route-key 1]))
 
 
 (defn append-error-message [err msg]
@@ -18,15 +25,7 @@
         err (if msg* (oops/oset! err "message" (s/join [msg* msg])) err)]
     err))
 
-(defn reg-handler-class [name]
-  (swap! *classes* assoc name (async/pub route-chan name)))
 
-(defn subscribe [handler-class route-name ch]
-  (async/sub (handler-class @*classes*) route-name ch))
-
-(defn unsubscribe [handler-class route-name  ch]
-  (async/unsub (handler-class @*classes*) route-name  ch))
-
-(defn push [handler-class route-name data]
-  (async/put! route-chan {handler-class route-name :data data}))
+(defn push [route-key handler-key data]
+  (async/put! (get-route-ch route-key) {route-key handler-key :data data}))
 

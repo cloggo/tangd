@@ -5,29 +5,30 @@
    [async.core :as async :refer-macros [go <! chan]] ))
 
 
-(defn run-response [route-name context]
-  (let [ch (async/chan)]
-    (async/subscribe :http-response route-name ch)
-    (async/go
-      (let [{:keys [data]} (<! ch)]
-        (restify/restify-fx data context)))))
+(defn run-response [ch context]
+  (async/go
+    (let [{:keys [data]} (<! ch)]
+      (restify/restify-fx data context))))
 
 
-(defn reg-http-request-handler [route-name f]
-  (let [ch (async/chan)]
-    (async/subscribe :http-request route-name ch)
-    (async/go
-      (let [{:keys [data]} (<! ch)]
-        (run-response route-name data)
-        (f data)))))
+(defn reg-http-request-handler [route-key f]
+  (let [ch (async/chan)
+        req-ch (async/chan)
+        res-ch (async/chan)
+        route-pub (async/pub ch route-key)]
+    (async/reg-route route-key ch route-pub)
+    (async/sub route-pub :http-request req-ch)
+    (async/sub route-pub :http-response res-ch)
+    (async/go-loop []
+      (let [{:keys [data]} (<! req-ch)]
+        (run-response res-ch data)
+        (f data))
+      (recur))))
 
 
-(defn http-request [route-name context]
-    (async/push :http-request route-name context))
+(defn http-request [route-key context]
+  (async/push route-key :http-request context))
 
 
-(defn http-response [route-name spec]
-  (async/push :http-response route-name spec))
-
-(async/reg-handler-class :http-request)
-(async/reg-handler-class :http-response)
+(defn http-response [route-key spec]
+  (async/push route-key :http-response spec))

@@ -1,6 +1,10 @@
 (ns app.controller.t-error
   (:require
-   [async-error.core :refer-macros [go-try <?]]
-   [async.core :as async*]
-   [async.restify.core :as r]))
+   [async.restify.core :as restify]))
+
+
+(restify/reg-http-request-handler
+ :t-error
+ (fn [context]
+   (restify/http-response :t-error {:error "oh no" :status :BAD_REQUEST})))
 

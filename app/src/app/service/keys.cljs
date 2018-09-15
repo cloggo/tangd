@@ -11,7 +11,6 @@
 (def ^:dynamic *default-jws* nil)
 
 (def default-jws *default-jws*)
-(def default-payload *default-payload*)
 
 (defn create-payload [jwk-es512 jwk-ecmr]
   (let [jwk-es512-pub (jose/jwk-pub jwk-es512)
@@ -76,5 +75,5 @@
 
 
 (defn cache-defaults [jws]
-  (set! keys/*default-jws* jws))
+  (set! *default-jws* (jose/json-dumps jws)))
 

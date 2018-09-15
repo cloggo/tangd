@@ -10,7 +10,8 @@
 
 (def ^:dynamic *default-jws* nil)
 
-(def default-jws *default-jws*)
+(defn default-jws []
+  *default-jws*)
 
 (defn create-payload [jwk-es512 jwk-ecmr]
   (let [jwk-es512-pub (jose/jwk-pub jwk-es512)
@@ -50,7 +51,7 @@
           algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
           thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
           thp-id-vec (mapv #(sqlite/on-cmd db :run schema/insert-thp %) thp-vec)]
-      (async/map* (insert-thp-jwk db jwk-id) thp-id-vec))))
+      thp-id-vec)))
 
 (defn drop-jws-table [db]
   (sqlite/on-cmd db :run schema/drop-jws-table))

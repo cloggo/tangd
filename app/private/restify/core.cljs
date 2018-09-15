@@ -9,9 +9,10 @@
 
 ;; defaults restify spec
 ;; =====================
-(def ^{:dynamic true :private true} *response-spec-defaults* {:status :OK
-                                                :send-mode :send
-                                                :next? false})
+(def ^{:dynamic true :private true} *response-spec-defaults*
+  {:status :OK
+   :send-mode :send
+   :next? false})
 
 
 (defn add-response-spec-defaults! [spec]

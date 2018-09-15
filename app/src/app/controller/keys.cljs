@@ -7,6 +7,14 @@
    [app.service.keys :as keys]))
 
 
+(defn insert-thp-jwk [db jwk]
+  (fn [result]
+    (let [jwk-id (.-lastID result)]
+      (go-try
+       (->> ((keys/insert-thp db jwk) result)
+            (mapv #(go-try ((keys/insert-thp-jwk db jwk-id) (<? %)))))))))
+
+
 (defn rotate-keys* [db init-vals]
   (let [[es512 ecmr payload jws] init-vals]
     (sqlite*/transaction
@@ -15,9 +23,9 @@
            {:status :CREATED})]
      (go-try
       (-> (keys/insert-jwk db ecmr)
-          (<?) ((keys/insert-thp db ecmr))
+          (<?) ((insert-thp-jwk db ecmr))
           (<?_ (keys/insert-jwk db es512))
-          (<?) ((keys/insert-thp db es512))
+          (<?) ((insert-thp-jwk db es512))
           (<?_ (keys/drop-jws-table db))
           (<?_ (keys/create-jws-table db))
           (<?_ (keys/create-jws-jwk-index db))

@@ -50,15 +50,16 @@
          (callback row)))
    (fn [err nrow] (callback nrow))])
 
-(defn all-handler-sig [callback err-handler]
-  [(fn [err rows]
+(defn get-handler-sig [callback err-handler]
+  [(fn [err result]
      (if err (err-handler err)
-         (callback rows)))])
+         (callback (or result {}))))])
 
 (def handler-sig
   {:run run-handler-sig
    :each each-handler-sig
-   :all all-handler-sig
+   :all get-handler-sig
+   :get get-handler-sig
    :prepare run-handler-sig})
 
 (defn on-cmd [db cmd stmt & params]

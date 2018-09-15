@@ -13,10 +13,11 @@
 
 (defn cache-default-jws [db]
   (async/go-try
-   (let [jwks (async/<? (select-default-jwk db))
-         jwks (mapv #(.-jwk %) jwks)
-         c-jwks (mapv jose/json-loads jwks)
-         payload (apply keys/create-payload c-jwks)
-         es512-vec (filter #(jose/jwk-prm % true "sign") c-jwks)
-         jws (keys/create-jws payload (first es512-vec))]
-     (keys/cache-defaults jws))))
+   (let [jwks (async/<? (select-default-jwk db))]
+     (when-not (empty? jwks)
+       (let [jwks (mapv #(.-jwk %) jwks)
+             c-jwks (mapv jose/json-loads jwks)
+             payload (apply keys/create-payload c-jwks)
+             es512-vec (filter #(jose/jwk-prm % true "sign") c-jwks)
+             jws (keys/create-jws payload (first es512-vec))]
+         (keys/cache-defaults jws))))))

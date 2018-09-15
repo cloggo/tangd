@@ -6,5 +6,6 @@
 (restify/reg-http-request-handler
  :t-error
  (fn [context]
-   (restify/http-response :t-error {:error "oh no" :status :BAD_REQUEST})))
+   (restify/http-response :t-error
+                          {:error "oh no" :status :BAD_REQUEST})))
 

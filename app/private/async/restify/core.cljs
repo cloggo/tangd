@@ -32,3 +32,9 @@
 
 (defn http-response [route-key spec]
   (async/push route-key :http-response spec))
+
+
+(defn check-error-result [result]
+  (if (async/error? result)
+    {:status :INTERNAL_SERVER_ERROR :error result}
+    result))

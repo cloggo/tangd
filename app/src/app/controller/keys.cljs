@@ -45,7 +45,7 @@
  (fn [context]
    (go
      (->> (rotate-keys)
-          (<!) (sqlite*/handle-db-result)
+          (<!) (restify/check-error-result)
           (restify/http-response :keys)))))
 
 ;; (def handler (restify/handle-route restify-route-event))

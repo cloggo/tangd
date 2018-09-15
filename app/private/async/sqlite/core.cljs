@@ -46,9 +46,3 @@
 (defn rollback-transaction [db]
   (on-cmd db :run "ROLLBACK;"))
 
-
-(defn handle-db-result [result]
-  (if (async/error? result)
-    {:status :INTERNAL_SERVER_ERROR :error result}
-    result))
-

@@ -36,5 +36,6 @@
                  (adv/get-jws-from-thp (sqlite/on-db))
                  (<?) (.-jws)
                  (create-jws-spec)))
-            (<!) (restify/http-response :adv-kid)))))
+            (<!) (restify/check-error-result)
+            (restify/http-response :adv-kid)))))
 

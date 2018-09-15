@@ -9,15 +9,13 @@
 
 
 (defn create-jws-spec [jws]
+  (def result {:send-mode :sendRaw
+               :headers #js {:content-type "application/jose+json"}
+               :status :OK})
   (if jws
-    {:payload jws
-     :send-mode :sendRaw
-     :headers #js {:content-type "application/jose+json"}
-     :status :OK}
-    {:send-mode :sendRaw
-     :headers #js {:content-type "application/jose+json"}
-     :error "invalid thumbprint"
-     :status :NOT_FOUND}))
+    (assoc result :payload jws :status :OK)
+    (assoc result :error "invalid thumbprint" :status :NOT_FOUND)))
+
 
 (restify/reg-http-request-handler
  :adv

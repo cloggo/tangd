@@ -20,6 +20,7 @@ cache:
   - package.json
 
 before_script:
+  - pushd app
   - echo "//npm.delite.ca/:_authToken=\"${VERDACCIO_NPM_TOKEN_READONLY}\"" > ~/.npmrc
   - npm install --registry https://npm.delite.ca
   - git config --global user.email "gitlab-ci@delite.ca"

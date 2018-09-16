@@ -1,0 +1,67 @@
+image: registry.delite.ca/docker/docker:latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  NODE_MODULE_PATH: node_modules/.bin
+  MOCHA_BIN: $NODE_MODULE_PATH/mocha
+  NODEGYP_BIN: $NODE_MODULE_PATH/node-gyp
+  NODEPREGYP_BIN: $NODE_MODULE_PATH/node-pre-gyp
+  DOCKER_RUN: docker run --user root -t -e NODE_ENV=test -v $CI_PROJECT_DIR:/deploy $DEV_IMAGE
+
+stages:
+  - build
+  - publish
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - node_modules/
+  - build/stage/
+  - package.json
+
+before_script:
+  - echo "//npm.delite.ca/:_authToken=\"${VERDACCIO_NPM_TOKEN_READONLY}\"" > ~/.npmrc
+  - npm install --registry https://npm.delite.ca
+  - git config --global user.email "gitlab-ci@delite.ca"
+  - git config --global user.name "gitlab-ci"
+  - git fetch --all --tags --prune
+  - TAG=$(git describe --abbrev=0 --tags)
+
+build:
+  image: registry.delite.ca/docker/base/alpine.3_8.clojure-lein-node-jose
+  stage: build
+  only:
+    - deploy
+    - publish
+  tags:
+    - linux
+  script:
+    - if ! git rev-parse --verify "$CI_COMMIT_REF_SLUG"; then git checkout tags/$TAG -b "$CI_COMMIT_REF_SLUG"; fi
+    - npm version $TAG --no-git-tag-version --allow-same-version
+    - lein cljsbuild once prod
+
+upload:
+  stage: publish
+  only:
+    - deploy
+    - publish
+  tags:
+    - linux
+  script:
+    - if ! git rev-parse --verify "$CI_COMMIT_REF_SLUG"; then git checkout tags/$TAG -b "$CI_COMMIT_REF_SLUG"; fi
+    - echo "//npm.delite.ca/:_authToken=\"${VERDACCIO_NPM_TOKEN}\"" > ~/.npmrc
+    - npm version $TAG --no-git-tag-version --allow-same-version
+    - npm publish --registry https://npm.delite.ca
+    - ./upload.sh build/stage gitlab-ci $JFROG_ARTIFACTORY_TOKEN
+
+publish:
+  stage: publish
+  only:
+    - publish
+  tags:
+    - linux
+  script:
+    - if ! git rev-parse --verify "$CI_COMMIT_REF_SLUG"; then git checkout tags/$TAG -b "$CI_COMMIT_REF_SLUG"; fi
+    - echo "//registry.npmjs.org/:_authToken=\"${NPMJS_TOKEN}\"" > ~/.npmrc
+    - npm version $TAG --no-git-tag-version --allow-same-version
+    - npm publish --registry https://registry.npmjs.org

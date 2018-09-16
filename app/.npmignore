@@ -11,3 +11,6 @@ figwheel_server.log
 pom.xml
 nohup.out
 *.sqlite3
+/src/
+/private/
+/test/

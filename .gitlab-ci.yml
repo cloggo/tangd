@@ -12,7 +12,6 @@ stages:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-  - app/node_modules/
   - app/index.js
 
 before_script:

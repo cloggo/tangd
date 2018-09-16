@@ -4,6 +4,6 @@ ADD app/ /app
 
 WORKDIR /app
 
-RUN npm install --registry npm.delite.ca
+RUN npm install --registry https://npm.delite.ca
 
 CMD ["node", "/app/index.js"]

@@ -29,7 +29,7 @@ before_script:
   - TAG=$(git describe --abbrev=0 --tags)
 
 build:
-  image: registry.delite.ca/docker/base/alpine.3_8.clojure-lein-node-jose
+  image: registry.delite.ca/docker/base/alpine/3_8:clojure-lein-node-jose
   stage: build
   only:
     - deploy

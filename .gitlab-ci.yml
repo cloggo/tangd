@@ -15,12 +15,11 @@ stages:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-  - node_modules/
-  - build/stage/
-  - package.json
+  - app/node_modules/
+  - app/index.js
 
 before_script:
-  - pushd app
+  - cd app
   - echo "//npm.delite.ca/:_authToken=\"${VERDACCIO_NPM_TOKEN_READONLY}\"" > ~/.npmrc
   - npm install --registry https://npm.delite.ca
   - git config --global user.email "gitlab-ci@delite.ca"

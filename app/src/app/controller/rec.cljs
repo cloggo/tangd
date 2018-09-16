@@ -12,9 +12,9 @@
   (if (jose/jwk-prm jwk false "deriveKey")
     (let [kty (jose/json-get jwk "kty")
           alg (jose/json-get jwk "alg")]
-      (if-not (= kty "EC")
-        {:status :BAD_REQUEST :error "invalid kty"}
-        (when-not (= alg "ECMR") {:status :BAD_REQUEST :error "invalid algorithm"})))
+      (if (= kty "EC")
+        (when-not (= alg "ECMR") {:status :BAD_REQUEST :error "invalid algorithm"})
+        {:status :BAD_REQUEST :error "invalid kty"}))
     {:status :FORBIDDEN :error "Not a deriveKey jwk"}))
 
 
@@ -22,9 +22,9 @@
   (if (jose/jwk-prm jwk true "deriveKey")
     (let [d (jose/json-get jwk "d")
           alg (jose/json-get jwk "alg")]
-      (if-not d
-        {:status :BAD_REQUEST :error "invalid d"}
-        (when-not (= alg "ECMR") {:status :FORBIDDEN :error "invalid algorithm"})))
+      (if d
+        (when-not (= alg "ECMR") {:status :FORBIDDEN :error "invalid algorithm"})
+        {:status :BAD_REQUEST :error "invalid d"}))
     {:status :FORBIDDEN :error "Not a deriveKey jwk"}))
 
 

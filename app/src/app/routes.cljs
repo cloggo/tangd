@@ -9,4 +9,4 @@
    [ :get "/adv/:kid" #(restify/http-request :adv-kid %&) ]
    [ :post "/keys/rotate" #(restify/http-request :keys %&)]
    [ :get "/t-error/"  #(restify/http-request :t-error %&)]
-   #_[ :post "/rec/:kid" #(registrar/dispatch! :rec %&)]])
+   [ :post "/rec/:kid" #(restify/http-request :rec %&)]])

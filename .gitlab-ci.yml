@@ -17,7 +17,6 @@ cache:
 
 before_script:
   - echo "//npm.delite.ca/:_authToken=\"${VERDACCIO_NPM_TOKEN_READONLY}\"" > ~/.npmrc
-  - npm install --registry https://npm.delite.ca
   - git config --global user.email "gitlab-ci@delite.ca"
   - git config --global user.name "gitlab-ci"
 

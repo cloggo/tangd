@@ -4,6 +4,7 @@
    [oops.core :as oops]
    [c-jose :as jose] ))
 
+;;> JSON operations
 (def default-json-flag
   (let [f0 (oops/oget jose "jose_json_encoding.JSON_SORT_KEYS")
         f1 (oops/oget jose "jose_json_encoding.JSON_COMPACT")]
@@ -16,6 +17,12 @@
 
 (defn json-loads [json]
    (oops/ocall jose :jose_json_loads json))
+
+(defn json-get [json key]
+  (oops/ocall jose :jose_json_get json key))
+
+(defn json-object-update [json other]
+  (oops/ocall jose :jose_json_object_update json other))
 
 
 (defn json-copy [json]
@@ -33,14 +40,21 @@
         jwks (string/join ["{\"keys\": \"" (string/join jwks) "\"}"])]
     jwks))
 
+;;< ===================
 
+
+;;> base64 operations
 (defn b64-enc-sbuf [s]
   (oops/ocall jose :jose_b64_enc_sbuf s))
 
 (defn b64-dec-sbuf [s]
   (oops/ocall jose :jose_b64_dec_buf s))
 
+;;< ====================
 
+
+
+;;> jwk operations
 (defn jwk-gen [alg]
   (let [json (json-loads (string/join ["{\"alg\": \"" alg "\"}"]))
         ;; Whoa! modified in place
@@ -68,6 +82,10 @@
     @a))
 
 
+(defn jwk-exc [lcl rem]
+  (oops/ocall jose :jose_jwk_exc lcl rem))
+
+
 (defn calc-thumbprint
   ([jwk] (calc-thumbprint jwk "S1"))
   ([jwk alg]  (let [dlen (oops/ocall jose :jose_jwk_thp_buf js/undefined alg js/undefined 0)
@@ -75,3 +93,5 @@
                     olen (oops/ocall jose :jose_jwk_thp_buf jwk alg buf dlen)]
                 ;; encode to bas64 no padding (javascript accept no paddding when decode)
                 (oops/ocall jose :jose_b64_enc_bbuf buf))))
+
+;;< =======================

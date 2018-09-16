@@ -69,6 +69,10 @@
   INNER JOIN thp_jwk ON (jws.jwk_id = thp_jwk.jwk_id)
   INNER JOIN thp ON (thp.thp_id = thp_jwk.thp_id) WHERE thp.thp = ?;")
 
+(def get-jwk-from-thp "SELECT jwk.jwk FROM jwk
+  INNER JOIN thp_jwk ON (jwk.jwk_id = thp_jwk.jwk_id)
+  INNER JOIN thp ON (thp.thp_id = thp_jwk.thp_id) WHERE thp.thp = ?;")
+
 (def init-stmts [create-jws-jwk-index create-thp-thp-index create-thp-jwk-jwk-index
                  create-thp-jwk-thp-index create-thp-jwk-table create-jws-table
                  create-thp-table create-jwk-table])

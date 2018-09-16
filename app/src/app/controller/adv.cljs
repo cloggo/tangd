@@ -30,10 +30,10 @@
    #_((sqlite/on-cmd (sqlite/on-db) :all "select * from jws;") (fn [r] (println r)))
 
    (go (->> (go-try
-            (->> (oops/oget req :params :kid)
-                 (adv/get-jws-from-thp (sqlite/on-db))
-                 (<?) (.-jws)
-                 (create-jws-spec)))
+             (->> (oops/oget req :params :kid)
+                  (adv/get-jws-from-thp (sqlite/on-db))
+                  (<?) (.-jws)
+                  (create-jws-spec)))
             (<!) (restify/check-error-result)
             (restify/http-response :adv-kid)))))
 

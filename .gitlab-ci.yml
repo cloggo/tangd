@@ -20,8 +20,6 @@ before_script:
   - npm install --registry https://npm.delite.ca
   - git config --global user.email "gitlab-ci@delite.ca"
   - git config --global user.name "gitlab-ci"
-  - git fetch --all --tags --prune
-  - TAG=$(git describe --abbrev=0 --tags)
 
 build:
   image: registry.delite.ca/docker/base/alpine/3_8:clojure-lein-node-jose
@@ -32,8 +30,6 @@ build:
     - linux
   script:
     - cd app
-    - if ! git rev-parse --verify "$CI_COMMIT_REF_SLUG"; then git checkout tags/$TAG -b "$CI_COMMIT_REF_SLUG"; fi
-    - npm version $TAG --no-git-tag-version --allow-same-version
     - lein cljsbuild once prod
 
 release:

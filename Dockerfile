@@ -1,4 +1,9 @@
 FROM registry.delite.ca/docker/base/node/10:latest
 
 ADD app/ /app
-ADD app/node_modules/ /app/node_modules
+
+WORKDIR /app
+
+RUN npm install --registry npm.delite.ca
+
+CMD ["node", "/app/index.js"]

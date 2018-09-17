@@ -2,6 +2,7 @@ FOREVER_BIN := node_modules/.bin/forever
 NODEMON_BIN := node_modules/.bin/nodemon
 DEV_MAIN_JS := target/js/compiled/app.js
 DEV_TEST_JS := target/js/compiled/test.js
+MAIN_JS := index.js
 
 app/node_modules: package.json
 	npm install --registry https://npm.delite.ca
@@ -41,6 +42,12 @@ build: app/node_modules
 	@RM -f app/index.js
 	lein cljsbuild once prod
 
+.PHONY: build-prod-auto
+
+build-prod-auto: app/node_modules
+	@RM -f app/index.js
+	lein cljsbuild auto prod
+
 .PHONY: nrepl
 
 nrepl:
@@ -57,7 +64,7 @@ start-dbg: app/node_modules
 .PHONY: start
 
 start: app/node_modules
-	node index.js
+	$(NODEMON_BIN) -e js --watch $(MAIN_JS) $(MAIN_JS) --data ./keys.sqlite3
 
 .PHONY: clean
 

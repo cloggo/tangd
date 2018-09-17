@@ -10,7 +10,7 @@
   (let [[flag0 path] args]
     (sqlite/set-db-name!
      (if (or (= flag0 "--data") (= flag0 "-d"))
-       (or path "./keys.sqlite3")))
-  (config/start-server config/config)))
+       (or path "./keys.sqlite3") "./keys.sqlite3"))
+    (config/start-server config/config)))
 
 (set! *main-cli-fn* -main)

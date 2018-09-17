@@ -4,6 +4,7 @@
    [async.core :as async]
    [async.sqlite.core :as sqlite]
    [jose.core :as jose]
+   [oops.core :as oops]
    [app.service.schema :as schema]))
 
 (def jose-hash-algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH)))
@@ -41,13 +42,13 @@
 
 (defn insert-thp-jwk [db jwk-id]
   (fn [result]
-    (let [thp-id (.-lastID result)]
+    (let [thp-id (oops/oget result :lastID)]
       (sqlite/on-cmd db :run schema/insert-thp-jwk thp-id jwk-id))))
 
 
 (defn insert-thp [db jwk]
   (fn [result]
-    (let [jwk-id (.-lastID result)
+    (let [jwk-id (oops/oget result :lastID)
           algs (jose/get-alg (jose/get-alg-kind :JOSE_HOOK_ALG_KIND_HASH))
           thp-vec (mapv #(jose/calc-thumbprint jwk %) algs)
           thp-id-vec (mapv #(sqlite/on-cmd db :run schema/insert-thp %) thp-vec)]
@@ -68,9 +69,9 @@
 
 (defn insert-jws [db payload default-es512]
   (fn [result]
-    (let [jwk (jose/json-loads (.-jwk result))]
+    (let [jwk (jose/json-loads (oops/oget result :jwk))]
       (when (jose/jwk-prm jwk true "sign")
-        (let [jwk-id (.-jwk_id result)
+        (let [jwk-id (oops/oget result :jwk_id)
               jws (create-jws payload jwk default-es512)]
           (sqlite/on-cmd db :run schema/insert-jws jwk-id (jose/json-dumps jws)))))))
 

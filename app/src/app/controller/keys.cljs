@@ -2,6 +2,7 @@
   (:require
    [async.restify.core :as restify]
    [sqlite.core :as sqlite]
+   [oops.core :as oops]
    [async.sqlite.core :as sqlite* :refer-macros [transaction]]
    [async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
    [app.service.keys :as keys]))
@@ -9,7 +10,7 @@
 
 (defn insert-thp-jwk [db jwk]
   (fn [result]
-    (let [jwk-id (.-lastID result)]
+    (let [jwk-id (oops/oget result :lastID)]
       (go-try
        (->> ((keys/insert-thp db jwk) result)
             (mapv #(go-try ((keys/insert-thp-jwk db jwk-id) (<? %)))))))))

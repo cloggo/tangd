@@ -33,7 +33,7 @@
    (go (->> (go-try
              (->> (oops/oget req :params :kid)
                   (adv/get-jws-from-thp (sqlite/on-db))
-                  (<?) (.-jws)
+                  (<?) (#(oops/oget % :jws))
                   (create-jws-spec)))
             (<!) (restify/check-error-result)
             (restify/http-response :adv-kid)))))

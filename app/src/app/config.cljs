@@ -13,6 +13,7 @@
    [sqlite.core :as sqlite]
    [app.service.schema :as schema]
    [app.controller.keys :as keys]
+   [app.service.keys :as keys*]
    [restify.body-parser :as body-parser]
    [app.service.default-jws :as default-jws]
    [restify.transit-formatter :as transit-formatter]))
@@ -81,4 +82,6 @@
 
     (oops/ocall server
                 :listen port
-                #(interop/logf "%s listening at %s" (.-name server) (.-url server)))))
+                #(interop/logf "%s listening at %s"
+                               (oops/oget server :name)
+                               (oops/oget server :url)))))

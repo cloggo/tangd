@@ -39,7 +39,7 @@
          (let [thp (oops/oget req :params :kid)
                ch (rec/get-jwk-from-thp (sqlite/on-db) thp)
                result (<? ch)
-               jwk (.-jwk result)
+               jwk (oops/oget result :jwk)
                jwk (jose/json-loads jwk)]
            (or (verify-local jwk)
                (let [rep (jose/jwk-exc jwk req-jwk)

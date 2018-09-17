@@ -4,7 +4,8 @@ ADD app/ /app
 
 WORKDIR /app
 
-RUN rm package-lock.json \
+RUN apk add --no-cache --update jansson openssl zlib \
+    && rm package-lock.json \
     && rm -rf node_modules \
     && npm install
 

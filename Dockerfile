@@ -9,4 +9,4 @@ RUN apk add --no-cache --update jansson openssl zlib \
     && rm -rf node_modules \
     && npm install
 
-CMD ["node", "/app/index.js"]
+CMD ["node", "/app/index.js", "--data", "/var/db/tangd/keys.sqlite3"]

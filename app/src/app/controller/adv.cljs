@@ -23,6 +23,7 @@
    (restify/http-response :adv
                           (create-jws-spec (keys/default-jws)))))
 
+
 (restify/reg-http-request-handler
  :adv-kid
  (fn [[req]]

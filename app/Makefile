@@ -49,7 +49,7 @@ nrepl:
 .PHONY: start-dev
 
 start-dev: app/node_modules
-	$(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) $(DEV_MAIN_JS)
+	$(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) $(DEV_MAIN_JS) --data ./keys.sqlite3
 
 start-dbg: app/node_modules
 	$(NODEMON_BIN) -e js --watch $(DEV_MAIN_JS) --inspect-brk=0.0.0.0 $(DEV_MAIN_JS)

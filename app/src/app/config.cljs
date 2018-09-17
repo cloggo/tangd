@@ -21,7 +21,7 @@
 
 (def app-name "tangd")
 
-(def db-name "./jwk_keys.sqlite3")
+;; (def *db-name* "./jwk_keys.sqlite3")
 
 (def port 8080)
 
@@ -59,7 +59,7 @@
 ;;> sqlite initializations
 
 (defn init-sqlite []
-  (sqlite/set-db-name! db-name)
+  ;;(sqlite/set-db-name! db-name)
   ;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
   (sqlite/init-db (sqlite/on-db) schema/init-stmts)
   (default-jws/cache-default-jws (sqlite/on-db)))

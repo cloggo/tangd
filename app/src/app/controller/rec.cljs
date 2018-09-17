@@ -33,13 +33,10 @@
              :status :OK})
 
 
-(defn acceptable-content? [req content-type]
-  (oops/ocall req :is content-type))
-
 
 (defn rec-jwk-exc [req]
   (go-try
-   (if (acceptable-content? req "application/jwk+json")
+   (if (restify/acceptable-content? req "application/jwk+json")
      (let [req-jwk (oops/oget req :body)]
        #_(println "req: " (jose/json-dumps req-jwk))
        (or (verify-request req-jwk)

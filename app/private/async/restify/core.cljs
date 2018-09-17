@@ -1,6 +1,7 @@
 (ns async.restify.core
   (:require
    #_[async-error.core :refer-macros [go-try <?] :refer [throw-err]]
+   [oops.core :as oops]
    [restify.core :as restify]
    [async.core :as async :refer-macros [go <! chan]] ))
 
@@ -38,3 +39,8 @@
   (if (async/error? result)
     {:status :INTERNAL_SERVER_ERROR :error result}
     result))
+
+
+(defn acceptable-content? [req content-type]
+  (oops/ocall req :is content-type))
+

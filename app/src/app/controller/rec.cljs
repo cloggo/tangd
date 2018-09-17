@@ -33,25 +33,31 @@
              :status :OK})
 
 
+(defn acceptable-content? [req content-type]
+  (oops/ocall req :is content-type))
+
+
 (defn rec-jwk-exc [req]
   (go-try
-   (let [req-jwk (oops/oget req :body)]
-     #_(println "req: " (jose/json-dumps req-jwk))
-     (or (verify-request req-jwk)
-         (let [thp (oops/oget req :params :kid)
-               ch (rec/get-jwk-from-thp (sqlite/on-db) thp)
-               result (<? ch)
-               jwk (oops/oget result :jwk)
-               jwk (and jwk (jose/json-loads jwk))]
-           (or (verify-local jwk)
-               #_(println "local: " (jose/json-dumps jwk))
-               (let [rep (jose/jwk-exc jwk req-jwk)
-                     alg (jose/json-loads "{\"alg\": \"ECMR\"}")
-                     key-op (jose/json-loads "{\"key_ops\": [\"deriveKey\"]}")]
-                 (jose/json-object-update rep alg)
-                 (jose/json-object-update rep key-op)
-                 #_(println "exc: " (jose/json-dumps rep))
-                 (assoc respond-templ :payload rep))))))))
+   (if (acceptable-content? req "application/jwk+json")
+     (let [req-jwk (oops/oget req :body)]
+       #_(println "req: " (jose/json-dumps req-jwk))
+       (or (verify-request req-jwk)
+           (let [thp (oops/oget req :params :kid)
+                 ch (rec/get-jwk-from-thp (sqlite/on-db) thp)
+                 result (<? ch)
+                 jwk (oops/oget result :jwk)
+                 jwk (and jwk (jose/json-loads jwk))]
+             (or (verify-local jwk)
+                 #_(println "local: " (jose/json-dumps jwk))
+                 (let [rep (jose/jwk-exc jwk req-jwk)
+                       alg (jose/json-loads "{\"alg\": \"ECMR\"}")
+                       key-op (jose/json-loads "{\"key_ops\": [\"deriveKey\"]}")]
+                   (jose/json-object-update rep alg)
+                   (jose/json-object-update rep key-op)
+                   #_(println "exc: " (jose/json-dumps rep))
+                   (assoc respond-templ :payload rep))))))
+     {:status :NOT_ACCEPTABLE :error "content is not application/jwk+json"})))
 
 
 (restify/reg-http-request-handler

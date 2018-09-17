@@ -11,7 +11,7 @@
     (bit-or f0 f1)))
 
 (defn json-dumps
-  ([json] (json-dumps json 0))
+  ([json] (json-dumps json default-json-flag))
   ([json flag]
    (oops/ocall jose :jose_json_dumps json flag)))
 
@@ -37,8 +37,10 @@
 
 (defn jwks->keys [& jwks]
   (let [jwks (mapv json-dumps jwks)
-        jwks (string/join ["{\"keys\": \"" (string/join jwks) "\"}"])]
+        jwks (string/join ["{\"keys\": [" (string/join "," jwks) "]}"])]
+    ;; (println jwks)
     jwks))
+
 
 ;;< ===================
 

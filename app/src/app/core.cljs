@@ -11,7 +11,6 @@
     (sqlite/set-db-name!
      (if (or (= flag0 "--data") (= flag0 "-d"))
        (or path "./keys.sqlite3")))
-    (println path) )
-  (config/start-server config/config))
+  (config/start-server config/config)))
 
 (set! *main-cli-fn* -main)

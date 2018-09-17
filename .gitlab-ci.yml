@@ -28,6 +28,7 @@ build:
     - linux
   script:
     - cd app
+    - npm install
     - lein cljsbuild once prod
 
 release:

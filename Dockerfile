@@ -4,7 +4,7 @@ ADD app/ /app
 
 WORKDIR /app
 
-RUN rm package-lock.json \
-    && npm install --registry https://npm.delite.ca
+RUN rm /app/package-lock.json \
+    && npm install
 
 CMD ["node", "/app/index.js"]

@@ -6,6 +6,6 @@ WORKDIR /app
 
 RUN rm package-lock.json \
     && rm -rf node_modules \
-    && npm install --registry https://npm.delite.ca
+    && npm install
 
 CMD ["node", "/app/index.js"]

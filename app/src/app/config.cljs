@@ -44,7 +44,7 @@
 
 ;;< ==============================
 
-(def config
+(defn get-restify-config []
   {:options server-options
    :port port
    :parser (body-parser/body-parser #js {:mapParams false})
@@ -68,13 +68,13 @@
 ;;< ========================
 
 
-(defn start-server [config]
-  (let [{:keys [options parser routes port]} config
+(defn start-server []
+  (init-sqlite)
+  (init-restify)
+
+  (let [{:keys [options parser routes port]} (get-restify-config)
         server (oops/ocall restify :createServer options)]
 
-    (init-sqlite)
-
-    (init-restify)
 
     (oops/ocall server :use parser)
 

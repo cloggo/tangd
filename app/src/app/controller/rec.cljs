@@ -9,9 +9,9 @@
    [app.service.rec :as rec]))
 
 (defn verify-request [jwk]
-  (if (jose/jwk-prm jwk false "deriveKey")
-    (let [kty (jose/json-get jwk "kty")
-          alg (jose/json-get jwk "alg")]
+  (if (and jwk (jose/jwk-prm jwk false "deriveKey"))
+    (let [kty (jose/json-value-get (jose/json-get jwk "kty"))
+          alg (jose/json-value-get (jose/json-get jwk "alg"))]
       (if (= kty "EC")
         (when-not (= alg "ECMR") {:status :BAD_REQUEST :error "invalid algorithm"})
         {:status :BAD_REQUEST :error "invalid kty"}))
@@ -19,35 +19,39 @@
 
 
 (defn verify-local [jwk]
-  (if (jose/jwk-prm jwk true "deriveKey")
-    (let [d (jose/json-get jwk "d")
-          alg (jose/json-get jwk "alg")]
+  (if (and jwk (jose/jwk-prm jwk true "deriveKey"))
+    (let [d (jose/json-value-get (jose/json-get jwk "d"))
+          alg (jose/json-value-get (jose/json-get jwk "alg"))]
+      #_(println d alg)
       (if d
         (when-not (= alg "ECMR") {:status :FORBIDDEN :error "invalid algorithm"})
         {:status :BAD_REQUEST :error "invalid d"}))
     {:status :FORBIDDEN :error "Not a deriveKey jwk"}))
 
 
-(def result {:headers #js {:content-type "application/jwk+json"}
+(def respond-templ {:headers #js {:content-type "application/jwk+json"}
              :status :OK})
 
 
 (defn rec-jwk-exc [req]
   (go-try
    (let [req-jwk (oops/oget req :body)]
+     #_(println "req: " (jose/json-dumps req-jwk))
      (or (verify-request req-jwk)
          (let [thp (oops/oget req :params :kid)
                ch (rec/get-jwk-from-thp (sqlite/on-db) thp)
                result (<? ch)
                jwk (oops/oget result :jwk)
-               jwk (jose/json-loads jwk)]
+               jwk (and jwk (jose/json-loads jwk))]
            (or (verify-local jwk)
+               #_(println "local: " (jose/json-dumps jwk))
                (let [rep (jose/jwk-exc jwk req-jwk)
                      alg (jose/json-loads "{\"alg\": \"ECMR\"}")
                      key-op (jose/json-loads "{\"key_ops\": [\"deriveKey\"]}")]
                  (jose/json-object-update rep alg)
                  (jose/json-object-update rep key-op)
-                 (assoc result :payload rep))))))))
+                 #_(println "exc: " (jose/json-dumps rep))
+                 (assoc respond-templ :payload rep))))))))
 
 
 (restify/reg-http-request-handler

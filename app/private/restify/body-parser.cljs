@@ -17,6 +17,9 @@
 (defn add-parser! [parser]
   (set! *parsers* (merge *parsers* parser)))
 
+(defn get-parsers []
+  *parsers*)
+
 (defn parse-body- [parsers]
   (fn [req res next]
     (let [method (oops/oget req :method)
@@ -43,6 +46,6 @@
   ([] body-parser #js {})
   ([opts] (let [_ (oops/oset! opts "!bodyReader" true)
                 body-reader (oops/ocall restify "plugins.bodyReader" opts)
-                parsers (reduce-kv #(assoc %1 %2 (%3 opts)) {} *parsers*)]
+                parsers (reduce-kv #(assoc %1 %2 (%3 opts)) {} (get-parsers))]
             #js [body-reader (parse-body- parsers)])))
 

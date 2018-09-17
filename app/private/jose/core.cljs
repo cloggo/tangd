@@ -21,6 +21,9 @@
 (defn json-get [json key]
   (oops/ocall jose :jose_json_get json key))
 
+(defn json-value-get [json]
+  (oops/ocall jose :jose_json_value_get json))
+
 (defn json-object-update [json other]
   (oops/ocall jose :jose_json_object_update json other))
 
@@ -38,7 +41,6 @@
 (defn jwks->keys [& jwks]
   (let [jwks (mapv json-dumps jwks)
         jwks (string/join ["{\"keys\": [" (string/join "," jwks) "]}"])]
-    ;; (println jwks)
     jwks))
 
 

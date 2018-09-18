@@ -3,6 +3,9 @@
 A full implementation of [tang](https://github.com/latchset/tang) server run on node.js
 
 * keys are stored in sqlite database
+* low memory usage, required only less than 30MB of memory
+* very high performance and scalable
+
 * to rotate keys, use the /keys/rotate rest api
 
 ```sh

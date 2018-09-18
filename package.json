@@ -1,0 +1,19 @@
+{
+    "name": "tangd",
+    "version": "0.1.0",
+    "engines": {
+        "node": "6.x"
+    },
+    "main": "index.js",
+    "dependencies": {
+        "c-jose": "^1.0.8",
+        "restify": "^7.2.1",
+        "sqlite3": "^4.0.2"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.4",
+        "source-map-support": "^0.4.15",
+        "utf-8-validate": "^5.0.1",
+        "ws": "^6.0.0"
+    }
+}

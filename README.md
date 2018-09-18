@@ -1,12 +1,13 @@
-A full implementation of [tan](https://github.com/latchset/tang) server run on node.js
+A full implementation of [tang](https://github.com/latchset/tang) server run on node.js
 
-## build
+## build from source
 
 ```sh
 lein cljsbuild prod once
 ```
 
-## installation
+## installation from npmjs.org
+* does not require compile from source
 
 ```sh
 npm install tangd

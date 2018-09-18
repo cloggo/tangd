@@ -3,18 +3,17 @@
 A full implementation of [tang](https://github.com/latchset/tang) server run on node.js
 
 * keys are stored in sqlite database
-* low memory usage, required only less than 30MB of memory
+* low memory usage, required less than 30MB of memory
 * very high performance and scalable
 
+### recommendation
+* run the server behind a firewall
 * to rotate keys, use the /keys/rotate rest api
 
 ```sh
 ## assuming the tang server is running behind a firewall
 curl -X POST http://localhost/keys/rotate -d "{}"
 ```
-
-### recommendation
-* run the server behind a firewall
 
 ## Build from source
 

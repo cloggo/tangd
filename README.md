@@ -7,7 +7,7 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 
 ```sh
 ## assuming the tang server is running behind a firewall
-curl -X POST http://localhost/keys/rotate
+curl -X POST http://localhost/keys/rotate -d "{}"
 ```
 
 ### recommendation

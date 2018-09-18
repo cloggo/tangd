@@ -1,6 +1,6 @@
 (ns app.controller.adv
   (:require
-   [async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
+   [async.async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
    [app.service.adv :as adv]
    [sqlite.core :as sqlite]
    [async.restify.core :as restify]

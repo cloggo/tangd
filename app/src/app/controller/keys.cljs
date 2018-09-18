@@ -4,7 +4,7 @@
    [sqlite.core :as sqlite]
    [oops.core :as oops]
    [async.sqlite.core :as sqlite* :refer-macros [transaction]]
-   [async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
+   [async.async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
    [app.service.keys :as keys]))
 
 

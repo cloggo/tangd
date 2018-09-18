@@ -1,0 +1,21 @@
+[submodule "app/private/async/async"]
+	path = app/private/async/async
+	url = git@gitlab.delite.ca:docker/lib/cljs/async/async.git
+[submodule "app/private/async/sqlite"]
+	path = app/private/async/sqlite
+	url = git@gitlab.delite.ca:docker/lib/cljs/async/sqlite.git
+[submodule "app/private/async/restify"]
+	path = app/private/async/restify
+	url = git@gitlab.delite.ca:docker/lib/cljs/async/restify.git
+[submodule "app/private/restify"]
+	path = app/private/restify
+	url = git@gitlab.delite.ca:docker/lib/cljs/restify.git
+[submodule "app/private/sqlite"]
+	path = app/private/sqlite
+	url = git@gitlab.delite.ca:docker/lib/cljs/sqlite.git
+[submodule "app/private/jose"]
+	path = app/private/jose
+	url = git@gitlab.delite.ca:docker/lib/cljs/jose.git
+[submodule "app/private/interop"]
+	path = app/private/interop
+	url = git@gitlab.delite.ca:docker/lib/cljs/interop.git

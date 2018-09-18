@@ -1,7 +1,7 @@
 (ns app.service.keys
   (:require
    [clojure.string :as s]
-   [async.core :as async]
+   [async.async.core :as async]
    [async.sqlite.core :as sqlite]
    [jose.core :as jose]
    [oops.core :as oops]

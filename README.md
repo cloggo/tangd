@@ -1,4 +1,4 @@
-A full implementation of tang server run on node.js
+A full implementation of [tan](https://github.com/latchset/tang) server run on node.js
 
 ## build
 
@@ -6,7 +6,7 @@ A full implementation of tang server run on node.js
 lein cljsbuild prod once
 ```
 
-## Installation
+## installation
 
 ```sh
 npm install tangd

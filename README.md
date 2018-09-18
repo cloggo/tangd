@@ -13,26 +13,26 @@ curl -X POST http://localhost/keys/rotate -d "{}"
 ### recommendation
 * run the server behind a firewall
 
-## build from source
+## Build from source
 
 ```sh
 lein cljsbuild prod once
 ```
 
-## installation from npmjs.org
+## Installation from npmjs.org
 * does not require compile from source
 
 ```sh
 npm install tangd
 ```
 
-## running
+## Running
 
 ```sh
 node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3
 ```
 
-## docker container
+## Docker container
 
 ```sh
 docker run  -p 80:8080 -v /secret/data:/var/db/tangd cloggo/tangd:latest

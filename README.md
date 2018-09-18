@@ -1,4 +1,17 @@
+# Tang
+
 A full implementation of [tang](https://github.com/latchset/tang) server run on node.js
+
+* keys are stored in sqlite database
+* to rotate keys, use the /keys/rotate rest api
+
+```sh
+## assuming the tang server is running behind a firewall
+curl -X POST http://localhost/keys/rotate
+```
+
+### recommendation
+* run the server behind a firewall
 
 ## build from source
 

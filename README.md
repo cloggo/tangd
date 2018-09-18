@@ -8,7 +8,7 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 
 ### recommendation
 * run the server behind a firewall
-* to rotate keys, use the /keys/rotate rest api
+* to rotate keys, use the /keys/rotate REST api
 
 ```sh
 ## assuming the tang server is running behind a firewall

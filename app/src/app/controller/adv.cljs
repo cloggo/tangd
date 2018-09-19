@@ -1,9 +1,9 @@
 (ns app.controller.adv
   (:require
-   [async.async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
+   [cljs-async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
    [app.service.adv :as adv]
    [sqlite.core :as sqlite]
-   [async.restify.core :as restify]
+   [async-restify.core :as restify]
    [oops.core :as oops]
    [app.service.keys :as keys]))
 

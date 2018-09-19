@@ -1,6 +1,6 @@
 (ns app.controller.t-error
   (:require
-   [async.restify.core :as restify]))
+   [async-restify.core :as restify]))
 
 
 (restify/reg-http-request-handler

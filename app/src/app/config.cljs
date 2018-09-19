@@ -7,7 +7,7 @@
    [jose.jwk-formatter :as jwk-formatter]
    [jose.jwk-parser :as jwk-parser]
    [restify.core :as restify*]
-   [async.restify.core :as async-restify]
+   [async-restify.core :as async-restify]
    [oops.core :as oops]
    [interop.core :as interop]
    [sqlite.core :as sqlite]

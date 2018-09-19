@@ -2,10 +2,10 @@
   (:require
    [app.service.keys :as keys]
    [jose.core :as jose]
-   [async.async.core :as async]
+   [cljs-async.core :as async]
    [app.service.schema :as schema]
    [oops.core :as oops]
-   [async.sqlite.core :as sqlite]))
+   [async-sqlite.core :as sqlite]))
 
 
 (defn select-default-jwk [db]

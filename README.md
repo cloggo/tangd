@@ -1,30 +1,41 @@
-# Standalone Usage
+# Tang
 
-1. `lein figwheel`
-2. (In another window) `node target\js\compiled\app.js ...`
+A full implementation of [tang](https://github.com/latchset/tang) server run on node.js
 
+* keys are stored in sqlite database
+* low memory usage, required less than 30MB of memory
+* very high performance and scalable
 
-# Production Builds
+### recommendation
+* run the server behind a firewall
+* to rotate keys, use the /keys/rotate REST api
 
-1. `lein cljsbuild once prod`
-2. `node server.js ...`
+```sh
+## assuming the tang server is running behind a firewall
+curl -X POST http://localhost/keys/rotate -d "{}"
+```
 
+## Build from source
 
-# REPL Usage (Vim)
+```sh
+lein cljsbuild prod once
+```
 
-You can now connect to Figwheel's REPL through
-[Piggieback](https://github.com/cemerick/piggieback) using
-[vim-fireplace](https://github.com/tpope/vim-fireplace):
+## Installation from npmjs.org
+* does not require compile from source
 
-1. `lein repl`
-2. `(fig-start)`
-3. `(cljs-repl)`
-4. (In another window) `node target\js\compiled\app.js ...`
-5. (In Vim) `:Piggieback (figwheel-sidecar.repl-api/repl-env)`
+```sh
+npm install tangd
+```
 
-Standard `vim-fireplace` commands will now work in the context of the
-Figwheel process:
+## Running
 
-- `cqp` to send a command from Vim to the REPL
-- `cpa...` to evaluate a form without saving or reloading the file
-- etc.
+```sh
+node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3
+```
+
+## Docker container
+
+```sh
+docker run  -p 80:8080 -v /secret/data:/var/db/tangd cloggo/tangd:latest
+```

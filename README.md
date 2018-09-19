@@ -31,11 +31,15 @@ npm install tangd
 ## Running
 
 ```sh
-node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3
+node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3 --port 8080
+
+# must also initiate a key rotation to create new keys
 ```
 
 ## Docker container
 
 ```sh
-docker run  -p 80:8080 -v /secret/data:/var/db/tangd cloggo/tangd:latest
+docker run -p 80:8080 -v /secret/data:/var/db/tangd cloggo/tangd:latest
+
+# must also initiate a key rotation to create new keys 
 ```

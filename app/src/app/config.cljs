@@ -1,7 +1,6 @@
 (ns app.config
   (:require
    [restify]
-   [app.loader]
    [app.routes :as routes]
    [restify.router :as router]
    [jose.jwk-formatter :as jwk-formatter]

@@ -1,5 +1,7 @@
 # tangd
 
+credit: [Nathanial McCallum](mailto:npmccallum@redhat.com)
+
 [![npm](https://img.shields.io/npm/v/tangd.svg)](https://www.npmjs.com/package/tangd)
 
 A full implementation of [tang](https://github.com/latchset/tang) server run on node.js

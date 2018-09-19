@@ -7,6 +7,6 @@
 (def routes
   [[ :get "/adv/"  #(restify/http-request :adv %&) ]
    [ :get "/adv/:kid" #(restify/http-request :adv-kid %&) ]
-   [ :post "/keys/rotate" #(restify/http-request :keys %&)]
+   #_[ :post "/keys/rotate" #(restify/http-request :keys %&)]
    #_[ :get "/t-error/"  #(restify/http-request :t-error %&)]
    [ :post "/rec/:kid" #(restify/http-request :rec %&)]])

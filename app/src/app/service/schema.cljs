@@ -76,3 +76,7 @@
 (def init-stmts [create-jws-jwk-index create-thp-thp-index create-thp-jwk-jwk-index
                  create-thp-jwk-thp-index create-thp-jwk-table create-jws-table
                  create-thp-table create-jwk-table])
+
+(def init-stmts* [create-jwk-table create-thp-table create-jws-table  create-thp-jwk-table
+                  create-jws-jwk-index create-thp-thp-index create-thp-jwk-jwk-index
+                  create-thp-jwk-thp-index ])

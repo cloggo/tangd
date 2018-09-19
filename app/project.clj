@@ -10,7 +10,7 @@
                  [org.clojars.akiel/async-error "0.3"]
                  [binaryage/devtools "0.9.10"]
                  [org.clojars.cloggo/cljs-async "0.1.2"]
-                 [org.clojars.cloggo/sqlite "0.1.0"]
+                 [org.clojars.cloggo/sqlite "0.1.1"]
                  [org.clojars.cloggo/jose "0.1.1"]
                  [org.clojars.cloggo/interop "0.1.0"]
                  [org.clojars.cloggo/restify "0.1.3"]

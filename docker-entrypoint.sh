@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -f /usr/bin/rotate-keys ]; then
+if [ ! -f /var/db/tangd/keys.sqlite3 ]; then
     /usr/bin/rotate-keys
 fi
 

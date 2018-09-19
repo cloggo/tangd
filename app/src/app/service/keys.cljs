@@ -79,3 +79,14 @@
 (defn cache-defaults [jws]
   (set! *default-jws* (jose/json-dumps jws)))
 
+
+(defn init-db [db [stmt0 & stmts]]
+  #_(println "stmt0: " stmt0)
+  #_(println "stmts: " (count stmts))
+  (reduce (fn [ch stmt]
+            (async/go-try
+             (async/<? ch)
+             #_(println stmt)
+             (async/<? (sqlite/on-cmd db :run stmt))))
+          (sqlite/on-cmd db :run stmt0)
+          stmts))

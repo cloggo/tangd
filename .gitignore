@@ -10,3 +10,5 @@ app/.config
 /app/nohup.out
 /app/jwk_keys.sqlite3-journal
 /app/keys.sqlite3-journal
+/app/keys.sqlite3-journal.bak
+/app/keys.sqlite3.bak

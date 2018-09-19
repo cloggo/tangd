@@ -34,25 +34,37 @@
           (<?* number? (keys/insert-jws db payload es512)))))))
 
 
-(defn rotate-keys []
+(defn rotate-keys [db]
   (let [init-vals (keys/rotate-keys)
-        [es512 ecmr payload jws] init-vals
-        sqlite-db (sqlite/on-db)]
-    (rotate-keys* sqlite-db init-vals)))
+        [es512 ecmr payload jws] init-vals]
+    (rotate-keys* db init-vals)))
 
 
-(defn rotate-and-exit [db-name]
-  (sqlite/set-db-name! db-name)
-  (go
-    (->> (rotate-keys)
-         (<!) (oops/ocall js/process :exit))))
+(defn rotate-and-exit [_]
+  (async/go
+    (let [db (sqlite/on-db)
+          _ (<! (rotate-keys db))]
+      (do (println "done..." )
+          (<! (async/timeout 1000))
+          (oops/ocall js/process :exit)))))
+
+
+(defn init-and-exit [stmts]
+  (fn [db-name]
+    (sqlite/set-db-name! db-name)
+    (go
+      (->> (keys/init-db (sqlite/on-db) stmts)
+           (<!)
+           ((fn [_]
+              #_(sqlite/db-close (sqlite/on-db))
+              (oops/ocall js/process :exit)))))))
 
 
 (restify/reg-http-request-handler
  :keys
  (fn [context]
    (go
-     (->> (rotate-keys)
+     (->> (rotate-keys (sqlite/on-db))
           (<!) (restify/check-error-result)
           (restify/http-response :keys)))))
 

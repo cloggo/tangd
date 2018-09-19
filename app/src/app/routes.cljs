@@ -8,5 +8,5 @@
   [[ :get "/adv/"  #(restify/http-request :adv %&) ]
    [ :get "/adv/:kid" #(restify/http-request :adv-kid %&) ]
    #_[ :post "/keys/rotate" #(restify/http-request :keys %&)]
-   [ :get "/t-error/"  #(restify/http-request :t-error %&)]
+   #_[ :get "/t-error/"  #(restify/http-request :t-error %&)]
    [ :post "/rec/:kid" #(restify/http-request :rec %&)]])

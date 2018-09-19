@@ -64,7 +64,7 @@ start-dbg: app/node_modules
 .PHONY: start
 
 start: app/node_modules
-	$(NODEMON_BIN) -e js --watch $(MAIN_JS) $(MAIN_JS) --data ./keys.sqlite3
+	$(NODEMON_BIN) -e js --watch $(MAIN_JS) $(MAIN_JS) --data ./keys.sqlite3 --port 8081
 
 .PHONY: clean
 

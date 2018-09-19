@@ -21,9 +21,9 @@
 
 (def app-name "tangd")
 
-;; (def *db-name* "./jwk_keys.sqlite3")
+(def *port* 8080)
 
-(def port 8080)
+(def *db-name* "./keys.sqlite3")
 
 (def response-headers #js {:content-type "application/transit+json"})
 
@@ -45,7 +45,7 @@
 
 (defn get-restify-config []
   {:options server-options
-   :port port
+   :port *port*
    :parser (body-parser/body-parser #js {:mapParams false})
    :routes routes/routes})
 
@@ -59,21 +59,17 @@
 ;;> sqlite initializations
 
 (defn init-sqlite []
-  ;;(sqlite/set-db-name! db-name)
-  ;;(rf/dispatch [:open-sqlite-db schema/init-stmts])
+  (sqlite/set-db-name! *db-name*)
   (sqlite/init-db (sqlite/on-db) schema/init-stmts)
   (default-jws/cache-default-jws (sqlite/on-db)))
 
 ;;< ========================
-
-
 (defn start-server []
   (init-sqlite)
   (init-restify)
 
   (let [{:keys [options parser routes port]} (get-restify-config)
         server (oops/ocall restify :createServer options)]
-
 
     (oops/ocall server :use parser)
 
@@ -84,3 +80,17 @@
                 #(interop/logf "%s listening at %s"
                                (oops/oget server :name)
                                (oops/oget server :url)))))
+
+
+
+(def arg-deck
+  [[["--data" "-d"] #(set! *db-name* %)]
+   [["--port" "-p"] #(set! *port* %)]])
+
+(defn match-opts [[opt val]]
+  (mapv (fn [[opts handler]]
+          (when (some #(= % opt) opts) (handler val))) arg-deck))
+
+(defn arg-parse [args]
+  (let [args (partition 2 args)]
+    (mapv match-opts args)))

@@ -19,13 +19,6 @@ curl -X POST http://localhost/keys/rotate -d "{}"
 
 ## Build from source
 
-
-### prerequisites
-* jansson
-* openssl-dev
-* zlib-dev
-
-
 ```sh
 lein cljsbuild prod once
 ```

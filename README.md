@@ -1,7 +1,5 @@
 # Tang
 
-## About
-
 [![npm](https://img.shields.io/npm/v/tangd.svg)](https://www.npmjs.com/package/tangd)
 
 Node.JS javascript binding for [JOSE](https://github.com/latchset/jose.git) using N-API

@@ -16,37 +16,44 @@
             (mapv #(go-try ((keys/insert-thp-jwk db jwk-id) (<? %)))))))))
 
 
-(defn rotate-keys* [db init-vals]
-  (let [[es512 ecmr payload jws] init-vals]
-    (sqlite*/transaction
-     db [(fn [_]
-           (keys/cache-defaults jws)
-           {:status :CREATED})]
-     (go-try
-      (-> (keys/insert-jwk db ecmr)
-          (<?) ((insert-thp-jwk db ecmr))
-          (<?_ (keys/insert-jwk db es512))
-          (<?) ((insert-thp-jwk db es512))
-          (<?_ (keys/drop-jws-table db))
-          (<?_ (keys/create-jws-table db))
-          (<?_ (keys/create-jws-jwk-index db))
-          (<?_ (keys/select-all-jwk db))
-          (<?* number? (keys/insert-jws db payload es512)))))))
+(defn rotate-keys*
+  ([db init-vals]
+   (let [[es512 ecmr payload jws] init-vals]
+     (rotate-keys* db init-vals
+                   (fn []
+                     (keys/cache-defaults jws)
+                     {:status :CREATED}))))
+  ([db init-vals after-func]
+   (let [[es512 ecmr payload jws] init-vals]
+     (sqlite*/transaction
+      db [after-func]
+      (go-try
+       (-> (keys/insert-jwk db ecmr)
+           (<?) ((insert-thp-jwk db ecmr))
+           (<?_ (keys/insert-jwk db es512))
+           (<?) ((insert-thp-jwk db es512))
+           (<?_ (keys/drop-jws-table db))
+           (<?_ (keys/create-jws-table db))
+           (<?_ (keys/create-jws-jwk-index db))
+           (<?_ (keys/select-all-jwk db))
+           (<?* number? (keys/insert-jws db payload es512))))))))
 
 
-(defn rotate-keys [db]
-  (let [init-vals (keys/rotate-keys)
-        [es512 ecmr payload jws] init-vals]
-    (rotate-keys* db init-vals)))
+(defn rotate-keys
+  ([db after-func] (rotate-keys* db (keys/rotate-keys) after-func))
+  ([db] (rotate-keys* db (keys/rotate-keys))))
 
 
 (defn rotate-and-exit [_]
   (async/go
+    (println "rotating keys...")
     (let [db (sqlite/on-db)
-          _ (<! (rotate-keys db))]
-      (do (println "done..." )
-          (<! (async/timeout 1000))
-          (oops/ocall js/process :exit)))))
+          _ (<! (rotate-keys
+                 db
+                 (fn [_]
+                   (async/go (<! (async/timeout 3000))
+                             (println "done...")
+                             (oops/ocall js/process :exit)))))])))
 
 
 (defn init-and-exit [stmts]

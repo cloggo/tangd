@@ -91,7 +91,6 @@
 (def arg-deck
   [[["--data" "-d"] #(set! *db-name* %)]
    [["rotate-keys"] rotate-and-exit]
-   #_[["create-db"] (keys/init-and-exit schema/init-stmts*)]
    [["--port" "-p"] #(set! *port* %)]])
 
 (defn match-opts [[opt val]]

@@ -1,4 +1,4 @@
-# Tang
+# tangd
 
 [![npm](https://img.shields.io/npm/v/tangd.svg)](https://www.npmjs.com/package/tangd)
 

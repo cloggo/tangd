@@ -41,6 +41,13 @@
     (rotate-keys* sqlite-db init-vals)))
 
 
+(defn rotate-and-exit [db-name]
+  (sqlite/set-db-name! db-name)
+  (go
+    (->> (rotate-keys)
+         (<!) (oops/ocall js/process :exit))))
+
+
 (restify/reg-http-request-handler
  :keys
  (fn [context]

@@ -1,11 +1,3 @@
-(def npm-prod {})
-
-(def npm-dev
-  (merge
-   {}
-   npm-prod))
-
-
 (defproject tangd "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
   :url "http://example.com/FIXME"
@@ -53,7 +45,6 @@
                                    :target :nodejs
                                    :install-deps true
                                    :preloads [devtools.preload]
-                                   :npm-deps ~npm-dev
                                    :optimizations :none
                                    :source-map-timestamp true}}
                        {:id "test"
@@ -66,7 +57,6 @@
                                    :output-to "target/js/compiled/test.js"
                                    :output-dir "target/js/compiled/test"
                                    :install-deps true
-                                   :npm-deps ~npm-dev
                                    :preloads [devtools.preload]
                                    :source-map true
                                    :target :nodejs
@@ -79,7 +69,6 @@
                                    :output-to "index.js"
                                    :output-dir "target/js/compiled/prod"
                                    :install-deps true
-                                   :npm-deps ~npm-prod
                                    :target :nodejs
                                    :optimizations :advanced}}]}
   ;; no need for node.js :optimizations :advanced but it does save about 5M of memory}}]}

@@ -45,20 +45,26 @@
   ([db] (rotate-keys* db (keys/rotate-keys))))
 
 
+(defn check-whitelist [route-key handler]
+  (fn [context]
+    (let [[req] context
+          remote-ip (or (oops/oget req :headers "x-forwarded-for")
+                        (oops/oget req :connection :remoteAddress))
+          remote-ip (str/replace-first remote-ip #"::ffff:" "")]
+      (if (some #(= remote-ip %) (keys/ip-whitelist))
+        (handler context)
+        (restify/http-response
+         route-key
+         {:error (str/join ["remote ip " remote-ip " is not allowed."])
+          :status :FORBIDDEN})))))
+
+
 (restify/reg-http-request-handler
  :keys
- (fn [[req]]
-   (let [remote-ip (or (oops/oget req :headers "x-forwarded-for")
-                       (oops/oget req :connection :remoteAddress))
-         remote-ip (str/replace-first remote-ip #"::ffff:" "")]
-     (if (some #(= remote-ip %) (keys/ip-whitelist))
-         (go
-           (->> (rotate-keys (sqlite/on-db))
-                (<!) (restify/check-error-result)
-                (restify/http-response :keys)))
-         (restify/http-response
-          :keys
-          {:error (str/join ["remote ip " remote-ip " is not allowed."])
-           :status :FORBIDDEN})))))
-
-;; (def handler (restify/handle-route restify-route-event))
+ (check-whitelist
+  :keys
+  (fn [_]
+    (go
+      (->> (rotate-keys (sqlite/on-db))
+           (<!) (restify/check-error-result)
+           (restify/http-response :keys))))))

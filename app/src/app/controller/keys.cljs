@@ -48,7 +48,9 @@
 (restify/reg-http-request-handler
  :keys
  (fn [[req]]
-   (let [remote-ip (oops/oget req :connection :remoteAddress)]
+   (let [remote-ip (or (oops/oget req :headers "x-forward-for")
+                       (oops/oget req :connection :remoteAddress))
+         remote-ip (str/replace-first remote-ip #"::fff:" "")]
      (if (some #(= remote-ip %) (keys/ip-whitelist))
          (go
            (->> (rotate-keys (sqlite/on-db))

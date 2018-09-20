@@ -14,3 +14,4 @@ nohup.out
 /src/
 /private/
 /test/
+*.bak

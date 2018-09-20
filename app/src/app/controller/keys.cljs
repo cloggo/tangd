@@ -48,7 +48,7 @@
 (restify/reg-http-request-handler
  :keys
  (fn [[req]]
-   (let [remote-ip (or (oops/oget req :headers "x-forward-for")
+   (let [remote-ip (or (oops/oget req :headers "x-forwarded-for")
                        (oops/oget req :connection :remoteAddress))
          remote-ip (str/replace-first remote-ip #"::ffff:" "")]
      (if (some #(= remote-ip %) (keys/ip-whitelist))

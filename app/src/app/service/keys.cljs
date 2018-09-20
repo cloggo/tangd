@@ -1,6 +1,6 @@
 (ns app.service.keys
   (:require
-   [clojure.string :as s]
+   [clojure.string :as str]
    [cljs-async.core :as async]
    [async-sqlite.core :as sqlite]
    [jose.core :as jose]
@@ -11,8 +11,20 @@
 
 (def ^:dynamic *default-jws* nil)
 
+(def ^:dynamic *ip-whitelist* ["::1" "127.0.0.1"])
+
 (defn default-jws []
   *default-jws*)
+
+(defn ip-whitelist [] *ip-whitelist*)
+
+(defn update-ip-whitelist
+  ([] (update-ip-whitelist (oops/oget js/process :env "IP_WHITELIST")))
+  ([ips]
+   (set! *ip-whitelist*
+         (into *ip-whitelist*
+               (str/split ips  #" ")))))
+
 
 (defn create-payload [jwk-es512 jwk-ecmr]
   (let [jwk-es512-pub (jose/jwk-pub jwk-es512)
@@ -81,12 +93,9 @@
 
 
 (defn init-db [db [stmt0 & stmts]]
-  #_(println "stmt0: " stmt0)
-  #_(println "stmts: " (count stmts))
   (reduce (fn [ch stmt]
             (async/go-try
              (async/<? ch)
-             #_(println stmt)
              (async/<? (sqlite/on-cmd db :run stmt))))
           (sqlite/on-cmd db :run stmt0)
           stmts))

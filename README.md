@@ -10,15 +10,6 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 * low memory usage, required less than 30MB of memory
 * very high performance and scalable
 
-### recommendation
-* run the server behind a firewall
-* to rotate keys, use the /keys/rotate REST api
-
-```sh
-## assuming the tang server is running behind a firewall
-curl -X POST http://localhost/keys/rotate -d "{}"
-```
-
 ## Build from source
 
 ```sh
@@ -35,7 +26,7 @@ npm install tangd
 ## Running
 
 ```sh
-node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3 --port 8080
+node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3 --port 8080 --ip-whitelist "10.6.0.4 10.8.0.9"
 
 # must also initiate a key rotation to create new keys
 ```
@@ -43,7 +34,18 @@ node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3 --port 8080
 ## Docker container
 
 ```sh
-docker run -p 80:8080 -v /secret/data:/var/db/tangd cloggo/tangd:latest
+docker run -p 80:8080 -e IP_WHITELIST="10.6.0.4 10.8.0.9" -v /secret/data:/var/db/tangd cloggo/tangd:latest
 
 # must also initiate a key rotation to create new keys 
 ```
+
+## Keys rotation
+
+* this is equivalent to the original tang command tangd-keygen
+* only whitelisted ip addresses are allowed to access this API
+* by defaults, the whitelisted ip addresses are [::1 127.0.0.1]
+
+```sh
+curl -X POST http://localhost/keys/rotate -d "{}"
+```
+

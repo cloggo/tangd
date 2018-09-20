@@ -11,11 +11,12 @@
    [interop.core :as interop]
    [sqlite.core :as sqlite]
    [app.service.schema :as schema]
-   [app.controller.keys :as keys]
-   [app.service.keys :as keys*]
+   #_[app.controller.keys :as keys]
+   [app.service.keys :as keys]
    [restify.body-parser :as body-parser]
    [app.service.default-jws :as default-jws]
-   [restify.transit-formatter :as transit-formatter]))
+   [restify.transit-formatter :as transit-formatter]
+   [clojure.string :as str]))
 
 ;;> app configurations
 
@@ -24,8 +25,6 @@
 (def ^:dynamic *port* 8080)
 
 (def ^:dyanmic *db-name* "./keys.sqlite3")
-
-(def ^:dynamic *post-db-init* identity)
 
 (def response-headers #js {:content-type "application/transit+json"})
 
@@ -53,6 +52,7 @@
 
 
 (defn init-restify []
+  (keys/update-ip-whitelist)
 
   (body-parser/add-parser! extra-parsers)
 
@@ -62,7 +62,7 @@
 
 (defn init-sqlite [db-name]
   (sqlite/set-db-name! db-name)
-  (sqlite/init-db (sqlite/on-db) schema/init-stmts *post-db-init*)
+  (sqlite/init-db (sqlite/on-db) schema/init-stmts)
   (default-jws/cache-default-jws (sqlite/on-db)))
 
 ;;< ========================
@@ -83,14 +83,9 @@
                                (oops/oget server :name)
                                (oops/oget server :url)))))
 
-(defn rotate-and-exit [db-name]
-  (set! *db-name* db-name)
-  (set! *post-db-init* keys/rotate-and-exit))
-
-
 (def arg-deck
   [[["--data" "-d"] #(set! *db-name* %)]
-   [["rotate-keys"] rotate-and-exit]
+   [["--ip-whitelist" "-l"] keys/update-ip-whitelist]
    [["--port" "-p"] #(set! *port* %)]])
 
 (defn match-opts [[opt val]]

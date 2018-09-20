@@ -5,7 +5,8 @@
    [oops.core :as oops]
    [async-sqlite.core :as sqlite* :refer-macros [transaction]]
    [cljs-async.core :as async :refer-macros [<?* <?_ <? go-try go  <!]]
-   [app.service.keys :as keys]))
+   [app.service.keys :as keys]
+   [clojure.string :as str]))
 
 
 (defn insert-thp-jwk [db jwk]
@@ -44,35 +45,18 @@
   ([db] (rotate-keys* db (keys/rotate-keys))))
 
 
-(defn rotate-and-exit [_]
-  (async/go
-    (println "rotating keys...")
-    (let [db (sqlite/on-db)
-          _ (<! (rotate-keys
-                 db
-                 (fn [_]
-                   (async/go (<! (async/timeout 3000))
-                             (println "done...")
-                             (oops/ocall js/process :exit)))))])))
-
-
-(defn init-and-exit [stmts]
-  (fn [db-name]
-    (sqlite/set-db-name! db-name)
-    (go
-      (->> (keys/init-db (sqlite/on-db) stmts)
-           (<!)
-           ((fn [_]
-              #_(sqlite/db-close (sqlite/on-db))
-              (oops/ocall js/process :exit)))))))
-
-
 (restify/reg-http-request-handler
  :keys
- (fn [context]
-   (go
-     (->> (rotate-keys (sqlite/on-db))
-          (<!) (restify/check-error-result)
-          (restify/http-response :keys)))))
+ (fn [[req]]
+   (let [remote-ip (oops/oget req :connection :remoteAddress)]
+     (if (some #(= remote-ip %) (keys/ip-whitelist))
+         (go
+           (->> (rotate-keys (sqlite/on-db))
+                (<!) (restify/check-error-result)
+                (restify/http-response :keys)))
+         (restify/http-response
+          :keys
+          {:error (str/join ["remote ip " remote-ip " is not allowed."])
+           :status :FORBIDDEN})))))
 
 ;; (def handler (restify/handle-route restify-route-event))

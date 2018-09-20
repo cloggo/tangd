@@ -1,6 +1,6 @@
 # tangd
 
-credit: [Nathanial McCallum](mailto:npmccallum@redhat.com)
+credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)
 
 [![npm](https://img.shields.io/npm/v/tangd.svg)](https://www.npmjs.com/package/tangd)
 

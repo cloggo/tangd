@@ -53,4 +53,3 @@ docker run -p 80:8080 -e IP_WHITELIST="10.6.0.4 10.8.0.9" -v /secret/data:/var/d
 ```sh
 curl -X POST http://localhost/keys/rotate -d "{}"
 ```
-

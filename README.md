@@ -52,7 +52,7 @@ npm install tangd
 #   --data, -d          database file path
 #   --ip-whitelist, -l  whitelisted ip to access security sensitive API
 
-node node_module/tangd/index.js --data /var/db/tangd/key.sqlite3 --port 8080 --ip-whitelist "10.6.0.4 10.8.0.9"
+node node_modules/tangd/index.js --data /var/db/tangd/key.sqlite3 --port 8080 --ip-whitelist "10.6.0.4 10.8.0.9"
 
 # must also initiate a key rotation to create new keys
 ```

@@ -1,4 +1,4 @@
-# <img src="header-logo.png" width="360" height="200" alt="tangd logo" />
+[![logo](header-logo.png)]
 
 credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)
 

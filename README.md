@@ -16,7 +16,7 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 * design to be deployed on any platform
 * strive to achieve better reliability
 * resolve issue quicker because it is based on a better code base
-* treat users with upmost respect
+* treat users with utmost respect
 
 ## Available REST API
 

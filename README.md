@@ -6,6 +6,7 @@ credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)
 
 A full implementation of [tang](https://github.com/latchset/tang) server run on node.js
 
+* fully compatible with the old implementation by McCallum et Al.
 * keys are stored in sqlite database
 * low memory usage, required less than 30MB of memory
 * very high performance and scalable
@@ -14,7 +15,8 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 ## Why create a new implemenation?
 
 * design to be deployed on any platform
-* strive to achieve better reliability
+* design to be hosted as a containerized service application
+* strive to achieve better performance, reliability and scalability
 * resolve issue quicker because it is based on a better code base
 * treat users with utmost respect
 

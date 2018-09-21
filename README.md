@@ -4,7 +4,7 @@ credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)
 
 [![npm](https://img.shields.io/npm/v/tangd.svg)](https://www.npmjs.com/package/tangd)
 
-A full implementation of [tang](https://github.com/latchset/tang) server run on node.js
+A full implementation of [tang](https://github.com/latchset/tang) server running on node.js
 
 * fully backward compatible with the old implementation by McCallum et Al.
 * keys are stored in sqlite database

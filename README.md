@@ -20,7 +20,7 @@ A full implementation of [tang](https://github.com/latchset/tang) server running
 * resolve issues quicker because it is based on a better code base
 * treat users with utmost respect
 
-## Available REST API
+## REST Service APIs
 
 | Method | Path	        | Operation                                                 |
 |:-------|:-------------|:----------------------------------------------------------|

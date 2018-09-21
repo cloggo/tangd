@@ -1,4 +1,4 @@
-# <img src="logo.png" width="320" height="120" alt="tangd logo" />
+# <img src="header-logo.png" width="360" height="200" alt="tangd logo" />
 
 credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)
 

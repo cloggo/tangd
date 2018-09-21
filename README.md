@@ -1,5 +1,7 @@
 # tangd
 
+<img src="logo.png" width="155" height="68" alt="tangd logo" />
+
 credit: [Nathanial McCallum](mailto:npmccallum@redhat.com)
 
 [![npm](https://img.shields.io/npm/v/tangd.svg)](https://www.npmjs.com/package/tangd)

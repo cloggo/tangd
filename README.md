@@ -12,7 +12,7 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 * very high performance and scalable
 * ease of use without sacrificing security
 
-## Why create a new implemenation?
+## Why develop a new tang implemenation?
 
 * design to be deployed on any platform
 * design to be hosted as a containerized service application

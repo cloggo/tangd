@@ -22,12 +22,12 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 
 ## Available REST API
 
-| Method | Path	        | Operation                                     |
-|--------|--------------|-----------------------------------------------|
-| GET	 | /adv	        | Fetch public keys                             |
-| GET	 | /adv/{kid}   | Fetch public keys using specified signing key |
-| POST	 | /rec/{kid}   | Perform recovery using specified exchange key |
-| POST   | /keys/rotate | Generate new keys                             |
+| Method | Path	        | Operation                                                |
+|--------|--------------|----------------------------------------------------------|
+| GET	 | /adv	        | Fetch public keys                                        |
+| GET	 | /adv/{kid}   | Fetch public keys using specified signing key            |
+| POST	 | /rec/{kid}   | Perform recovery using specified exchange key            |
+| POST   | /keys/rotate | Generate new keys (reserved for whitelisted ip addresses |
 
 ## Build from source
 

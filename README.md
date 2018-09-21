@@ -1,5 +1,5 @@
-<p align="center">
-<img width="720" height="405" src="header-logo.png"/>
+<p align="left">
+<img width="360" height="202" src="header-logo.png"/>
 </p>
 
 credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)

@@ -1,6 +1,4 @@
-# tangd
-
-<img src="logo.png" width="155" height="68" alt="tangd logo" />
+# (tangd <img src="logo.png" width="80" height="32" alt="tangd logo" />)
 
 credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)
 

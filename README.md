@@ -68,7 +68,7 @@ docker run -p 80:8080 -e IP_WHITELIST="10.6.0.4 10.8.0.9" -v /secret/data:/var/d
 * this is equivalent to the original tang command tangd-keygen
 * only whitelisted ip addresses are allowed to access this API
 * the default whitelisted ip addresses are [::1 127.0.0.1]
-* additional whitelist ip addresses can be specified in the environment variable or command line switch
+* additional whitelist ip addresses can be specified in the environment variable and/or command line switch
 
 ```sh
 curl -X POST http://localhost/keys/rotate -d "{}"

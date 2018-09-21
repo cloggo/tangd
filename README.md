@@ -9,6 +9,23 @@ A full implementation of [tang](https://github.com/latchset/tang) server run on 
 * keys are stored in sqlite database
 * low memory usage, required less than 30MB of memory
 * very high performance and scalable
+* ease of use without sacrificing security
+
+## Why create a new implemenation?
+
+* design to be deployed on any platform
+* strive to achieve better reliability
+* resolve issue quicker because it is based on a better code base
+* treat users with upmost respect
+
+## Available REST API
+
+| Method | Path	        | Operation                                     |
+| -------|--------------|-----------------------------------------------|
+| GET	 | /adv	        | Fetch public keys                             |
+| GET	 | /adv/{kid}   | Fetch public keys using specified signing key |
+| POST	 | /rec/{kid}   | Perform recovery using specified exchange key |
+| POST   | /keys/rotate | Generate new keys                             |
 
 ## Build from source
 

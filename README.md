@@ -1,4 +1,6 @@
-[![logo](header-logo.png)]
+<p align="center">
+![logo](header-logo.png)
+</p>
 
 credit: [Nathanial McCallum et Al.](mailto:npmccallum@redhat.com)
 

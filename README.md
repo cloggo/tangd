@@ -45,7 +45,7 @@ npm install tangd
 ## Running
 
 ```sh
-# command switches:
+# command line switches:
 #   --port, -p          server port number
 #   --data, -d          database file path
 #   --ip-whitelist, -l  whitelisted ip to access security sensitive API

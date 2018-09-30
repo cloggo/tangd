@@ -48,7 +48,7 @@
 (defn check-whitelist [route-key handler]
   (fn [context]
     (let [[req] context
-          remote-ip (or (oops/oget req :headers "x-forwarded-for")
+          remote-ip (or (oops/oget req :header "x-forwarded-for")
                         (oops/oget req :connection :remoteAddress))
           remote-ip (str/replace-first remote-ip #"::ffff:" "")]
       (if (some #(= remote-ip %) (keys/ip-whitelist))
